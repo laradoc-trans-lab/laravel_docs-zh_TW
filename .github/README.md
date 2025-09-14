@@ -6,6 +6,17 @@
 
 ---
 
+## 切換分支說明
+
+本專案由於為每個版本建立孤立分支，所以要抓取特定版本的檔案需要依照以下步驟，以版本 12.x 為例子 :
+
+```bash
+git clone https://github.com/laradoc-trans-lab/laravel_docs-zh_TW.git
+git fetch origin
+git checkout -b 12.x origin/12.x
+```
+
+
 ## 主要說明
 
 - 分支 `main` 並不存在任何檔案，請切換分支版本，例如 `12.x` 才會有翻譯檔。
