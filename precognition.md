@@ -8,7 +8,7 @@
     - [使用 React 與 Inertia](#using-react-and-inertia)
     - [使用 Alpine 與 Blade](#using-alpine)
     - [設定 Axios](#configuring-axios)
-- [自訂驗證規則](#customizing-validation-rules)
+- [客製化驗證規則](#customizing-validation-rules)
 - [處理檔案上傳](#handling-file-uploads)
 - [管理副作用](#managing-side-effects)
 - [測試](#testing)
@@ -16,9 +16,9 @@
 <a name="introduction"></a>
 ## 簡介
 
-Laravel Precognition 讓您能夠預測未來 HTTP 請求的結果。Precognition 的主要用途之一是為您的前端 JavaScript 應用程式提供「即時」驗證，而無需重複應用程式的後端驗證規則。Precognition 與 Laravel 基於 Inertia 的 [入門套件](/docs/{{version}}/starter-kits) 搭配使用效果尤其出色。
+Laravel Precognition 讓您能夠預測未來 HTTP 請求的結果。Precognition 的主要用途之一是為您的前端 JavaScript 應用程式提供「即時」驗證，而無需重複應用程式的後端驗證規則。Precognition 特別適合搭配 Laravel 基於 Inertia 的[入門套件](/docs/{{version}}/starter-kits)。
 
-當 Laravel 收到「預知請求 (precognitive request)」時，它將執行所有路由的 Middleware 並解析路由的控制器依賴項，包括驗證 [表單請求](/docs/{{version}}/validation#form-request-validation) — 但它實際上不會執行路由的控制器方法。
+當 Laravel 收到「預知請求」時，它將執行路由的所有中介層，並解析路由的控制器依賴，包含驗證[表單請求](/docs/{{version}}/validation#form-request-validation)—— 但它實際上不會執行路由的控制器方法。
 
 <a name="live-validation"></a>
 ## 即時驗證
@@ -26,9 +26,9 @@ Laravel Precognition 讓您能夠預測未來 HTTP 請求的結果。Precognitio
 <a name="using-vue"></a>
 ### 使用 Vue
 
-使用 Laravel Precognition，您可以為使用者提供即時驗證體驗，而無需在前端 Vue 應用程式中重複您的驗證規則。為了說明其運作方式，讓我們在應用程式中建立一個用於建立新使用者的表單。
+透過 Laravel Precognition，您可以為使用者提供即時驗證體驗，而無需在前端 Vue 應用程式中重複驗證規則。為了說明其運作方式，我們將在應用程式中建立一個用於建立新使用者的表單。
 
-首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` Middleware 加入到路由定義中。您還應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 來存放路由的驗證規則：
+首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` 中介層新增至路由定義中。您還應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 來包含路由的驗證規則：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -39,15 +39,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下來，您應該透過 NPM 安裝 Laravel Precognition 的 Vue 前端輔助套件：
+接著，您應該透過 NPM 安裝適用於 Vue 的 Laravel Precognition 前端輔助程式：
 
 ```shell
 npm install laravel-precognition-vue
 ```
 
-安裝 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `useForm` 函數建立一個表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`) 和初始表單資料。
+安裝 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `useForm` 函式來建立表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`) 和初始表單資料。
 
-然後，要啟用即時驗證，請在每個輸入的 `change` 事件上呼叫表單的 `validate` 方法，並提供輸入的名稱：
+然後，要啟用即時驗證，請在每個輸入欄位的 `change` 事件上呼叫表單的 `validate` 方法，並提供輸入欄位的名稱：
 
 ```vue
 <script setup>
@@ -91,13 +91,13 @@ const submit = () => form.submit();
 </template>
 ```
 
-現在，當使用者填寫表單時，Precognition 將根據路由表單請求中的驗證規則提供即時驗證輸出。當表單輸入變更時，將向您的 Laravel 應用程式發送一個去抖動的「預知」驗證請求。您可以透過呼叫表單的 `setValidationTimeout` 函數來設定去抖動逾時：
+現在，當使用者填寫表單時，Precognition 將根據路由表單請求中的驗證規則提供即時驗證輸出。當表單輸入欄位變更時，將會向您的 Laravel 應用程式傳送一個經過防抖動處理的「預判式」驗證請求。您可以透過呼叫表單的 `setValidationTimeout` 函式來設定防抖動逾時時間：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-當驗證請求正在進行中時，表單的 `validating` 屬性將為 `true`：
+當驗證請求正在執行時，表單的 `validating` 屬性將為 `true`：
 
 ```html
 <div v-if="form.validating">
@@ -105,7 +105,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-在驗證請求或表單提交期間返回的任何驗證錯誤將自動填充表單的 `errors` 物件：
+在驗證請求或表單提交期間返回的任何驗證錯誤，都將自動填入表單的 `errors` 物件中：
 
 ```html
 <div v-if="form.invalid('email')">
@@ -121,7 +121,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-您也可以透過將輸入的名稱傳遞給表單的 `valid` 和 `invalid` 函數，分別判斷輸入是否通過或未通過驗證：
+您也可以透過將輸入欄位的名稱傳遞給表單的 `valid` 和 `invalid` 函式，來判斷輸入欄位是否分別通過或未能通過驗證：
 
 ```html
 <span v-if="form.valid('email')">
@@ -134,9 +134,9 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 表單輸入只有在變更並收到驗證回應後才會顯示為有效或無效。
+> 表單輸入欄位只會在變更且收到驗證回應後才會顯示為有效或無效。
 
-如果您正在使用 Precognition 驗證表單輸入的子集，手動清除錯誤會很有用。您可以使用表單的 `forgetError` 函數來實現此目的：
+如果您使用 Precognition 驗證表單輸入欄位中的一部分，手動清除錯誤會很有用。您可以使用表單的 `forgetError` 函式來實現此目的：
 
 ```html
 <input
@@ -150,9 +150,9 @@ form.setValidationTimeout(3000);
 >
 ```
 
-如我們所見，您可以掛接到輸入的 `change` 事件並在使用者與其互動時驗證個別輸入；但是，您可能需要驗證使用者尚未互動的輸入。這在建立「精靈 (wizard)」時很常見，您希望在進入下一步之前驗證所有可見的輸入，無論使用者是否與其互動過。
+如我們所見，您可以連結到輸入欄位的 `change` 事件，並在使用者與其互動時驗證個別輸入欄位；但是，您可能需要驗證使用者尚未互動的輸入欄位。這在建立「精靈」時很常見，您希望在進入下一步之前，驗證所有可見的輸入欄位，無論使用者是否與其互動過。
 
-要使用 Precognition 執行此操作，您應該呼叫 `validate` 方法，將您希望驗證的欄位名稱傳遞給 `only` 設定鍵。您可以使用 `onSuccess` 或 `onValidationError` 回呼來處理驗證結果：
+若要使用 Precognition 執行此操作，您應該呼叫 `validate` 方法，並將您希望驗證的欄位名稱傳遞給 `only` 配置鍵。您可以透過 `onSuccess` 或 `onValidationError` 回呼函式來處理驗證結果：
 
 ```html
 <button
@@ -165,7 +165,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-當然，您也可以執行程式碼以回應表單提交的回應。表單的 `submit` 函數返回一個 Axios 請求 Promise。這提供了一種方便的方式來存取回應酬載、在成功提交後重設表單輸入，或處理失敗的請求：
+當然，您也可以根據表單提交的回應執行程式碼。表單的 `submit` 函式會回傳一個 Axios 請求 Promise。這提供了一種方便的方式來存取回應負載、在成功提交後重設表單輸入欄位，或處理失敗的請求：
 
 ```js
 const submit = () => form.submit()
@@ -179,7 +179,7 @@ const submit = () => form.submit()
     });
 ```
 
-您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在進行中：
+您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在執行：
 
 ```html
 <button :disabled="form.processing">
@@ -191,17 +191,17 @@ const submit = () => form.submit()
 ### 使用 Vue 與 Inertia
 
 > [!NOTE]
-> 如果您想在開發 Laravel 應用程式時使用 Vue 和 Inertia 搶先一步，請考慮使用我們的 [入門套件](/docs/{{version}}/starter-kits) 之一。Laravel 的入門套件為您的新 Laravel 應用程式提供了後端和前端身份驗證腳手架。
+> 如果您希望在使用 Vue 和 Inertia 開發 Laravel 應用程式時有一個良好的開端，請考慮使用我們的 [入門套件](/docs/{{version}}/starter-kits) 之一。Laravel 的入門套件為您的新 Laravel 應用程式提供了後端和前端身份驗證骨架。
 
-在使用 Precognition 與 Vue 和 Inertia 之前，請務必查閱我們關於 [使用 Precognition 與 Vue](#using-vue) 的一般文件。當使用 Vue 與 Inertia 時，您需要透過 NPM 安裝與 Inertia 相容的 Precognition 函式庫：
+在使用 Precognition 與 Vue 和 Inertia 之前，務必查閱我們關於 [使用 Precognition 與 Vue](#using-vue) 的一般文件。當使用 Vue 與 Inertia 時，您將需要透過 NPM 安裝與 Inertia 相容的 Precognition 函式庫：
 
 ```shell
 npm install laravel-precognition-vue-inertia
 ```
 
-安裝後，Precognition 的 `useForm` 函數將返回一個 Inertia [表單輔助函數](https://inertiajs.com/forms#form-helper)，並增強了上述驗證功能。
+安裝後，Precognition 的 `useForm` 函式將會回傳一個經過增強的 Inertia [表單輔助程式](https://inertiajs.com/forms#form-helper)，其具備了上述討論的驗證功能。
 
-表單輔助函數的 `submit` 方法已簡化，無需指定 HTTP 方法或 URL。相反，您可以將 Inertia 的 [訪問選項](https://inertiajs.com/manual-visits) 作為第一個也是唯一一個參數傳遞。此外，`submit` 方法不像上面 Vue 範例中那樣返回 Promise。相反，您可以在提供給 `submit` 方法的訪問選項中提供 Inertia 支援的任何 [事件回呼](https://inertiajs.com/manual-visits#event-callbacks)：
+表單輔助程式的 `submit` 方法已簡化，無需指定 HTTP 方法或 URL。相反地，您可以將 Inertia 的 [訪問選項](https://inertiajs.com/manual-visits) 作為第一個也是唯一的參數傳遞。此外，`submit` 方法不像上面的 Vue 範例那樣回傳 Promise。相反地，您可以在提供給 `submit` 方法的訪問選項中，提供 Inertia 支援的任何 [事件回呼](https://inertiajs.com/manual-visits#event-callbacks)：
 
 ```vue
 <script setup>
@@ -222,9 +222,9 @@ const submit = () => form.submit({
 <a name="using-react"></a>
 ### 使用 React
 
-使用 Laravel Precognition，您可以為使用者提供即時驗證體驗，而無需在前端 React 應用程式中重複您的驗證規則。為了說明其運作方式，讓我們在應用程式中建立一個用於建立新使用者的表單。
+透過 Laravel Precognition，您可以為使用者提供即時驗證體驗，而無需在前端 React 應用程式中重複您的驗證規則。為了說明其運作方式，我們將在應用程式中建立一個用於建立新使用者的表單。
 
-首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` Middleware 加入到路由定義中。您還應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 來存放路由的驗證規則：
+首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` 中介層加入到路由定義中。您也應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 以放置路由的驗證規則：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -235,15 +235,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下來，您應該透過 NPM 安裝 Laravel Precognition 的 React 前端輔助套件：
+接下來，您應該透過 NPM 安裝 Laravel Precognition 適用於 React 的前端輔助工具：
 
 ```shell
 npm install laravel-precognition-react
 ```
 
-安裝 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `useForm` 函數建立一個表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`) 和初始表單資料。
+安裝完 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `useForm` 函式來建立一個表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`)，以及初始表單資料。
 
-要啟用即時驗證，您應該監聽每個輸入的 `change` 和 `blur` 事件。在 `change` 事件處理函數中，您應該使用 `setData` 函數設定表單資料，傳遞輸入的名稱和新值。然後，在 `blur` 事件處理函數中呼叫表單的 `validate` 方法，並提供輸入的名稱：
+為了啟用即時驗證，您應該監聽每個輸入欄位的 `change` 和 `blur` 事件。在 `change` 事件處理器中，您應該使用 `setData` 函式來設定表單資料，傳入輸入欄位的名稱和新值。接著，在 `blur` 事件處理器中呼叫表單的 `validate` 方法，並提供輸入欄位的名稱：
 
 ```jsx
 import { useForm } from 'laravel-precognition-react';
@@ -288,31 +288,31 @@ export default function Form() {
 };
 ```
 
-現在，當使用者填寫表單時，Precognition 將根據路由表單請求中的驗證規則提供即時驗證輸出。當表單輸入變更時，將向您的 Laravel 應用程式發送一個去抖動的「預知」驗證請求。您可以透過呼叫表單的 `setValidationTimeout` 函數來設定去抖動逾時：
+現在，當使用者填寫表單時，Precognition 將提供即時驗證輸出，這些輸出由路由的表單請求中的驗證規則提供。當表單的輸入欄位被更改時，一個去抖動的「預先感知 (precognitive)」驗證請求將被發送到您的 Laravel 應用程式。您可以透過呼叫表單的 `setValidationTimeout` 函式來設定去抖動逾時：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-當驗證請求正在進行中時，表單的 `validating` 屬性將為 `true`：
+當一個驗證請求正在執行時，表單的 `validating` 屬性將為 `true`：
 
 ```jsx
 {form.validating && <div>Validating...</div>}
 ```
 
-在驗證請求或表單提交期間返回的任何驗證錯誤將自動填充表單的 `errors` 物件：
+在驗證請求或表單提交期間，任何回傳的驗證錯誤將會自動填入表單的 `errors` 物件：
 
 ```jsx
 {form.invalid('email') && <div>{form.errors.email}</div>}
 ```
 
-您可以使用表單的 `hasErrors` 屬性來判斷表單是否有任何錯誤：
+您可以透過表單的 `hasErrors` 屬性來判斷表單是否有任何錯誤：
 
 ```jsx
 {form.hasErrors && <div><!-- ... --></div>}
 ```
 
-您也可以透過將輸入的名稱傳遞給表單的 `valid` 和 `invalid` 函數，分別判斷輸入是否通過或未通過驗證：
+您也可以透過將輸入欄位的名稱傳遞給表單的 `valid` 和 `invalid` 函式，分別判斷該輸入欄位是通過驗證還是驗證失敗：
 
 ```jsx
 {form.valid('email') && <span>✅</span>}
@@ -321,9 +321,9 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 表單輸入只有在變更並收到驗證回應後才會顯示為有效或無效。
+> 表單輸入欄位僅會在更改並收到驗證回應後才顯示為有效或無效。
 
-如果您正在使用 Precognition 驗證表單輸入的子集，手動清除錯誤會很有用。您可以使用表單的 `forgetError` 函數來實現此目的：
+如果您使用 Precognition 驗證表單輸入欄位中的子集，手動清除錯誤會很有用。您可以使用表單的 `forgetError` 函式來實現此目的：
 
 ```jsx
 <input
@@ -337,9 +337,9 @@ form.setValidationTimeout(3000);
 >
 ```
 
-如我們所見，您可以掛接到輸入的 `blur` 事件並在使用者與其互動時驗證個別輸入；但是，您可能需要驗證使用者尚未互動的輸入。這在建立「精靈 (wizard)」時很常見，您希望在進入下一步之前驗證所有可見的輸入，無論使用者是否與其互動過。
+如我們所見，您可以掛載到輸入欄位的 `blur` 事件，並在使用者與其互動時驗證個別輸入欄位；然而，您可能需要驗證使用者尚未互動過的輸入欄位。這在建立「精靈」時很常見，在這種情況下，您希望在進入下一步之前，驗證所有可見的輸入欄位，無論使用者是否與其互動過。
 
-要使用 Precognition 執行此操作，您應該呼叫 `validate` 方法，將您希望驗證的欄位名稱傳遞給 `only` 設定鍵。您可以使用 `onSuccess` 或 `onValidationError` 回呼來處理驗證結果：
+要使用 Precognition 實現此目的，您應該呼叫 `validate` 方法，將您希望驗證的欄位名稱傳遞給 `only` 設定鍵。您可以使用 `onSuccess` 或 `onValidationError` 回呼函式來處理驗證結果：
 
 ```jsx
 <button
@@ -352,7 +352,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-當然，您也可以執行程式碼以回應表單提交的回應。表單的 `submit` 函數返回一個 Axios 請求 Promise。這提供了一種方便的方式來存取回應酬載、在成功提交後重設表單輸入，或處理失敗的請求：
+當然，您也可以在表單提交回應後執行程式碼。表單的 `submit` 函式會回傳一個 Axios 請求 Promise。這提供了一種方便的方式來存取回應負載、在表單成功提交後重置表單輸入，或處理失敗的請求：
 
 ```js
 const submit = (e) => {
@@ -370,7 +370,7 @@ const submit = (e) => {
 };
 ```
 
-您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在進行中：
+您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在執行：
 
 ```html
 <button disabled={form.processing}>
@@ -382,17 +382,17 @@ const submit = (e) => {
 ### 使用 React 與 Inertia
 
 > [!NOTE]
-> 如果您想在開發 Laravel 應用程式時使用 React 和 Inertia 搶先一步，請考慮使用我們的 [入門套件](/docs/{{version}}/starter-kits) 之一。Laravel 的入門套件為您的新 Laravel 應用程式提供了後端和前端身份驗證腳手架。
+> 如果您想在開發 Laravel 應用程式時搭配 React 與 Inertia 快速上手，請考慮使用我們的 [入門套件](/docs/{{version}}/starter-kits) 之一。Laravel 的入門套件為您的新 Laravel 應用程式提供了後端與前端身份驗證骨架。
 
-在使用 Precognition 與 React 和 Inertia 之前，請務必查閱我們關於 [使用 Precognition 與 React](#using-react) 的一般文件。當使用 React 與 Inertia 時，您需要透過 NPM 安裝與 Inertia 相容的 Precognition 函式庫：
+在使用 Precognition 搭配 React 與 Inertia 之前，請務必查閱我們關於 [使用 Precognition 搭配 React](#using-react) 的一般文件。當您使用 React 搭配 Inertia 時，您將需要透過 NPM 安裝與 Inertia 相容的 Precognition 函式庫：
 
 ```shell
 npm install laravel-precognition-react-inertia
 ```
 
-安裝後，Precognition 的 `useForm` 函數將返回一個 Inertia [表單輔助函數](https://inertiajs.com/forms#form-helper)，並增強了上述驗證功能。
+安裝完成後，Precognition 的 `useForm` 函式將會回傳一個 Inertia [表單輔助工具](https://inertiajs.com/forms#form-helper)，該工具已強化了上述討論的驗證功能。
 
-表單輔助函數的 `submit` 方法已簡化，無需指定 HTTP 方法或 URL。相反，您可以將 Inertia 的 [訪問選項](https://inertiajs.com/manual-visits) 作為第一個也是唯一一個參數傳遞。此外，`submit` 方法不像上面 React 範例中那樣返回 Promise。相反，您可以在提供給 `submit` 方法的訪問選項中提供 Inertia 支援的任何 [事件回呼](https://inertiajs.com/manual-visits#event-callbacks)：
+表單輔助工具的 `submit` 方法已經過簡化，無需指定 HTTP 方法或 URL。相反地，您可以將 Inertia 的 [訪問選項](https://inertiajs.com/manual-visits) 作為第一個也是唯一一個參數傳遞。此外，如上述 React 範例所示，`submit` 方法不會回傳 Promise。相反地，您可以將 Inertia 支援的任何 [事件回呼](https://inertiajs.com/manual-visits#event-callbacks) 寫入傳遞給 `submit` 方法的訪問選項中：
 
 ```js
 import { useForm } from 'laravel-precognition-react-inertia';
@@ -415,9 +415,9 @@ const submit = (e) => {
 <a name="using-alpine"></a>
 ### 使用 Alpine 與 Blade
 
-使用 Laravel Precognition，您可以為使用者提供即時驗證體驗，而無需在前端 Alpine 應用程式中重複您的驗證規則。為了說明其運作方式，讓我們在應用程式中建立一個用於建立新使用者的表單。
+透過 Laravel Precognition，您可以在前端 Alpine 應用程式中為使用者提供即時驗證體驗，而無需重複後端驗證規則。為了說明其運作方式，我們將在應用程式中建立一個用於建立新使用者的表單。
 
-首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` Middleware 加入到路由定義中。您還應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 來存放路由的驗證規則：
+首先，要為路由啟用 Precognition，應將 `HandlePrecognitiveRequests` 中介層新增到路由定義中。您還應該建立一個 [表單請求](/docs/{{version}}/validation#form-request-validation) 來容納路由的驗證規則：
 
 ```php
 use App\Http\Requests\CreateUserRequest;
@@ -428,13 +428,13 @@ Route::post('/users', function (CreateUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下來，您應該透過 NPM 安裝 Laravel Precognition 的 Alpine 前端輔助套件：
+接著，您應該透過 NPM 安裝 Laravel Precognition 適用於 Alpine 的前端輔助套件：
 
 ```shell
 npm install laravel-precognition-alpine
 ```
 
-然後，在您的 `resources/js/app.js` 檔案中向 Alpine 註冊 Precognition 外掛：
+然後，在您的 `resources/js/app.js` 檔案中向 Alpine 註冊 Precognition 外掛程式：
 
 ```js
 import Alpine from 'alpinejs';
@@ -446,9 +446,9 @@ Alpine.plugin(Precognition);
 Alpine.start();
 ```
 
-安裝並註冊 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `$form`「魔術」建立一個表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`) 和初始表單資料。
+安裝並註冊 Laravel Precognition 套件後，您現在可以使用 Precognition 的 `$form`「魔法」建立一個表單物件，提供 HTTP 方法 (`post`)、目標 URL (`/users`) 以及初始表單資料。
 
-要啟用即時驗證，您應該將表單資料綁定到其相關輸入，然後監聽每個輸入的 `change` 事件。在 `change` 事件處理函數中，您應該呼叫表單的 `validate` 方法，並提供輸入的名稱：
+要啟用即時驗證，您應該將表單的資料綁定到其相關的輸入框，然後監聽每個輸入框的 `change` 事件。在 `change` 事件處理器中，您應該呼叫表單的 `validate` 方法，並提供輸入框的名稱：
 
 ```html
 <form x-data="{
@@ -486,13 +486,13 @@ Alpine.start();
 </form>
 ```
 
-現在，當使用者填寫表單時，Precognition 將根據路由表單請求中的驗證規則提供即時驗證輸出。當表單輸入變更時，將向您的 Laravel 應用程式發送一個去抖動的「預知」驗證請求。您可以透過呼叫表單的 `setValidationTimeout` 函數來設定去抖動逾時：
+現在，當使用者填寫表單時，Precognition 將提供由路由的表單請求中的驗證規則所驅動的即時驗證輸出。當表單的輸入發生變更時，將會向您的 Laravel 應用程式發送一個去抖動的「預先認知 (precognitive)」驗證請求。您可以透過呼叫表單的 `setValidationTimeout` 函數來設定去抖動逾時時間：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-當驗證請求正在進行中時，表單的 `validating` 屬性將為 `true`：
+當驗證請求正在處理中時，表單的 `validating` 屬性將為 `true`：
 
 ```html
 <template x-if="form.validating">
@@ -500,7 +500,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-在驗證請求或表單提交期間返回的任何驗證錯誤將自動填充表單的 `errors` 物件：
+在驗證請求或表單提交期間返回的任何驗證錯誤都將自動填入表單的 `errors` 物件：
 
 ```html
 <template x-if="form.invalid('email')">
@@ -516,7 +516,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-您也可以透過將輸入的名稱傳遞給表單的 `valid` 和 `invalid` 函數，分別判斷輸入是否通過或未通過驗證：
+您也可以透過將輸入框的名稱傳遞給表單的 `valid` 和 `invalid` 函數，來分別判斷輸入框是否通過或未通過驗證：
 
 ```html
 <template x-if="form.valid('email')">
@@ -529,11 +529,11 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 表單輸入只有在變更並收到驗證回應後才會顯示為有效或無效。
+> A form input will only appear as valid or invalid once it has changed and a validation response has been received.
 
-如我們所見，您可以掛接到輸入的 `change` 事件並在使用者與其互動時驗證個別輸入；但是，您可能需要驗證使用者尚未互動的輸入。這在建立「精靈 (wizard)」時很常見，您希望在進入下一步之前驗證所有可見的輸入，無論使用者是否與其互動過。
+正如我們所見，您可以掛載到輸入框的 `change` 事件並在使用者互動時驗證個別輸入框；但是，您可能需要驗證使用者尚未互動的輸入框。這在建立「精靈 (wizard)」時很常見，您希望在進入下一步之前，驗證所有可見的輸入框，無論使用者是否與它們互動過。
 
-要使用 Precognition 執行此操作，您應該呼叫 `validate` 方法，將您希望驗證的欄位名稱傳遞給 `only` 設定鍵。您可以使用 `onSuccess` 或 `onValidationError` 回呼來處理驗證結果：
+若要使用 Precognition 執行此操作，您應該呼叫 `validate` 方法，並將您希望驗證的欄位名稱傳遞給 `only` 設定鍵。您可以透過 `onSuccess` 或 `onValidationError` 回呼函數來處理驗證結果：
 
 ```html
 <button
@@ -546,7 +546,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在進行中：
+您可以透過檢查表單的 `processing` 屬性來判斷表單提交請求是否正在處理中：
 
 ```html
 <button :disabled="form.processing">
@@ -555,9 +555,9 @@ form.setValidationTimeout(3000);
 ```
 
 <a name="repopulating-old-form-data"></a>
-#### 重新填充舊表單資料
+#### 重新填入舊表單資料
 
-在上面討論的使用者建立範例中，我們使用 Precognition 執行即時驗證；但是，我們正在執行傳統的伺服器端表單提交來提交表單。因此，表單應該填充從伺服器端表單提交返回的任何「舊」輸入和驗證錯誤：
+在上面討論的使用者建立範例中，我們使用 Precognition 執行即時驗證；但是，我們是透過傳統的伺服器端表單提交來提交表單。因此，表單應該填入來自伺服器端表單提交的任何「舊有」輸入和驗證錯誤：
 
 ```html
 <form x-data="{
@@ -568,7 +568,7 @@ form.setValidationTimeout(3000);
 }">
 ```
 
-或者，如果您想透過 XHR 提交表單，您可以使用表單的 `submit` 函數，它返回一個 Axios 請求 Promise：
+或者，如果您想透過 XHR 提交表單，您可以使用表單的 `submit` 函數，它會返回一個 Axios 請求 Promise：
 
 ```html
 <form
@@ -596,7 +596,7 @@ form.setValidationTimeout(3000);
 <a name="configuring-axios"></a>
 ### 設定 Axios
 
-Precognition 驗證函式庫使用 [Axios](https://github.com/axios/axios) HTTP 用戶端向您的應用程式後端發送請求。為了方便起見，如果您的應用程式需要，可以自訂 Axios 實例。例如，當使用 `laravel-precognition-vue` 函式庫時，您可以在應用程式的 `resources/js/app.js` 檔案中為每個傳出請求添加額外的請求標頭：
+Precognition 驗證函式庫使用 [Axios](https://github.com/axios/axios) HTTP 用戶端向應用程式的後端發送請求。為了方便起見，如果您的應用程式需要，可以客製化 Axios 實例。例如，當使用 `laravel-precognition-vue` 函式庫時，您可以在應用程式的 `resources/js/app.js` 檔案中為每個傳出的請求新增額外的請求標頭：
 
 ```js
 import { client } from 'laravel-precognition-vue';
@@ -604,7 +604,7 @@ import { client } from 'laravel-precognition-vue';
 client.axios().defaults.headers.common['Authorization'] = authToken;
 ```
 
-或者，如果您已經為您的應用程式設定了 Axios 實例，您可以告訴 Precognition 使用該實例：
+或者，如果您已經為您的應用程式設定了一個 Axios 實例，您可以指示 Precognition 改用該實例：
 
 ```js
 import Axios from 'axios';
@@ -617,14 +617,14 @@ client.use(window.axios)
 ```
 
 > [!WARNING]
-> Inertia 風格的 Precognition 函式庫只會將設定的 Axios 實例用於驗證請求。表單提交將始終由 Inertia 發送。
+> The Inertia flavored Precognition libraries will only use the configured Axios instance for validation requests. Form submissions will always be sent by Inertia.
 
 <a name="customizing-validation-rules"></a>
-## 自訂驗證規則
+## 客製化驗證規則
 
-可以使用請求的 `isPrecognitive` 方法來自訂在預知請求期間執行的驗證規則。
+可以在 precognitive 請求期間，透過使用請求的 `isPrecognitive` 方法來客製化驗證規則。
 
-例如，在使用者建立表單上，我們可能只想在最終表單提交時驗證密碼是否「未洩露 (uncompromised)」。對於預知驗證請求，我們將只驗證密碼是必需的且至少有 8 個字元。使用 `isPrecognitive` 方法，我們可以自訂表單請求定義的規則：
+例如，在建立使用者表單中，我們可能希望僅在最終表單提交時驗證密碼是否「未洩漏」。對於 precognitive 驗證請求，我們只會簡單地驗證密碼為必填且至少包含 8 個字元。使用 `isPrecognitive` 方法，我們可以客製化 FormRequest 定義的規則：
 
 ```php
 <?php
@@ -659,9 +659,9 @@ class StoreUserRequest extends FormRequest
 <a name="handling-file-uploads"></a>
 ## 處理檔案上傳
 
-預設情況下，Laravel Precognition 在預知驗證請求期間不會上傳或驗證檔案。這確保了大型檔案不會不必要地多次上傳。
+依預設，Laravel Precognition 在 precognitive 驗證請求期間不會上傳或驗證檔案。這確保大型檔案不會不必要地多次上傳。
 
-由於此行為，您應該確保您的應用程式 [自訂相應表單請求的驗證規則](#customizing-validation-rules)，以指定該欄位僅在完整表單提交時才需要：
+由於這種行為，您應該確保您的應用程式[客製化相對應的 form request 驗證規則](#customizing-validation-rules)，以指定該欄位僅在完整表單提交時才需要。
 
 ```php
 /**
@@ -683,7 +683,7 @@ protected function rules()
 }
 ```
 
-如果您想在每個驗證請求中包含檔案，您可以在用戶端表單實例上呼叫 `validateFiles` 函數：
+如果您希望在每個驗證請求中都包含檔案，可以在您的客戶端表單實例上呼叫 `validateFiles` 函式。
 
 ```js
 form.validateFiles();
@@ -692,9 +692,9 @@ form.validateFiles();
 <a name="managing-side-effects"></a>
 ## 管理副作用
 
-當將 `HandlePrecognitiveRequests` Middleware 添加到路由時，您應該考慮在 _其他_ Middleware 中是否有任何副作用應該在預知請求期間跳過。
+當為路由新增 `HandlePrecognitiveRequests` 中介層時，您應該考慮在 precognitive 請求期間是否應跳過 _其他_ 中介層的任何副作用。
 
-例如，您可能有一個 Middleware 會增加每個使用者與您的應用程式互動的總次數，但您可能不希望預知請求被計為互動。為了實現這一點，我們可以在增加互動計數之前檢查請求的 `isPrecognitive` 方法：
+例如，您可能有一個中介層會增加每個使用者與應用程式的「互動」總數，但您可能不希望將 precognitive 請求計為互動。為了達成此目的，我們可以在增加互動計數之前檢查請求的 `isPrecognitive` 方法：
 
 ```php
 <?php
@@ -724,9 +724,9 @@ class InteractionMiddleware
 <a name="testing"></a>
 ## 測試
 
-如果您想在測試中發出預知請求，Laravel 的 `TestCase` 包含一個 `withPrecognition` 輔助函數，它將添加 `Precognition` 請求標頭。
+如果您想在測試中發出 precognitive 請求，Laravel 的 `TestCase` 包含一個 `withPrecognition` 輔助函式，它會新增 `Precognition` 請求標頭。
 
-此外，如果您想斷言預知請求成功，例如沒有返回任何驗證錯誤，您可以使用回應上的 `assertSuccessfulPrecognition` 方法：
+此外，如果您想斷言 precognitive 請求成功，例如，沒有返回任何驗證錯誤，您可以在回應上使用 `assertSuccessfulPrecognition` 方法：
 
 ```php tab=Pest
 it('validates registration form with precognition', function () {

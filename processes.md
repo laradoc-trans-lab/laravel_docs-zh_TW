@@ -1,34 +1,35 @@
-# 處理程序 (Processes)
+# 進程
 
 - [簡介](#introduction)
-- [呼叫處理程序](#invoking-processes)
-    - [處理程序選項](#process-options)
-    - [處理程序輸出](#process-output)
-    - [管線](#process-pipelines)
-- [非同步處理程序](#asynchronous-processes)
-    - [處理程序 ID 與訊號](#process-ids-and-signals)
-    - [非同步處理程序輸出](#asynchronous-process-output)
-    - [非同步處理程序逾時](#asynchronous-process-timeouts)
-- [並行處理程序](#concurrent-processes)
-    - [命名 Pool 處理程序](#naming-pool-processes)
-    - [Pool 處理程序 ID 與訊號](#pool-process-ids-and-signals)
+- [調用進程](#invoking-processes)
+    - [進程選項](#process-options)
+    - [進程輸出](#process-output)
+    - [管道](#process-pipelines)
+- [非同步進程](#asynchronous-processes)
+    - [進程 ID 與信號](#process-ids-and-signals)
+    - [非同步進程輸出](#asynchronous-process-output)
+    - [非同步進程超時](#asynchronous-process-timeouts)
+- [並發進程](#concurrent-processes)
+    - [命名池進程](#naming-pool-processes)
+    - [池進程 ID 與信號](#pool-process-ids-and-signals)
 - [測試](#testing)
-    - [偽造處理程序](#faking-processes)
-    - [偽造特定處理程序](#faking-specific-processes)
-    - [偽造處理程序序列](#faking-process-sequences)
-    - [偽造非同步處理程序生命週期](#faking-asynchronous-process-lifecycles)
-    - [可用的斷言](#available-assertions)
-    - [防止意外處理程序](#preventing-stray-processes)
+    - [模擬進程](#faking-processes)
+    - [模擬特定進程](#faking-specific-processes)
+    - [模擬進程序列](#faking-process-sequences)
+    - [模擬非同步進程生命週期](#faking-asynchronous-process-lifecycles)
+    - [可用斷言](#available-assertions)
+    - [防止迷失進程](#preventing-stray-processes)
 
 <a name="introduction"></a>
 ## 簡介
 
-Laravel 圍繞著 [Symfony Process component](https://symfony.com/doc/current/components/process.html) 提供了一個表達性強且簡潔的 API，讓您能夠方便地從 Laravel 應用程式中呼叫外部處理程序。Laravel 的處理程序功能專注於最常見的使用情境與絕佳的開發者體驗。
+Laravel 圍繞 [Symfony Process 元件](https://symfony.com/doc/current/components/process.html) 提供了一個表達力強大且極簡的 API，讓您可以方便地從 Laravel 應用程式中調用外部進程。Laravel 的進程功能專注於最常見的用例和絕佳的開發者體驗。
+
 
 <a name="invoking-processes"></a>
-## 呼叫處理程序
+## 調用進程
 
-要呼叫處理程序，您可以使用 `Process` Facade 提供的 `run` 和 `start` 方法。`run` 方法將呼叫處理程序並等待其執行完成，而 `start` 方法則用於非同步處理程序執行。我們將在本文件中探討這兩種方法。首先，讓我們看看如何呼叫一個基本的同步處理程序並檢查其結果：
+要調用進程，您可以使用 `Process` facade 提供的 `run` 和 `start` 方法。`run` 方法將調用進程並等待進程執行完成，而 `start` 方法則用於非同步進程執行。我們將在本文件中探討這兩種方法。首先，讓我們看看如何調用一個基本的同步進程並檢查其結果：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -38,7 +39,7 @@ $result = Process::run('ls -la');
 return $result->output();
 ```
 
-當然，`run` 方法返回的 `Illuminate\Contracts\Process\ProcessResult` 實例提供了各種有用的方法，可用於檢查處理程序結果：
+當然，`run` 方法返回的 `Illuminate\Contracts\Process\ProcessResult` 實例提供了多種有用的方法，可用於檢查進程結果：
 
 ```php
 $result = Process::run('ls -la');
@@ -51,10 +52,11 @@ $result->errorOutput();
 $result->exitCode();
 ```
 
+
 <a name="throwing-exceptions"></a>
 #### 拋出例外
 
-如果您有一個處理程序結果，並且希望在結束代碼大於零（表示失敗）時拋出 `Illuminate\Process\Exceptions\ProcessFailedException` 實例，您可以使用 `throw` 和 `throwIf` 方法。如果處理程序沒有失敗，則會返回 `ProcessResult` 實例：
+如果您有一個進程結果，並且希望在結束代碼大於零（表示失敗）時拋出 `Illuminate\Process\Exceptions\ProcessFailedException` 的實例，您可以使用 `throw` 和 `throwIf` 方法。如果進程沒有失敗，將返回 `ProcessResult` 實例：
 
 ```php
 $result = Process::run('ls -la')->throw();
@@ -62,54 +64,59 @@ $result = Process::run('ls -la')->throw();
 $result = Process::run('ls -la')->throwIf($condition);
 ```
 
-<a name="process-options"></a>
-### 處理程序選項
 
-當然，您可能需要在呼叫處理程序之前自訂其行為。幸運的是，Laravel 允許您調整各種處理程序功能，例如工作目錄、逾時和環境變數。
+<a name="process-options"></a>
+### 進程選項
+
+當然，您可能需要在調用進程之前自訂其行為。幸運的是，Laravel 允許您調整各種進程功能，例如工作目錄、超時和環境變數。
+
 
 <a name="working-directory-path"></a>
 #### 工作目錄路徑
 
-您可以使用 `path` 方法指定處理程序的工作目錄。如果未呼叫此方法，處理程序將繼承目前執行中 PHP 腳本的工作目錄：
+您可以使用 `path` 方法來指定進程的工作目錄。如果未調用此方法，進程將繼承當前執行中的 PHP 腳本的工作目錄：
 
 ```php
 $result = Process::path(__DIR__)->run('ls -la');
 ```
 
+
 <a name="input"></a>
 #### 輸入
 
-您可以使用 `input` 方法透過處理程序的「標準輸入」提供輸入：
+您可以使用 `input` 方法透過進程的「標準輸入」提供輸入：
 
 ```php
 $result = Process::input('Hello World')->run('cat');
 ```
 
-<a name="timeouts"></a>
-#### 逾時
 
-預設情況下，處理程序在執行超過 60 秒後將拋出 `Illuminate\Process\Exceptions\ProcessTimedOutException` 實例。但是，您可以透過 `timeout` 方法自訂此行為：
+<a name="timeouts"></a>
+#### 超時
+
+預設情況下，進程在執行超過 60 秒後會拋出 `Illuminate\Process\Exceptions\ProcessTimedOutException` 的實例。但是，您可以透過 `timeout` 方法自訂此行為：
 
 ```php
 $result = Process::timeout(120)->run('bash import.sh');
 ```
 
-或者，如果您想完全禁用處理程序逾時，可以呼叫 `forever` 方法：
+或者，如果您想完全禁用進程超時，您可以調用 `forever` 方法：
 
 ```php
 $result = Process::forever()->run('bash import.sh');
 ```
 
-`idleTimeout` 方法可用於指定處理程序在不返回任何輸出的情況下可以執行的最大秒數：
+`idleTimeout` 方法可用於指定進程在不返回任何輸出情況下可以運行的最大秒數：
 
 ```php
 $result = Process::timeout(60)->idleTimeout(30)->run('bash import.sh');
 ```
 
+
 <a name="environment-variables"></a>
 #### 環境變數
 
-環境變數可以透過 `env` 方法提供給處理程序。被呼叫的處理程序也將繼承您系統定義的所有環境變數：
+環境變數可以透過 `env` 方法提供給進程。被調用的進程還將繼承系統定義的所有環境變數：
 
 ```php
 $result = Process::forever()
@@ -117,7 +124,7 @@ $result = Process::forever()
     ->run('bash import.sh');
 ```
 
-如果您希望從被呼叫的處理程序中移除繼承的環境變數，您可以將該環境變數的值設為 `false`：
+如果您希望從被調用的進程中移除繼承的環境變數，您可以將該環境變數的值設為 `false`：
 
 ```php
 $result = Process::forever()
@@ -125,10 +132,11 @@ $result = Process::forever()
     ->run('bash import.sh');
 ```
 
+
 <a name="tty-mode"></a>
 #### TTY 模式
 
-`tty` 方法可用於為您的處理程序啟用 TTY 模式。TTY 模式將處理程序的輸入和輸出連接到您程式的輸入和輸出，允許您的處理程序作為一個處理程序打開像 Vim 或 Nano 這樣的編輯器：
+`tty` 方法可用於為進程啟用 TTY 模式。TTY 模式將進程的輸入和輸出連接到您程式的輸入和輸出，允許您的進程作為進程打開 Vim 或 Nano 等編輯器：
 
 ```php
 Process::forever()->tty()->run('vim');
@@ -137,10 +145,11 @@ Process::forever()->tty()->run('vim');
 > [!WARNING]
 > TTY 模式在 Windows 上不受支援。
 
-<a name="process-output"></a>
-### 處理程序輸出
 
-如前所述，處理程序輸出可以使用處理程序結果上的 `output` (stdout) 和 `errorOutput` (stderr) 方法來存取：
+<a name="process-output"></a>
+### 進程輸出
+
+如前所述，進程輸出可以使用進程結果上的 `output` (stdout) 和 `errorOutput` (stderr) 方法來訪問：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -151,7 +160,7 @@ echo $result->output();
 echo $result->errorOutput();
 ```
 
-然而，也可以透過將一個閉包作為 `run` 方法的第二個參數傳遞來即時收集輸出。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）和輸出字串本身：
+然而，也可以透過將閉包作為第二個參數傳遞給 `run` 方法來即時收集輸出。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）以及輸出字串本身：
 
 ```php
 $result = Process::run('ls -la', function (string $type, string $output) {
@@ -159,7 +168,7 @@ $result = Process::run('ls -la', function (string $type, string $output) {
 });
 ```
 
-Laravel 還提供了 `seeInOutput` 和 `seeInErrorOutput` 方法，它們提供了一種方便的方式來判斷給定字串是否包含在處理程序的輸出中：
+Laravel 還提供了 `seeInOutput` 和 `seeInErrorOutput` 方法，它們提供了一種便捷的方式來判斷給定字串是否包含在進程的輸出中：
 
 ```php
 if (Process::run('ls -la')->seeInOutput('laravel')) {
@@ -167,10 +176,11 @@ if (Process::run('ls -la')->seeInOutput('laravel')) {
 }
 ```
 
-<a name="disabling-process-output"></a>
-#### 禁用處理程序輸出
 
-如果您的處理程序正在寫入大量您不感興趣的輸出，您可以透過完全禁用輸出檢索來節省記憶體。要實現這一點，請在建構處理程序時呼叫 `quietly` 方法：
+<a name="disabling-process-output"></a>
+#### 禁用進程輸出
+
+如果您的進程正在寫入大量您不感興趣的輸出，您可以透過完全禁用輸出檢索來節省記憶體。為此，在建構進程時調用 `quietly` 方法：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -178,10 +188,11 @@ use Illuminate\Support\Facades\Process;
 $result = Process::quietly()->run('bash import.sh');
 ```
 
-<a name="process-pipelines"></a>
-### 管線
 
-有時您可能希望將一個處理程序的輸出作為另一個處理程序的輸入。這通常被稱為將一個處理程序的輸出「導向」另一個處理程序。`Process` Facade 提供的 `pipe` 方法使這變得容易實現。`pipe` 方法將同步執行導向的處理程序，並返回管線中最後一個處理程序的結果：
+<a name="process-pipelines"></a>
+### 管道
+
+有時您可能希望將一個進程的輸出作為另一個進程的輸入。這通常被稱為將一個進程的輸出「管道」到另一個進程。`Process` facade 提供的 `pipe` 方法使這變得容易實現。`pipe` 方法將同步執行管道中的進程，並返回管道中最後一個進程的結果：
 
 ```php
 use Illuminate\Process\Pipe;
@@ -197,7 +208,7 @@ if ($result->successful()) {
 }
 ```
 
-如果您不需要自訂構成管線的個別處理程序，您可以簡單地將命令字串陣列傳遞給 `pipe` 方法：
+如果您不需要自訂構成管道的個別進程，您可以簡單地將一個命令字串陣列傳遞給 `pipe` 方法：
 
 ```php
 $result = Process::pipe([
@@ -206,7 +217,7 @@ $result = Process::pipe([
 ]);
 ```
 
-處理程序輸出可以透過將一個閉包作為 `pipe` 方法的第二個參數傳遞來即時收集。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）和輸出字串本身：
+可以透過將閉包作為第二個參數傳遞給 `pipe` 方法來即時收集進程輸出。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）以及輸出字串本身：
 
 ```php
 $result = Process::pipe(function (Pipe $pipe) {
@@ -217,7 +228,7 @@ $result = Process::pipe(function (Pipe $pipe) {
 });
 ```
 
-Laravel 還允許您透過 `as` 方法為管線中的每個處理程序分配字串鍵。此鍵也將傳遞給提供給 `pipe` 方法的輸出閉包，讓您能夠判斷輸出屬於哪個處理程序：
+Laravel 還允許您透過 `as` 方法為管道中的每個進程分配字串鍵。此鍵也將傳遞給提供給 `pipe` 方法的輸出閉包，允許您確定輸出屬於哪個進程：
 
 ```php
 $result = Process::pipe(function (Pipe $pipe) {
@@ -229,9 +240,9 @@ $result = Process::pipe(function (Pipe $pipe) {
 ```
 
 <a name="asynchronous-processes"></a>
-## 非同步處理程序
+## 非同步進程
 
-雖然 `run` 方法同步呼叫處理程序，但 `start` 方法可用於非同步呼叫處理程序。這允許您的應用程式在處理程序於背景執行時繼續執行其他任務。一旦處理程序被呼叫，您可以使用 `running` 方法來判斷處理程序是否仍在執行：
+儘管 `run` 方法以同步方式調用進程，但 `start` 方法可用於以非同步方式調用進程。這讓您的應用程式可以在進程於背景執行時，繼續執行其他任務。進程一旦被調用，您就可以使用 `running` 方法來判斷進程是否仍在執行：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -243,7 +254,7 @@ while ($process->running()) {
 $result = $process->wait();
 ```
 
-您可能已經注意到，您可以呼叫 `wait` 方法來等待處理程序執行完成並檢索 `ProcessResult` 實例：
+如您所見，您可以調用 `wait` 方法，以等待進程執行完畢並取得 `ProcessResult` 實例：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -254,9 +265,9 @@ $result = $process->wait();
 ```
 
 <a name="process-ids-and-signals"></a>
-### 處理程序 ID 與訊號
+### 進程 ID 與信號
 
-`id` 方法可用於檢索執行中處理程序由作業系統分配的處理程序 ID：
+`id` 方法可用於取得執行中進程由作業系統分配的進程 ID：
 
 ```php
 $process = Process::start('bash import.sh');
@@ -264,16 +275,16 @@ $process = Process::start('bash import.sh');
 return $process->id();
 ```
 
-您可以使用 `signal` 方法向執行中的處理程序發送「訊號」。預定義訊號常數的列表可以在 [PHP 說明文件](https://www.php.net/manual/en/pcntl.constants.php)中找到：
+您可以使用 `signal` 方法向執行中的進程發送「信號」。預定義的信號常數列表可在 [PHP 文件](https://www.php.net/manual/en/pcntl.constants.php)中找到：
 
 ```php
 $process->signal(SIGUSR2);
 ```
 
 <a name="asynchronous-process-output"></a>
-### 非同步處理程序輸出
+### 非同步進程輸出
 
-當非同步處理程序正在執行時，您可以使用 `output` 和 `errorOutput` 方法存取其所有目前輸出；但是，您可以使用 `latestOutput` 和 `latestErrorOutput` 來存取自上次檢索輸出以來發生的處理程序輸出：
+當非同步進程執行時，您可以使用 `output` 和 `errorOutput` 方法取得其所有當前輸出；然而，您可以使用 `latestOutput` 和 `latestErrorOutput` 方法來取得自上次取得輸出後，進程產生的輸出：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -286,7 +297,7 @@ while ($process->running()) {
 }
 ```
 
-與 `run` 方法一樣，也可以透過將一個閉包作為 `start` 方法的第二個參數傳遞來即時從非同步處理程序收集輸出。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）和輸出字串本身：
+與 `run` 方法一樣，也可以通過將閉包作為 `start` 方法的第二個參數傳遞，從非同步進程即時收集輸出。該閉包將接收兩個參數：輸出的「類型」（`stdout` 或 `stderr`）以及輸出字串本身：
 
 ```php
 $process = Process::start('bash import.sh', function (string $type, string $output) {
@@ -296,7 +307,7 @@ $process = Process::start('bash import.sh', function (string $type, string $outp
 $result = $process->wait();
 ```
 
-您可以使用 `waitUntil` 方法根據處理程序的輸出停止等待，而不是等到處理程序完成。當給定給 `waitUntil` 方法的閉包返回 `true` 時，Laravel 將停止等待處理程序完成：
+除了等待進程完成，您可以使用 `waitUntil` 方法根據進程輸出停止等待。當給予 `waitUntil` 方法的閉包返回 `true` 時，Laravel 將停止等待進程完成：
 
 ```php
 $process = Process::start('bash import.sh');
@@ -307,9 +318,9 @@ $process->waitUntil(function (string $type, string $output) {
 ```
 
 <a name="asynchronous-process-timeouts"></a>
-### 非同步處理程序逾時
+### 非同步進程超時
 
-當非同步處理程序正在執行時，您可以使用 `ensureNotTimedOut` 方法驗證處理程序是否沒有逾時。如果處理程序已逾時，此方法將拋出一個[逾時例外](#timeouts)：
+當非同步進程執行時，您可以使用 `ensureNotTimedOut` 方法驗證該進程是否未超時。如果進程超時，此方法將拋出一個 [超時異常](#timeouts)：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -324,11 +335,11 @@ while ($process->running()) {
 ```
 
 <a name="concurrent-processes"></a>
-## 並行處理程序
+## 並發進程
 
-Laravel 還讓管理並行、非同步處理程序 Pool 變得輕而易舉，讓您能夠輕鬆地同時執行許多任務。要開始使用，請呼叫 `pool` 方法，該方法接受一個閉包，該閉包接收 `Illuminate\Process\Pool` 的實例。
+Laravel 也讓管理並發的非同步進程池變得輕而易舉，讓您可以輕鬆地同時執行多個任務。首先，調用 `pool` 方法，它接受一個閉包，該閉包會收到一個 `Illuminate\Process\Pool` 實例。
 
-在此閉包中，您可以定義屬於 Pool 的處理程序。一旦透過 `start` 方法啟動處理程序 Pool，您就可以透過 `running` 方法存取執行中處理程序的 [collection](/docs/{{version}}/collections)：
+在此閉包中，您可以定義屬於該進程池的進程。一旦進程池透過 `start` 方法啟動，您就可以透過 `running` 方法訪問執行中進程的 [集合](/docs/{{version}}/collections)：
 
 ```php
 use Illuminate\Process\Pool;
@@ -349,7 +360,7 @@ while ($pool->running()->isNotEmpty()) {
 $results = $pool->wait();
 ```
 
-如您所見，您可以等待所有 Pool 處理程序執行完成並透過 `wait` 方法解析其結果。`wait` 方法返回一個可陣列存取的物件，允許您透過其鍵存取 Pool 中每個處理程序的 `ProcessResult` 實例：
+如您所見，您可以等待所有池進程執行完畢，並透過 `wait` 方法取得它們的結果。`wait` 方法會返回一個可透過陣列訪問的物件，讓您可以透過其鍵來訪問池中每個進程的 `ProcessResult` 實例：
 
 ```php
 $results = $pool->wait();
@@ -357,7 +368,7 @@ $results = $pool->wait();
 echo $results[0]->output();
 ```
 
-或者，為了方便起見，`concurrently` 方法可用於啟動非同步處理程序 Pool 並立即等待其結果。這與 PHP 的陣列解構功能結合使用時，可以提供特別具表達性的語法：
+或者，為了方便起見，`concurrently` 方法可用於啟動一個非同步進程池並立即等待其結果。當與 PHP 的陣列解構功能結合使用時，這可以提供特別富有表達性的語法：
 
 ```php
 [$first, $second, $third] = Process::concurrently(function (Pool $pool) {
@@ -370,9 +381,9 @@ echo $first->output();
 ```
 
 <a name="naming-pool-processes"></a>
-### 命名 Pool 處理程序
+### 命名池進程
 
-透過數字鍵存取處理程序 Pool 結果的表達性不強；因此，Laravel 允許您透過 `as` 方法為 Pool 中的每個處理程序分配字串鍵。此鍵也將傳遞給提供給 `start` 方法的閉包，讓您能夠判斷輸出屬於哪個處理程序：
+透過數字鍵訪問進程池結果並非富有表達性；因此，Laravel 允許您透過 `as` 方法為池中的每個進程分配字串鍵。此鍵也會傳遞給提供給 `start` 方法的閉包，讓您能夠判斷輸出屬於哪個進程：
 
 ```php
 $pool = Process::pool(function (Pool $pool) {
@@ -389,15 +400,15 @@ return $results['first']->output();
 ```
 
 <a name="pool-process-ids-and-signals"></a>
-### Pool 處理程序 ID 與訊號
+### 池進程 ID 與信號
 
-由於處理程序 Pool 的 `running` 方法提供了 Pool 中所有被呼叫處理程序的 collection，您可以輕鬆存取底層的 Pool 處理程序 ID：
+由於進程池的 `running` 方法提供了池中所有調用進程的集合，因此您可以輕鬆地訪問底層池進程 ID：
 
 ```php
 $processIds = $pool->running()->each->id();
 ```
 
-而且，為了方便起見，您可以呼叫處理程序 Pool 上的 `signal` 方法，向 Pool 中的每個處理程序發送訊號：
+為了方便起見，您可以在進程池上調用 `signal` 方法，向池中的每個進程發送信號：
 
 ```php
 $pool->signal(SIGUSR2);
@@ -406,12 +417,12 @@ $pool->signal(SIGUSR2);
 <a name="testing"></a>
 ## 測試
 
-許多 Laravel 服務都提供了功能，可幫助您輕鬆且具表達性地編寫測試，Laravel 的處理程序服務也不例外。`Process` Facade 的 `fake` 方法允許您指示 Laravel 在呼叫處理程序時返回 Stub / 虛擬結果。
+許多 Laravel 服務提供了功能，能幫助您輕鬆且明確地撰寫測試，而 Laravel 的進程服務也不例外。`Process` facade 的 `fake` 方法允許您指示 Laravel 在調用進程時返回模擬 (stubbed) / 虛擬 (dummy) 結果。
 
 <a name="faking-processes"></a>
-### 偽造處理程序
+### 模擬進程
 
-為了探索 Laravel 偽造處理程序的能力，讓我們想像一個呼叫處理程序的路由：
+為了探討 Laravel 模擬進程的能力，讓我們想像一個調用進程的路由：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -424,7 +435,7 @@ Route::get('/import', function () {
 });
 ```
 
-在測試此路由時，我們可以透過呼叫 `Process` Facade 上不帶參數的 `fake` 方法，指示 Laravel 為每個被呼叫的處理程序返回一個偽造的、成功的處理程序結果。此外，我們甚至可以[斷言](#available-assertions)給定的處理程序是否被「執行」：
+測試此路由時，我們可以透過在 `Process` facade 上調用不帶任何參數的 `fake` 方法，指示 Laravel 為每個調用的進程返回一個模擬的成功進程結果。此外，我們甚至可以 [斷言](#available-assertions) 某個進程確實被「執行 (run)」了：
 
 ```php tab=Pest
 <?php
@@ -438,10 +449,10 @@ test('process is invoked', function () {
 
     $response = $this->get('/import');
 
-    // 簡單的處理程序斷言...
+    // Simple process assertion...
     Process::assertRan('bash import.sh');
 
-    // 或者，檢查處理程序配置...
+    // Or, inspecting the process configuration...
     Process::assertRan(function (PendingProcess $process, ProcessResult $result) {
         return $process->command === 'bash import.sh' &&
                $process->timeout === 60;
@@ -467,10 +478,10 @@ class ExampleTest extends TestCase
 
         $response = $this->get('/import');
 
-        // 簡單的處理程序斷言...
+        // Simple process assertion...
         Process::assertRan('bash import.sh');
 
-        // 或者，檢查處理程序配置...
+        // Or, inspecting the process configuration...
         Process::assertRan(function (PendingProcess $process, ProcessResult $result) {
             return $process->command === 'bash import.sh' &&
                    $process->timeout === 60;
@@ -479,7 +490,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-如前所述，在 `Process` Facade 上呼叫 `fake` 方法將指示 Laravel 始終返回一個沒有輸出的成功處理程序結果。但是，您可以使用 `Process` Facade 的 `result` 方法輕鬆指定偽造處理程序的輸出和結束代碼：
+如前所述，在 `Process` facade 上調用 `fake` 方法會指示 Laravel 總是返回一個沒有輸出的成功進程結果。但是，您可以使用 `Process` facade 的 `result` 方法輕鬆指定模擬進程的輸出和結束代碼：
 
 ```php
 Process::fake([
@@ -492,11 +503,11 @@ Process::fake([
 ```
 
 <a name="faking-specific-processes"></a>
-### 偽造特定處理程序
+### 模擬特定進程
 
-您可能已經在前面的範例中注意到，`Process` Facade 允許您透過將陣列傳遞給 `fake` 方法，為每個處理程序指定不同的偽造結果。
+正如您可能在前面的範例中注意到的，`Process` facade 允許您透過將一個陣列傳遞給 `fake` 方法，為每個進程指定不同的模擬結果。
 
-陣列的鍵應表示您希望偽造的命令模式及其相關結果。`*` 字元可用作萬用字元。任何未被偽造的處理程序命令都將實際被呼叫。您可以使用 `Process` Facade 的 `result` 方法為這些命令建構 Stub / 偽造結果：
+該陣列的鍵應代表您希望模擬的命令模式及其相關結果。`*` 字元可用作萬用字元 (wildcard character)。任何未被模擬的進程命令都將實際調用。您可以使用 `Process` facade 的 `result` 方法為這些命令建構模擬 / 虛擬結果：
 
 ```php
 Process::fake([
@@ -509,7 +520,7 @@ Process::fake([
 ]);
 ```
 
-如果您不需要自訂偽造處理程序的結束代碼或錯誤輸出，您可能會發現將偽造處理程序結果指定為簡單字串更方便：
+如果您不需要自訂模擬進程的結束代碼或錯誤輸出，您可能會覺得將模擬進程結果指定為簡單的字串會更方便：
 
 ```php
 Process::fake([
@@ -519,9 +530,9 @@ Process::fake([
 ```
 
 <a name="faking-process-sequences"></a>
-### 偽造處理程序序列
+### 模擬進程序列
 
-如果您正在測試的程式碼使用相同的命令呼叫多個處理程序，您可能希望為每個處理程序呼叫分配不同的偽造處理程序結果。您可以透過 `Process` Facade 的 `sequence` 方法實現此目的：
+如果您正在測試的程式碼使用相同的命令調用多個進程，您可能希望為每次進程調用分配不同的模擬進程結果。您可以透過 `Process` facade 的 `sequence` 方法來實現這一點：
 
 ```php
 Process::fake([
@@ -532,11 +543,11 @@ Process::fake([
 ```
 
 <a name="faking-asynchronous-process-lifecycles"></a>
-### 偽造非同步處理程序生命週期
+### 模擬非同步進程生命週期
 
-到目前為止，我們主要討論了偽造使用 `run` 方法同步呼叫的處理程序。但是，如果您嘗試測試與透過 `start` 呼叫的非同步處理程序互動的程式碼，您可能需要更複雜的方法來描述您的偽造處理程序。
+到目前為止，我們主要討論了使用 `run` 方法同步調用的模擬進程。但是，如果您嘗試測試與透過 `start` 調用的非同步進程交互的程式碼，您可能需要一種更複雜的方法來描述您的模擬進程。
 
-例如，讓我們想像以下與非同步處理程序互動的路由：
+例如，讓我們想像以下與非同步進程交互的路由：
 
 ```php
 use Illuminate\Support\Facades\Log;
@@ -554,7 +565,7 @@ Route::get('/import', function () {
 });
 ```
 
-為了正確偽造此處理程序，我們需要能夠描述 `running` 方法應該返回 `true` 的次數。此外，我們可能希望指定應按順序返回的多行輸出。為此，我們可以使用 `Process` Facade 的 `describe` 方法：
+為了正確地模擬這個進程，我們需要能夠描述 `running` 方法應該返回 `true` 的次數。此外，我們可能還希望指定應該按順序返回的多行輸出。為了實現這一點，我們可以使用 `Process` facade 的 `describe` 方法：
 
 ```php
 Process::fake([
@@ -567,17 +578,17 @@ Process::fake([
 ]);
 ```
 
-讓我們深入研究上面的範例。使用 `output` 和 `errorOutput` 方法，我們可以指定將按順序返回的多行輸出。`exitCode` 方法可用於指定偽造處理程序的最終結束代碼。最後，`iterations` 方法可用於指定 `running` 方法應該返回 `true` 的次數。
+讓我們深入探討上面的範例。使用 `output` 和 `errorOutput` 方法，我們可以指定將按順序返回的多行輸出。`exitCode` 方法可用於指定模擬進程的最終結束代碼。最後，`iterations` 方法可用於指定 `running` 方法應該返回 `true` 的次數。
 
 <a name="available-assertions"></a>
-### 可用的斷言
+### 可用斷言
 
-如[前所述](#faking-processes)，Laravel 為您的功能測試提供了幾個處理程序斷言。我們將在下面討論這些斷言。
+正如 [前面討論](#faking-processes) 的，Laravel 為您的功能測試提供了多個進程斷言。我們將在下面討論每個斷言。
 
 <a name="assert-process-ran"></a>
 #### assertRan
 
-斷言給定的處理程序已被呼叫：
+斷言給定的進程已被調用：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -585,7 +596,7 @@ use Illuminate\Support\Facades\Process;
 Process::assertRan('ls -la');
 ```
 
-`assertRan` 方法也接受一個閉包，該閉包將接收處理程序實例和處理程序結果，允許您檢查處理程序的配置選項。如果此閉包返回 `true`，則斷言將「通過」：
+`assertRan` 方法也接受一個閉包，該閉包將接收一個進程實例和一個進程結果，允許您檢查進程的配置選項。如果此閉包返回 `true`，則斷言將「通過 (pass)」：
 
 ```php
 Process::assertRan(fn ($process, $result) =>
@@ -595,12 +606,12 @@ Process::assertRan(fn ($process, $result) =>
 );
 ```
 
-傳遞給 `assertRan` 閉包的 `$process` 是 `Illuminate\Process\PendingProcess` 的實例，而 `$result` 是 `Illuminate\Contracts\Process\ProcessResult` 的實例。
+傳遞給 `assertRan` 閉包的 `$process` 是一個 `Illuminate\Process\PendingProcess` 實例，而 `$result` 是一個 `Illuminate\Contracts\Process\ProcessResult` 實例。
 
 <a name="assert-process-didnt-run"></a>
 #### assertDidntRun
 
-斷言給定的處理程序未被呼叫：
+斷言給定的進程未被調用：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -608,7 +619,7 @@ use Illuminate\Support\Facades\Process;
 Process::assertDidntRun('ls -la');
 ```
 
-與 `assertRan` 方法一樣，`assertDidntRun` 方法也接受一個閉包，該閉包將接收處理程序實例和處理程序結果，允許您檢查處理程序的配置選項。如果此閉包返回 `true`，則斷言將「失敗」：
+與 `assertRan` 方法類似，`assertDidntRun` 方法也接受一個閉包，該閉包將接收一個進程實例和一個進程結果，允許您檢查進程的配置選項。如果此閉包返回 `true`，則斷言將「失敗 (fail)」：
 
 ```php
 Process::assertDidntRun(fn (PendingProcess $process, ProcessResult $result) =>
@@ -619,7 +630,7 @@ Process::assertDidntRun(fn (PendingProcess $process, ProcessResult $result) =>
 <a name="assert-process-ran-times"></a>
 #### assertRanTimes
 
-斷言給定的處理程序已被呼叫指定次數：
+斷言給定的進程被調用指定次數：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -627,7 +638,7 @@ use Illuminate\Support\Facades\Process;
 Process::assertRanTimes('ls -la', times: 3);
 ```
 
-`assertRanTimes` 方法也接受一個閉包，該閉包將接收 `PendingProcess` 和 `ProcessResult` 的實例，允許您檢查處理程序的配置選項。如果此閉包返回 `true` 並且處理程序已被呼叫指定次數，則斷言將「通過」：
+`assertRanTimes` 方法也接受一個閉包，該閉包將接收一個 `PendingProcess` 實例和一個 `ProcessResult` 實例，允許您檢查進程的配置選項。如果此閉包返回 `true` 並且進程被調用指定次數，則斷言將「通過 (pass)」：
 
 ```php
 Process::assertRanTimes(function (PendingProcess $process, ProcessResult $result) {
@@ -636,9 +647,9 @@ Process::assertRanTimes(function (PendingProcess $process, ProcessResult $result
 ```
 
 <a name="preventing-stray-processes"></a>
-### 防止意外處理程序
+### 防止迷失進程
 
-如果您想確保所有被呼叫的處理程序在您的個別測試或完整測試套件中都已被偽造，您可以呼叫 `preventStrayProcesses` 方法。呼叫此方法後，任何沒有相應偽造結果的處理程序都將拋出例外，而不是啟動實際的處理程序：
+如果您想確保所有調用的進程在您的個別測試或完整測試套件中都被模擬，您可以調用 `preventStrayProcesses` 方法。調用此方法後，任何沒有相應模擬結果的進程都將拋出異常，而不是啟動實際的進程：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -649,9 +660,30 @@ Process::fake([
     'ls *' => 'Test output...',
 ]);
 
-// 返回偽造的回應...
+// Fake response is returned...
 Process::run('ls -la');
 
-// 拋出例外...
+// An exception is thrown...
+Process::run('bash import.sh');
+```
+
+<a name="preventing-stray-processes"></a>
+### 防止迷失進程
+
+如果您希望確保在您的個別測試或整個測試套件中，所有調用的進程都已被模擬，您可以調用 `preventStrayProcesses` 方法。調用此方法後，任何沒有對應模擬結果的進程將會拋出例外，而不是啟動實際進程：
+
+```php
+use Illuminate\Support\Facades\Process;
+
+Process::preventStrayProcesses();
+
+Process::fake([
+    'ls *' => 'Test output...',
+]);
+
+// Fake response is returned...
+Process::run('ls -la');
+
+// An exception is thrown...
 Process::run('bash import.sh');
 ```

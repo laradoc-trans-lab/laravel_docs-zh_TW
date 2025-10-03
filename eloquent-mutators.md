@@ -1,37 +1,37 @@
-# Eloquent: Mutators & Casting
+# Eloquent：修改器與轉換
 
-- [簡介](#introduction)
-- [存取器與修改器](#accessors-and-mutators)
-    - [定義存取器](#defining-an-accessor)
+- [介紹](#introduction)
+- [取用器與修改器](#accessors-and-mutators)
+    - [定義取用器](#defining-an-accessor)
     - [定義修改器](#defining-a-mutator)
-- [屬性型別轉換](#attribute-casting)
-    - [陣列與 JSON 型別轉換](#array-and-json-casting)
-    - [日期型別轉換](#date-casting)
-    - [Enum 型別轉換](#enum-casting)
-    - [加密型別轉換](#encrypted-casting)
-    - [查詢時型別轉換](#query-time-casting)
-- [自訂型別轉換](#custom-casts)
-    - [值物件型別轉換](#value-object-casting)
+- [屬性轉換](#attribute-casting)
+    - [陣列與 JSON 轉換](#array-and-json-casting)
+    - [日期轉換](#date-casting)
+    - [Enum 轉換](#enum-casting)
+    - [加密轉換](#encrypted-casting)
+    - [查詢時轉換](#query-time-casting)
+- [自訂轉換](#custom-casts)
+    - [值物件轉換](#value-object-casting)
     - [陣列 / JSON 序列化](#array-json-serialization)
-    - [入站型別轉換](#inbound-casting)
-    - [型別轉換參數](#cast-parameters)
-    - [比較型別轉換值](#comparing-cast-values)
-    - [可型別轉換](#castables)
+    - [僅傳入轉換](#inbound-casting)
+    - [轉換參數](#cast-parameters)
+    - [比較轉換值](#comparing-cast-values)
+    - [可轉換物件 (Castable)](#castables)
 
 <a name="introduction"></a>
-## 簡介
+## 介紹
 
-存取器 (Accessors)、修改器 (Mutators) 和屬性型別轉換 (Attribute Casting) 允許你在 Eloquent 模型實例上取得或設定屬性值時對其進行轉換。例如，你可能希望使用 [Laravel 加密器](/docs/{{version}}/encryption) 在資料庫中儲存值時對其進行加密，然後在 Eloquent 模型上存取該屬性時自動解密。或者，你可能希望將資料庫中儲存的 JSON 字串在透過 Eloquent 模型存取時轉換為陣列。
+取用器 (Accessor)、修改器 (Mutator)、以及屬性轉換 (Attribute Casting) 可讓你在 Model 實體上取用或設定 Eloquent 屬性值時對其進行轉換。舉例來說，我們可能會想在資料庫內儲存某個值時使用 [Laravel 加密器](/docs/{{version}}/encryption) 來加密，然後在 Eloquent Model 上取用該屬性時自動解密。或者，我們也可能想在透過 Eloquent Model 取用時，將資料庫內儲存的 JSON 字串轉換為陣列。
 
 <a name="accessors-and-mutators"></a>
-## 存取器與修改器
+## 取用器與修改器
 
 <a name="defining-an-accessor"></a>
-### 定義存取器
+### 定義取用器
 
-存取器在 Eloquent 屬性值被存取時對其進行轉換。要定義存取器，請在你的模型上建立一個受保護的方法來表示可存取的屬性。此方法名稱應與適用時的真實底層模型屬性 / 資料庫欄位的「駝峰式命名」表示法相對應。
+取用器 (Accessor) 會在 Eloquent 屬性被取用時對其值進行轉換。若要定義取用器，請在 Model 上建立一個 protected 方法來代表要取用的屬性。若適用，該方法的名稱應對應至底層 Model 屬性 / 資料庫欄位的「駝峰式命名 (camel case)」。
 
-在此範例中，我們將為 `first_name` 屬性定義一個存取器。當嘗試取得 `first_name` 屬性的值時，Eloquent 將自動呼叫此存取器。所有屬性存取器 / 修改器方法都必須宣告 `Illuminate\Database\Eloquent\Casts\Attribute` 的回傳型別提示：
+在本範例中，我們要為 `first_name` 屬性定義一個取用器。當嘗試取用 `first_name` 屬性的值時，Eloquent 會自動呼叫該取用器。所有屬性取用器 / 修改器方法都必須宣告 `Illuminate\Database\Eloquent\Casts\Attribute` 的回傳型別提示：
 
 ```php
 <?php
@@ -55,9 +55,9 @@ class User extends Model
 }
 ```
 
-所有存取器方法都回傳一個 `Attribute` 實例，該實例定義了屬性將如何被存取，以及可選地，如何被修改。在此範例中，我們只定義了屬性將如何被存取。為此，我們向 `Attribute` 類別建構函式提供了 `get` 引數。
+所有取用器方法都會回傳一個 `Attribute` 實體，該實體定義了該屬性將如何被取用，並可選擇性地定義其如何被修改。在本範例中，我們只定義了該屬性如何被取用。為此，我們為 `Attribute` 類別的建構函式提供了 `get` 引數。
 
-如你所見，欄位的原始值會傳遞給存取器，允許你操作並回傳該值。要存取存取器的值，你只需在模型實例上存取 `first_name` 屬性即可：
+如你所見，欄位的原始值會被傳給取用器，讓你能操作並回傳該值。若要取用該取用器的值，只要在 Model 實體上取用 `first_name` 屬性即可：
 
 ```php
 use App\Models\User;
@@ -68,12 +68,12 @@ $firstName = $user->first_name;
 ```
 
 > [!NOTE]
-> 如果你希望這些計算值被新增到模型的陣列 / JSON 表示法中，[你需要將它們附加](/docs/{{version}}/eloquent-serialization#appending-values-to-json)。
+> 若想將這些計算出來的值加到 Model 的陣列 / JSON 表示中，[則需要將其附加 (Append)](/docs/{{version}}/eloquent-serialization#appending-values-to-json)。
 
 <a name="building-value-objects-from-multiple-attributes"></a>
 #### 從多個屬性建立值物件
 
-有時你的存取器可能需要將多個模型屬性轉換為單一的「值物件」。為此，你的 `get` 閉包可以接受第二個引數 `$attributes`，該引數將自動提供給閉包，並包含模型所有當前屬性的陣列：
+有時候，你的取用器可能需要將多個 Model 屬性轉換為單一的「值物件 (Value Object)」。為此，你的 `get` 閉包可接受第二個引數 `$attributes`，該引數會被自動提供給閉包，其中會包含一個包含 Model 目前所有屬性的陣列：
 
 ```php
 use App\Support\Address;
@@ -94,9 +94,9 @@ protected function address(): Attribute
 ```
 
 <a name="accessor-caching"></a>
-#### 存取器快取
+#### 取用器快取
 
-當從存取器回傳值物件時，對值物件所做的任何更改都將在模型儲存之前自動同步回模型。這是因為 Eloquent 會保留存取器回傳的實例，以便每次呼叫存取器時都能回傳相同的實例：
+當從取用器回傳值物件時，對該值物件所做的任何變更都會在 Model 儲存前自動同步回 Model。這是可行的，因為 Eloquent 會保留取用器回傳的實體，因此每次叫用取用器時都能回傳相同的實體：
 
 ```php
 use App\Models\User;
@@ -109,7 +109,7 @@ $user->address->lineTwo = 'Updated Address Line 2 Value';
 $user->save();
 ```
 
-但是，你可能希望有時為字串和布林值等基本值啟用快取，特別是當它們計算密集時。為此，你可以在定義存取器時呼叫 `shouldCache` 方法：
+不過，有時候你可能會想為字串與布林值等原始型別值啟用快取，特別是在這些值的計算量很大的時候。為此，可在定義取用器時叫用 `shouldCache` 方法：
 
 ```php
 protected function hash(): Attribute
@@ -120,7 +120,7 @@ protected function hash(): Attribute
 }
 ```
 
-如果你想禁用屬性的物件快取行為，你可以在定義屬性時呼叫 `withoutObjectCaching` 方法：
+若想停用屬性的物件快取行為，可在定義屬性時叫用 `withoutObjectCaching` 方法：
 
 ```php
 /**
@@ -140,7 +140,7 @@ protected function address(): Attribute
 <a name="defining-a-mutator"></a>
 ### 定義修改器
 
-修改器在 Eloquent 屬性值被設定時對其進行轉換。要定義修改器，你可以在定義屬性時提供 `set` 引數。讓我們為 `first_name` 屬性定義一個修改器。當我們嘗試在模型上設定 `first_name` 屬性的值時，此修改器將自動被呼叫：
+修改器 (Mutator) 會在 Eloquent 屬性被設定時對其值進行轉換。若要定義修改器，可在定義屬性時提供 `set` 引數。我們來為 `first_name` 屬性定義一個修改器。當我們嘗試在 Model 上設定 `first_name` 屬性的值時，這個修改器會被自動呼叫：
 
 ```php
 <?php
@@ -165,7 +165,7 @@ class User extends Model
 }
 ```
 
-修改器閉包將接收正在設定到屬性上的值，允許你操作該值並回傳操作後的值。要使用我們的修改器，我們只需在 Eloquent 模型上設定 `first_name` 屬性即可：
+修改器的閉包會收到要被設定在屬性上的值，讓你能操作該值並回傳操作後的值。若要使用我們的修改器，只需要在 Eloquent Model 上設定 `first_name` 屬性即可：
 
 ```php
 use App\Models\User;
@@ -175,12 +175,12 @@ $user = User::find(1);
 $user->first_name = 'Sally';
 ```
 
-在此範例中，`set` 回呼將以值 `Sally` 呼叫。然後修改器將對名稱應用 `strtolower` 函數，並將其結果值設定在模型的內部 `$attributes` 陣列中。
+在本範例中，`set` 回呼會以 `Sally` 這個值被呼叫。接著，修改器會對該名稱套用 `strtolower` 函式，並將結果設定在 Model 內部的 `$attributes` 陣列中。
 
 <a name="mutating-multiple-attributes"></a>
 #### 修改多個屬性
 
-有時你的修改器可能需要在底層模型上設定多個屬性。為此，你可以從 `set` 閉包回傳一個陣列。陣列中的每個鍵都應與與模型關聯的底層屬性 / 資料庫欄位相對應：
+有時候，你的修改器可能需要在底層 Model 上設定多個屬性。為此，可從 `set` 閉包回傳一個陣列。陣列中的每個索引鍵都應對應至與該 Model 關聯的底層屬性 / 資料庫欄位：
 
 ```php
 use App\Support\Address;
@@ -205,11 +205,11 @@ protected function address(): Attribute
 ```
 
 <a name="attribute-casting"></a>
-## 屬性型別轉換
+## 屬性轉換
 
-屬性型別轉換提供了與存取器和修改器類似的功能，而無需你在模型上定義任何額外的方法。相反，模型的 `casts` 方法提供了一種將屬性轉換為常見資料型別的便捷方式。
+屬性轉換提供了類似於取用器與修改器的功能，且不需要在 Model 上定義任何額外的方法。反之，Model 的 `casts` 方法提供了一個方便的方法，來將屬性轉換為常用的資料類型。
 
-`casts` 方法應回傳一個陣列，其中鍵是要進行型別轉換的屬性名稱，值是你希望將欄位轉換為的型別。支援的型別轉換型別有：
+`casts` 方法應回傳一個陣列，其中 Key 為要轉換的屬性名稱，而 Value 則為要將該欄位轉換過去的類型。支援的轉換類型有：
 
 <div class="content-list" markdown="1">
 
@@ -239,7 +239,7 @@ protected function address(): Attribute
 
 </div>
 
-為了演示屬性型別轉換，讓我們將 `is_admin` 屬性進行型別轉換，該屬性在我們的資料庫中儲存為整數 (`0` 或 `1`)，轉換為布林值：
+為了示範屬性轉換，我們來將 `is_admin` 屬性轉換為布林值。該屬性在資料庫中是以整數 (`0` 或 `1`) 儲存的：
 
 ```php
 <?php
@@ -264,7 +264,7 @@ class User extends Model
 }
 ```
 
-定義型別轉換後，當你存取 `is_admin` 屬性時，它將始終被轉換為布林值，即使底層值在資料庫中儲存為整數：
+定義好轉換後，在存取 `is_admin` 屬性時，就算底層的值在資料庫中是以整數儲存，該屬性也一律會被轉換為布林值：
 
 ```php
 $user = App\Models\User::find(1);
@@ -274,7 +274,7 @@ if ($user->is_admin) {
 }
 ```
 
-如果你需要在執行時新增一個新的臨時型別轉換，你可以使用 `mergeCasts` 方法。這些型別轉換定義將新增到模型上已定義的任何型別轉換中：
+若需要在執行階段新增一個新的、暫時的轉換，可使用 `mergeCasts` 方法。這些轉換定義會被加到 Model 上任何已定義的轉換中：
 
 ```php
 $user->mergeCasts([
@@ -284,12 +284,13 @@ $user->mergeCasts([
 ```
 
 > [!WARNING]
-> `null` 的屬性將不會被型別轉換。此外，你不應定義與關聯關係同名的型別轉換（或屬性），也不應將型別轉換分配給模型的主鍵。
+> `null` 的屬性不會被轉換。此外，絕對不要定義與關聯名稱相同的轉換 (或屬性)，也絕對不要將轉換指派給 Model 的主鍵。
+
 
 <a name="stringable-casting"></a>
-#### 可字串化型別轉換
+#### Stringable 轉換
 
-你可以使用 `Illuminate\Database\Eloquent\Casts\AsStringable` 型別轉換類別將模型屬性轉換為 [流暢的 Illuminate\Support\Stringable 物件](/docs/{{version}}/strings#fluent-strings-method-list)：
+可使用 `Illuminate\Database\Eloquent\Casts\AsStringable` 轉換類別，來將 Model 屬性轉換為一個[流暢的 Illuminate\Support\Stringable 物件](/docs/{{version}}/strings#fluent-strings-method-list)：
 
 ```php
 <?php
@@ -316,9 +317,9 @@ class User extends Model
 ```
 
 <a name="array-and-json-casting"></a>
-### 陣列與 JSON 型別轉換
+### 陣列與 JSON 轉換
 
-`array` 型別轉換在處理儲存為序列化 JSON 的欄位時特別有用。例如，如果你的資料庫有一個包含序列化 JSON 的 `JSON` 或 `TEXT` 欄位型別，將 `array` 型別轉換新增到該屬性將在你從 Eloquent 模型存取它時自動將該屬性反序列化為 PHP 陣列：
+`array` 轉換在處理儲存為序列化 JSON 的欄位時特別有用。例如，若資料庫中有個 `JSON` 或 `TEXT` 型別的欄位，其中包含了序列化的 JSON，只要為該屬性加上 `array` 轉換，在 Eloquent Model 上存取該屬性時，它就會自動被反序列化為 PHP 陣列：
 
 ```php
 <?php
@@ -343,7 +344,7 @@ class User extends Model
 }
 ```
 
-定義型別轉換後，你可以存取 `options` 屬性，它將自動從 JSON 反序列化為 PHP 陣列。當你設定 `options` 屬性的值時，給定的陣列將自動序列化回 JSON 以供儲存：
+定義好轉換後，便可存取 `options` 屬性，而它會自動從 JSON 反序列化為 PHP 陣列。在設定 `options` 屬性的值時，給定的陣列會自動被序列化回 JSON 以進行儲存：
 
 ```php
 use App\Models\User;
@@ -359,7 +360,7 @@ $user->options = $options;
 $user->save();
 ```
 
-要以更簡潔的語法更新 JSON 屬性的單個欄位，你可以[將屬性設定為可大量賦值](/docs/{{version}}/eloquent#mass-assignment-json-columns) 並在呼叫 `update` 方法時使用 `->` 運算子：
+若要以更簡潔的語法更新 JSON 屬性中的單一欄位，可以[將該屬性設為可大量指派](/docs/{{version}}/eloquent#mass-assignment-json-columns)並在呼叫 `update` 方法時使用 `->` 運算子：
 
 ```php
 $user = User::find(1);
@@ -370,7 +371,7 @@ $user->update(['options->key' => 'value']);
 <a name="json-and-unicode"></a>
 #### JSON 與 Unicode
 
-如果你想將陣列屬性儲存為帶有未逸出 Unicode 字元的 JSON，你可以使用 `json:unicode` 型別轉換：
+若想將陣列屬性以未逸脫 (unescaped) 的 Unicode 字元儲存為 JSON，可以使用 `json:unicode` 轉換：
 
 ```php
 /**
@@ -387,9 +388,9 @@ protected function casts(): array
 ```
 
 <a name="array-object-and-collection-casting"></a>
-#### 陣列物件與集合型別轉換
+#### 陣列物件與 Collection 轉換
 
-儘管標準的 `array` 型別轉換對於許多應用程式來說已經足夠，但它也有一些缺點。由於 `array` 型別轉換回傳的是基本型別，因此無法直接修改陣列的偏移量。例如，以下程式碼將觸發 PHP 錯誤：
+雖然標準的 `array` 轉換對許多應用程式來說已經足夠，但它仍有一些缺點。由於 `array` 轉換回傳的是一個原生型別，因此無法直接修改陣列中的某個 Offset (位移)。例如，下列程式碼會觸發一個 PHP 錯誤：
 
 ```php
 $user = User::find(1);
@@ -397,7 +398,7 @@ $user = User::find(1);
 $user->options['key'] = $value;
 ```
 
-為了解決這個問題，Laravel 提供了一個 `AsArrayObject` 型別轉換，它將你的 JSON 屬性轉換為 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 類別。此功能是透過 Laravel 的[自訂型別轉換](#custom-casts)實作的，它允許 Laravel 智慧地快取和轉換變異的物件，以便可以修改單個偏移量而不會觸發 PHP 錯誤。要使用 `AsArrayObject` 型別轉換，只需將其分配給屬性即可：
+為了解決這個問題，Laravel 提供了一個 `AsArrayObject` 轉換，能將你的 JSON 屬性轉換為 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 類別。這個功能是使用 Laravel 的[自訂轉換](#custom-casts)實作來達成的，它讓 Laravel 能智慧地快取並轉換經修改的物件，進而使個別 Offset 得以在不觸發 PHP 錯誤的情況下被修改。若要使用 `AsArrayObject` 轉換，只要將其指派給屬性即可：
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
@@ -415,7 +416,7 @@ protected function casts(): array
 }
 ```
 
-同樣，Laravel 提供了一個 `AsCollection` 型別轉換，它將你的 JSON 屬性轉換為 Laravel [Collection](/docs/{{version}}/collections) 實例：
+同樣地，Laravel 也提供了一個 `AsCollection` 轉換，可將你的 JSON 屬性轉換為 Laravel 的 [Collection](/docs/{{version}}/collections) 實體：
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -433,7 +434,7 @@ protected function casts(): array
 }
 ```
 
-如果你希望 `AsCollection` 型別轉換實例化自訂集合類別而不是 Laravel 的基本集合類別，你可以將集合類別名稱作為型別轉換引數提供：
+若希望 `AsCollection` 轉換實體化的是自訂的 Collection 類別，而非 Laravel 的基礎 Collection 類別，可以提供該 Collection 類別的名稱作為轉換參數：
 
 ```php
 use App\Collections\OptionCollection;
@@ -452,7 +453,7 @@ protected function casts(): array
 }
 ```
 
-`of` 方法可用於指示集合項目應透過集合的 [mapInto 方法](/docs/{{version}}/collections#method-mapinto) 映射到給定的類別中：
+`of` 方法可用來指示 Collection 項目應透過 Collection 的 [mapInto 方法](/docs/{{version}}/collections#method-mapinto)對應至給定的類別：
 
 ```php
 use App\ValueObjects\Option;
@@ -471,7 +472,7 @@ protected function casts(): array
 }
 ```
 
-將集合映射到物件時，物件應實作 `Illuminate\Contracts\Support\Arrayable` 和 `JsonSerializable` 介面，以定義其實例應如何序列化為資料庫中的 JSON：
+當將 Collection 對應至物件時，該物件應實作 `Illuminate\Contracts\Support\Arrayable` 與 `JsonSerializable` 介面，以定義其物件實體應如何被序列化為 JSON 並存入資料庫：
 
 ```php
 <?php
@@ -524,11 +525,11 @@ class Option implements Arrayable, JsonSerializable
 ```
 
 <a name="date-casting"></a>
-### 日期型別轉換
+### 日期轉換
 
-預設情況下，Eloquent 會將 `created_at` 和 `updated_at` 欄位轉換為 [Carbon](https://github.com/briannesbitt/Carbon) 實例，該實例擴展了 PHP `DateTime` 類別並提供了各種有用的方法。你可以透過在模型的 `casts` 方法中定義額外的日期型別轉換來轉換額外的日期屬性。通常，日期應使用 `datetime` 或 `immutable_datetime` 型別轉換型別進行型別轉換。
+在預設情況下，Eloquent 會將 `created_at` 與 `updated_at` 欄位轉換為 [Carbon](https://github.com/briannesbitt/Carbon) 的實體。Carbon 繼承了 PHP 的 `DateTime` 類別，並提供了一系列有用的方法。我們可以在 Model 的 `casts` 方法中定義額外的日期轉換，以轉換其他日期屬性。一般來說，日期應使用 `datetime` 或 `immutable_datetime` 型別來轉換。
 
-定義 `date` 或 `datetime` 型別轉換時，你還可以指定日期的格式。當[模型序列化為陣列或 JSON](/docs/{{version}}/eloquent-serialization) 時，將使用此格式：
+定義 `date` 或 `datetime` 轉換時，也可以指定日期的格式。此格式會在 [Model 序列化為陣列或 JSON](/docs/{{version}}/eloquent-serialization) 時使用：
 
 ```php
 /**
@@ -544,9 +545,9 @@ protected function casts(): array
 }
 ```
 
-當欄位被轉換為日期時，你可以將對應的模型屬性值設定為 UNIX 時間戳記、日期字串 (`Y-m-d`)、日期時間字串或 `DateTime` / `Carbon` 實例。日期的值將被正確轉換並儲存在你的資料庫中。
+當某個欄位被轉換為日期時，可以將對應 Model 屬性的值設為 UNIX 時間戳、日期字串 (`Y-m-d`)、日期時間字串、或是 `DateTime` / `Carbon` 的實體。日期的值會被正確地轉換並存入資料庫。
 
-你可以透過在模型上定義 `serializeDate` 方法來自訂所有模型日期的預設序列化格式。此方法不會影響你的日期在資料庫中儲存時的格式：
+我們可以定義 Model 上的 `serializeDate` 方法來自訂該 Model 上所有日期的預設序列化格式。此方法不會影響日期在存入資料庫時的格式：
 
 ```php
 /**
@@ -558,7 +559,7 @@ protected function serializeDate(DateTimeInterface $date): string
 }
 ```
 
-要指定在資料庫中實際儲存模型日期時應使用的格式，你應該在模型上定義 `$dateFormat` 屬性：
+若要指定 Model 的日期在實際存入資料庫時應使用的格式，則應在 Model 上定義 `$dateFormat` 屬性：
 
 ```php
 /**
@@ -569,17 +570,19 @@ protected function serializeDate(DateTimeInterface $date): string
 protected $dateFormat = 'U';
 ```
 
+
 <a name="date-casting-and-timezones"></a>
-#### 日期型別轉換、序列化與時區
+#### 日期轉換、序列化、與時區
 
-預設情況下，`date` 和 `datetime` 型別轉換會將日期序列化為 UTC ISO-8601 日期字串 (`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`)，無論你的應用程式 `timezone` 設定選項中指定的時區為何。強烈建議你始終使用此序列化格式，並透過不更改應用程式 `timezone` 設定選項的預設 `UTC` 值來將應用程式的日期儲存在 UTC 時區。在整個應用程式中一致地使用 UTC 時區將提供與用 PHP 和 JavaScript 編寫的其他日期操作函式庫的最大互通性。
+在預設情況下，`date` 與 `datetime` 轉換會將日期序列化為 UTC ISO-8601 日期字串 (`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`)，而不會去管應用程式設定檔 `timezone` 選項中指定的時區為何。我們強烈建議一律使用這個序列化格式，並將應用程式的 `timezone` 設定選項保留為預設的 `UTC` 值，藉此將應用程式的日期儲存在 UTC 時區。在整個應用程式中一致地使用 UTC 時區，可為我們提供與其他 PHP 或 JavaScript 日期處理函式庫最大程度的互通性。
 
-如果自訂格式應用於 `date` 或 `datetime` 型別轉換，例如 `datetime:Y-m-d H:i:s`，則 Carbon 實例的內部時區將在日期序列化期間使用。通常，這將是你的應用程式 `timezone` 設定選項中指定的時區。但是，重要的是要注意，`timestamp` 欄位（例如 `created_at` 和 `updated_at`）不受此行為的限制，並且始終以 UTC 格式化，無論應用程式的時區設定如何。
+若有為 `date` 或 `datetime` 轉換套用自訂格式 (如 `datetime:Y-m-d H:i:s`)，則在日期序列化時，會使用 Carbon 實體內部的時區。一般來說，這個時區會是應用程式設定檔 `timezone` 中指定的時區。不過，請務必注意，`timestamp` 欄位 (如 `created_at` 與 `updated_at`) 並不受此行為影響，且不論應用程式的時區設定為何，都一律會以 UTC 格式化。
+
 
 <a name="enum-casting"></a>
-### Enum 型別轉換
+### Enum 轉換
 
-Eloquent 還允許你將屬性值轉換為 PHP [Enums](https://www.php.net/manual/en/language.enumerations.backed.php)。為此，你可以在模型的 `casts` 方法中指定要轉換的屬性和 Enum：
+Eloquent 也允許我們將屬性值轉換為 PHP 的 [Enum](https://www.php.net/manual/en/language.enumerations.backed.php)。為此，可在 Model 的 `casts` 方法中指定要轉換的屬性與 Enum：
 
 ```php
 use App\Enums\ServerStatus;
@@ -597,7 +600,7 @@ protected function casts(): array
 }
 ```
 
-一旦你在模型上定義了型別轉換，當你與屬性互動時，指定的屬性將自動在 Enum 之間進行型別轉換：
+在 Model 上定義好轉換後，在與該屬性互動時，指定的屬性就會自動被轉換為 Enum，或由 Enum 轉回：
 
 ```php
 if ($server->status == ServerStatus::Provisioned) {
@@ -607,10 +610,11 @@ if ($server->status == ServerStatus::Provisioned) {
 }
 ```
 
-<a name="casting-arrays-of-enums"></a>
-#### Enum 陣列型別轉換
 
-有時你可能需要模型在單一欄位中儲存 Enum 值陣列。為此，你可以使用 Laravel 提供的 `AsEnumArrayObject` 或 `AsEnumCollection` 型別轉換：
+<a name="casting-arrays-of-enums"></a>
+#### 轉換 Enum 陣列
+
+有時候，我們可能需要在單一欄位中儲存一個 Enum 值陣列。為此，可利用 Laravel 提供的 `AsEnumArrayObject` 或 `AsEnumCollection` 轉換：
 
 ```php
 use App\Enums\ServerStatus;
@@ -629,22 +633,25 @@ protected function casts(): array
 }
 ```
 
+
 <a name="encrypted-casting"></a>
-### 加密型別轉換
+### 加密轉換
 
-`encrypted` 型別轉換將使用 Laravel 內建的[加密](/docs/{{version}}/encryption)功能加密模型的屬性值。此外，`encrypted:array`、`encrypted:collection`、`encrypted:object`、`AsEncryptedArrayObject` 和 `AsEncryptedCollection` 型別轉換的功能與其未加密的對應項相同；但是，正如你所預期的，底層值在儲存到資料庫時會被加密。
+`encrypted` 轉換會使用 Laravel 內建的[加密](/docs/{{version}}/encryption)功能來將 Model 屬性值加密。此外，`encrypted:array`、`encrypted:collection`、`encrypted:object`、`AsEncryptedArrayObject`、`AsEncryptedCollection` 等轉換的運作方式都與其未加密的版本類似；不過，正如其名，在存入資料庫時，其底層的值會被加密。
 
-由於加密文字的最終長度不可預測且比其純文字對應項長，請確保相關的資料庫欄位是 `TEXT` 型別或更大。此外，由於值在資料庫中是加密的，因此你將無法查詢或搜尋加密的屬性值。
+由於加密後文字的最終長度是不可預測的，且會比其純文字版本還長，請確定對應的資料庫欄位是 `TEXT` 或更大的型別。此外，由於這些值在資料庫中是加密的，因此將無法查詢或搜尋已加密的屬性值。
+
 
 <a name="key-rotation"></a>
 #### 金鑰輪替
 
-如你所知，Laravel 使用應用程式 `app` 設定檔中指定的 `key` 設定值來加密字串。通常，此值對應於 `APP_KEY` 環境變數的值。如果你需要輪替應用程式的加密金鑰，你需要使用新金鑰手動重新加密你的加密屬性。
+讀者可能知道，Laravel 會使用應用程式的 `app` 設定檔中指定的 `key` 設定值來加密字串。一般來說，這個值會對應到 `APP_KEY` 環境變數的值。若需要輪替應用程式的加密金鑰，則需要手動使用新的金鑰來重新加密這些已加密的屬性。
+
 
 <a name="query-time-casting"></a>
-### 查詢時型別轉換
+### 查詢時轉換
 
-有時你可能需要在執行查詢時應用型別轉換，例如從表格中選取原始值時。例如，考慮以下查詢：
+有時候，我們可能需要在執行查詢時套用轉換，例如，從資料表中選取一個 Raw (原始) 值時。舉例來說，請參考下列查詢：
 
 ```php
 use App\Models\Post;
@@ -657,7 +664,7 @@ $users = User::select([
 ])->get();
 ```
 
-此查詢結果中的 `last_posted_at` 屬性將是一個簡單的字串。如果我們可以在執行查詢時將 `datetime` 型別轉換應用於此屬性，那將會很棒。幸運的是，我們可以使用 `withCasts` 方法來實現這一點：
+這個查詢結果上的 `last_posted_at` 屬性會是一個簡單的字串。若能在執行查詢時為這個屬性套用 `datetime` 轉換就再好不過了。值得慶幸的是，我們可以使用 `withCasts` 方法來達成這個目的：
 
 ```php
 $users = User::select([
@@ -670,15 +677,15 @@ $users = User::select([
 ```
 
 <a name="custom-casts"></a>
-## 自訂型別轉換
+## 自訂轉換
 
-Laravel 有各種內建的、有用的型別轉換型別；但是，你可能偶爾需要定義自己的型別轉換型別。要建立型別轉換，請執行 `make:cast` Artisan 命令。新的型別轉換類別將放置在你的 `app/Casts` 目錄中：
+Laravel 有許多內建且實用的轉換型別；不過，有時候可能也需要定義自己的轉換型別。若要建立轉換，請執行 `make:cast` 這個 Artisan 指令。新的轉換類別會被放在 `app/Casts` 目錄下：
 
 ```shell
 php artisan make:cast AsJson
 ```
 
-所有自訂型別轉換類別都實作 `CastsAttributes` 介面。實作此介面的類別必須定義 `get` 和 `set` 方法。`get` 方法負責將資料庫中的原始值轉換為型別轉換值，而 `set` 方法應將型別轉換值轉換為可以儲存在資料庫中的原始值。作為範例，我們將重新實作內建的 `json` 型別轉換型別作為自訂型別轉換型別：
+所有自訂轉換類別都實作了 `CastsAttributes` 介面。實作此介面的類別必須定義 `get` 與 `set` 方法。`get` 方法負責將資料庫中的原始值轉換為轉換後的值，而 `set` 方法則應將轉換後的值轉換為可存入資料庫的原始值。舉例來說，我們來將內建的 `json` 轉換型別重新實作為一個自訂轉換型別：
 
 ```php
 <?php
@@ -721,7 +728,7 @@ class AsJson implements CastsAttributes
 }
 ```
 
-一旦你定義了自訂型別轉換型別，你就可以使用其類別名稱將其附加到模型屬性：
+定義好自訂轉換型別後，就可以使用其類別名稱將該型別附加到 Model 的屬性上：
 
 ```php
 <?php
@@ -748,11 +755,11 @@ class User extends Model
 ```
 
 <a name="value-object-casting"></a>
-### 值物件型別轉換
+### 值物件轉換
 
-你不僅限於將值轉換為基本型別。你還可以將值轉換為物件。定義將值轉換為物件的自訂型別轉換與轉換為基本型別非常相似；但是，如果你的值物件包含多個資料庫欄位，則 `set` 方法必須回傳鍵 / 值對的陣列，這些鍵 / 值對將用於在模型上設定原始、可儲存的值。如果你的值物件只影響單個欄位，你應該只回傳可儲存的值。
+不僅能將值轉換為原始型別，也可以將值轉換為物件。定義將值轉換為物件的自訂轉換與轉換為原始型別非常類似；不過，若值物件包含了多個資料庫欄位，則 `set` 方法必須回傳一個鍵／值對陣列，用來在 Model 上設定可儲存的原始值。若值物件只影響單一欄位，則只需回傳可儲存的值即可。
 
-作為範例，我們將定義一個自訂型別轉換類別，該類別將多個模型值轉換為單個 `Address` 值物件。我們假設 `Address` 值物件有兩個公共屬性：`lineOne` 和 `lineTwo`：
+舉例來說，我們來定義一個自訂轉換類別，用來將多個 Model 值轉換為單一的 `Address` 值物件。我們假設 `Address` 值物件有 `lineOne` 與 `lineTwo` 這兩個公開屬性：
 
 ```php
 <?php
@@ -807,7 +814,7 @@ class AsAddress implements CastsAttributes
 }
 ```
 
-當轉換為值物件時，對值物件所做的任何更改都將在模型儲存之前自動同步回模型：
+當轉換為值物件時，對該值物件所做的任何變更，都會在 Model 儲存前自動同步回 Model：
 
 ```php
 use App\Models\User;
@@ -820,14 +827,14 @@ $user->save();
 ```
 
 > [!NOTE]
-> 如果你打算將包含值物件的 Eloquent 模型序列化為 JSON 或陣列，你應該在值物件上實作 `Illuminate\Contracts\Support\Arrayable` 和 `JsonSerializable` 介面。
+> 若打算將包含值物件的 Eloquent Model 序列化為 JSON 或陣列，則應在該值物件上實作 `Illuminate\Contracts\Support\Arrayable` 與 `JsonSerializable` 介面。
 
 <a name="value-object-caching"></a>
 #### 值物件快取
 
-當轉換為值物件的屬性被解析時，它們會被 Eloquent 快取。因此，如果再次存取該屬性，將回傳相同的物件實例。
+當被轉換為值物件的屬性被解析時，Eloquent 會快取這些物件。因此，若再次存取該屬性，就會回傳同一個物件實體。
 
-如果你想禁用自訂型別轉換類別的物件快取行為，你可以在自訂型別轉換類別上宣告一個公共的 `withoutObjectCaching` 屬性：
+若想停用自訂轉換類別的物件快取行為，可以在自訂轉換類別上宣告一個公開的 `withoutObjectCaching` 屬性：
 
 ```php
 class AsAddress implements CastsAttributes
@@ -841,9 +848,9 @@ class AsAddress implements CastsAttributes
 <a name="array-json-serialization"></a>
 ### 陣列 / JSON 序列化
 
-當 Eloquent 模型使用 `toArray` 和 `toJson` 方法轉換為陣列或 JSON 時，你的自訂型別轉換值物件通常也會被序列化，只要它們實作 `Illuminate\Contracts\Support\Arrayable` 和 `JsonSerializable` 介面。但是，當使用第三方函式庫提供的值物件時，你可能無法將這些介面新增到物件中。
+當使用 `toArray` 與 `toJson` 方法將 Eloquent Model 轉換為陣列或 JSON 時，只要自訂轉換的值物件有實作 `Illuminate\Contracts\Support\Arrayable` 與 `JsonSerializable` 介面，通常也會一併被序列化。不過，當使用第三方函式庫提供的值物件時，可能無法將這些介面新增到物件上。
 
-因此，你可以指定你的自訂型別轉換類別將負責序列化值物件。為此，你的自訂型別轉換類別應實作 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 介面。此介面規定你的類別應包含一個 `serialize` 方法，該方法應回傳值物件的序列化形式：
+因此，可以指定由自訂轉換類別來負責序列化該值物件。若要這麼做，自訂轉換類別應實作 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 介面。此介面規定類別中應包含一個 `serialize` 方法，該方法應回傳值物件的序列化形式：
 
 ```php
 /**
@@ -862,17 +869,17 @@ public function serialize(
 ```
 
 <a name="inbound-casting"></a>
-### 入站型別轉換
+### 僅傳入轉換
 
-有時，你可能需要編寫一個自訂型別轉換類別，該類別只轉換正在設定到模型上的值，並且在從模型中取得屬性時不執行任何操作。
+有時候，可能需要撰寫一個自訂轉換類別，該類別只在設定 Model 屬性時轉換值，而在從 Model 取出屬性時不執行任何操作。
 
-僅入站的自訂型別轉換應實作 `CastsInboundAttributes` 介面，該介面只要求定義一個 `set` 方法。`make:cast` Artisan 命令可以使用 `--inbound` 選項呼叫，以生成一個僅入站的型別轉換類別：
+僅傳入的自訂轉換應實作 `CastsInboundAttributes` 介面，該介面僅要求定義 `set` 方法。可使用 `--inbound` 選項來叫用 `make:cast` Artisan 指令，以產生一個僅傳入的轉換類別：
 
 ```shell
 php artisan make:cast AsHash --inbound
 ```
 
-僅入站型別轉換的經典範例是「雜湊」型別轉換。例如，我們可以定義一個型別轉換，透過給定的演算法雜湊入站值：
+「雜湊 (hashing)」轉換是僅傳入轉換的一個典型範例。舉例來說，我們可以定義一個轉換，透過給定的演算法來雜湊傳入的值：
 
 ```php
 <?php
@@ -910,9 +917,9 @@ class AsHash implements CastsInboundAttributes
 ```
 
 <a name="cast-parameters"></a>
-### 型別轉換參數
+### 轉換參數
 
-將自訂型別轉換附加到模型時，可以透過使用 `:` 字元將其與類別名稱分開並用逗號分隔多個參數來指定型別轉換參數。參數將傳遞給型別轉換類別的建構函式：
+將自訂轉換附加到 Model 上時，可以使用 `:` 字元將參數與類別名稱分開，並用逗號分隔多個參數來指定轉換參數。這些參數會被傳遞給該轉換類別的建構函式：
 
 ```php
 /**
@@ -929,11 +936,11 @@ protected function casts(): array
 ```
 
 <a name="comparing-cast-values"></a>
-### 比較型別轉換值
+### 比較轉換值
 
-如果你想定義如何比較兩個給定的型別轉換值以確定它們是否已更改，你的自訂型別轉換類別可以實作 `Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes` 介面。這允許你精細控制 Eloquent 認為已更改的值，從而在模型更新時將其儲存到資料庫。
+若想定義兩個給定的轉換值應如何比較來判斷其是否已變更，則自訂的轉換類別可實作 `Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes` 介面。這樣一來，我們就能精細地控制 Eloquent 認定哪些值已變更，並在更新 Model 時將其儲存至資料庫。
 
-此介面規定你的類別應包含一個 `compare` 方法，如果給定值被認為相等，則該方法應回傳 `true`：
+該介面規定，類別中應包含一個 `compare` 方法，且若給定的值被視為相等，則該方法應回傳 `true`：
 
 ```php
 /**
@@ -956,9 +963,9 @@ public function compare(
 ```
 
 <a name="castables"></a>
-### 可型別轉換
+### 可轉換物件 (Castable)
 
-你可能希望允許應用程式的值物件定義自己的自訂型別轉換類別。你可以將實作 `Illuminate\Contracts\Database\Eloquent\Castable` 介面的值物件類別附加到模型，而不是將自訂型別轉換類別附加到模型：
+有時候，我們會想讓應用程式中的值物件能定義自己的自訂轉換類別。比起將自訂轉換類別附加到 Model 上，我們也可以改為附加一個有實作 `Illuminate\Contracts\Database\Eloquent\Castable` 介面的值物件類別：
 
 ```php
 use App\ValueObjects\Address;
@@ -971,7 +978,7 @@ protected function casts(): array
 }
 ```
 
-實作 `Castable` 介面的物件必須定義一個 `castUsing` 方法，該方法回傳負責將 `Castable` 類別進行型別轉換的自訂型別轉換類別的類別名稱：
+實作 `Castable` 介面的物件必須定義一個 `castUsing` 方法，該方法會回傳自訂轉換器 (Caster) 類別的類別名稱，而該轉換器則負責處理與這個 `Castable` 類別之間的雙向轉換：
 
 ```php
 <?php
@@ -995,7 +1002,7 @@ class Address implements Castable
 }
 ```
 
-使用 `Castable` 類別時，你仍然可以在 `casts` 方法定義中提供引數。引數將傳遞給 `castUsing` 方法：
+在使用 `Castable` 類別時，我們還是可以在 `casts` 方法的定義中提供引數。這些引數會被傳遞給 `castUsing` 方法：
 
 ```php
 use App\ValueObjects\Address;
@@ -1009,9 +1016,9 @@ protected function casts(): array
 ```
 
 <a name="anonymous-cast-classes"></a>
-#### 可型別轉換與匿名型別轉換類別
+#### 可轉換物件與匿名轉換類別
 
-透過將「可型別轉換」與 PHP 的[匿名類別](https://www.php.net/manual/en/language.oop5.anonymous.php)結合，你可以將值物件及其型別轉換邏輯定義為單個可型別轉換物件。為此，從值物件的 `castUsing` 方法回傳一個匿名類別。匿名類別應實作 `CastsAttributes` 介面：
+透過將「可轉換物件 (castable)」與 PHP 的[匿名類別](https://www.php.net/manual/en/language.oop5.anonymous.php)結合，我們就可以將值物件與其轉換邏輯定義為單一一個可轉換物件。若要這麼做，只要在值物件的 `castUsing` 方法中回傳一個匿名類別即可。該匿名類別應實作 `CastsAttributes` 介面：
 
 ```php
 <?php
@@ -1061,4 +1068,3 @@ class Address implements Castable
     }
 }
 ```
-

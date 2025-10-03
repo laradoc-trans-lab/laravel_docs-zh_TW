@@ -1,8 +1,8 @@
-## 序言
-    - [發行說明](/docs/{{version}}/releases)
+- ## 前言
+    - [版本說明](/docs/{{version}}/releases)
     - [升級指南](/docs/{{version}}/upgrade)
     - [貢獻指南](/docs/{{version}}/contributions)
-- ## 開始使用
+- ## 入門
     - [安裝](/docs/{{version}}/installation)
     - [設定](/docs/{{version}}/configuration)
     - [目錄結構](/docs/{{version}}/structure)
@@ -11,12 +11,12 @@
     - [部署](/docs/{{version}}/deployment)
 - ## 架構概念
     - [請求生命週期](/docs/{{version}}/lifecycle)
-    - [Service Container](/docs/{{version}}/container)
-    - [Service Providers](/docs/{{version}}/providers)
+    - [服務容器](/docs/{{version}}/container)
+    - [服務提供者](/docs/{{version}}/providers)
     - [Facades](/docs/{{version}}/facades)
-- ## 基礎
+- ## 基礎功能
     - [路由](/docs/{{version}}/routing)
-    - [Middleware](/docs/{{version}}/middleware)
+    - [中介層](/docs/{{version}}/middleware)
     - [CSRF 保護](/docs/{{version}}/csrf)
     - [控制器](/docs/{{version}}/controllers)
     - [請求](/docs/{{version}}/requests)
@@ -25,22 +25,22 @@
     - [Blade 模板](/docs/{{version}}/blade)
     - [資源打包](/docs/{{version}}/vite)
     - [URL 生成](/docs/{{version}}/urls)
-    - [Session](/docs/{{version}}/session)
+    - [會話](/docs/{{version}}/session)
     - [驗證](/docs/{{version}}/validation)
     - [錯誤處理](/docs/{{version}}/errors)
     - [日誌](/docs/{{version}}/logging)
 - ## 深入探討
-    - [Artisan Console](/docs/{{version}}/artisan)
-    - [Broadcasting](/docs/{{version}}/broadcasting)
+    - [Artisan 主控台](/docs/{{version}}/artisan)
+    - [廣播](/docs/{{version}}/broadcasting)
     - [快取](/docs/{{version}}/cache)
     - [集合](/docs/{{version}}/collections)
-    - [並發](/docs/{{version}}/concurrency)
+    - [併發](/docs/{{version}}/concurrency)
     - [上下文](/docs/{{version}}/context)
     - [契約](/docs/{{version}}/contracts)
     - [事件](/docs/{{version}}/events)
     - [檔案儲存](/docs/{{version}}/filesystem)
-    - [輔助函數](/docs/{{version}}/helpers)
-    - [HTTP Client](/docs/{{version}}/http-client)
+    - [輔助函式](/docs/{{version}}/helpers)
+    - [HTTP 用戶端](/docs/{{version}}/http-client)
     - [本地化](/docs/{{version}}/localization)
     - [郵件](/docs/{{version}}/mail)
     - [通知](/docs/{{version}}/notifications)
@@ -50,7 +50,7 @@
     - [速率限制](/docs/{{version}}/rate-limiting)
     - [字串](/docs/{{version}}/strings)
     - [任務排程](/docs/{{version}}/scheduling)
-- ## 安全
+- ## 安全性
     - [身份驗證](/docs/{{version}}/authentication)
     - [授權](/docs/{{version}}/authorization)
     - [電子郵件驗證](/docs/{{version}}/verification)
@@ -58,7 +58,7 @@
     - [雜湊](/docs/{{version}}/hashing)
     - [密碼重設](/docs/{{version}}/passwords)
 - ## 資料庫
-    - [開始使用](/docs/{{version}}/database)
+    - [入門](/docs/{{version}}/database)
     - [查詢產生器](/docs/{{version}}/queries)
     - [分頁](/docs/{{version}}/pagination)
     - [遷移](/docs/{{version}}/migrations)
@@ -66,7 +66,7 @@
     - [Redis](/docs/{{version}}/redis)
     - [MongoDB](/docs/{{version}}/mongodb)
 - ## Eloquent ORM
-    - [開始使用](/docs/{{version}}/eloquent)
+    - [入門](/docs/{{version}}/eloquent)
     - [關聯](/docs/{{version}}/eloquent-relationships)
     - [集合](/docs/{{version}}/eloquent-collections)
     - [修改器 / 型別轉換](/docs/{{version}}/eloquent-mutators)
@@ -74,9 +74,9 @@
     - [序列化](/docs/{{version}}/eloquent-serialization)
     - [工廠](/docs/{{version}}/eloquent-factories)
 - ## 測試
-    - [開始使用](/docs/{{version}}/testing)
+    - [入門](/docs/{{version}}/testing)
     - [HTTP 測試](/docs/{{version}}/http-tests)
-    - [Console 測試](/docs/{{version}}/console-tests)
+    - [主控台測試](/docs/{{version}}/console-tests)
     - [瀏覽器測試](/docs/{{version}}/dusk)
     - [資料庫](/docs/{{version}}/database-testing)
     - [模擬](/docs/{{version}}/mocking)
@@ -89,6 +89,7 @@
     - [Folio](/docs/{{version}}/folio)
     - [Homestead](/docs/{{version}}/homestead)
     - [Horizon](/docs/{{version}}/horizon)
+    - [MCP](/docs/{{version}}/mcp)
     - [Mix](/docs/{{version}}/mix)
     - [Octane](/docs/{{version}}/octane)
     - [Passport](/docs/{{version}}/passport)
@@ -104,5 +105,4 @@
     - [Socialite](/docs/{{version}}/socialite)
     - [Telescope](/docs/{{version}}/telescope)
     - [Valet](/docs/{{version}}/valet)
-- [API 說明文件](https://api.laravel.com/docs/12.x)
-
+- [API 文件](https://api.laravel.com/docs/12.x)

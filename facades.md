@@ -11,11 +11,11 @@
 <a name="introduction"></a>
 ## 簡介
 
-在整個 Laravel 說明文件中，你會看到透過 "facades" 與 Laravel 功能互動的程式碼範例。Facades 為應用程式 [service container](/docs/{{version}}/container) 中可用的類別提供了「靜態」介面。Laravel 內建了許多 facades，提供了對幾乎所有 Laravel 功能的存取。
+在整個 Laravel 文件中，您會看到透過「Facades」與 Laravel 功能互動的程式碼範例。Facades 為應用程式[服務容器](/docs/{{version}}/container)中可用的類別提供了「靜態」介面。Laravel 內建了許多 Facades，這些 Facades 提供了對幾乎所有 Laravel 功能的存取。
 
-Laravel facades 作為 service container 中底層類別的「靜態代理」，提供了簡潔、富有表達力的語法優勢，同時比傳統靜態方法保持了更好的可測試性和靈活性。如果你不完全理解 facades 的運作方式也沒關係，只要順其自然，繼續學習 Laravel 即可。
+Laravel Facades 充當服務容器中底層類別的「靜態代理」，提供了簡潔、富有表現力的語法優勢，同時比傳統的靜態方法具有更高的可測試性和靈活性。如果您還不太完全理解 Facades 的運作方式，這也完全沒關係——只需順其自然，繼續學習 Laravel 即可。
 
-所有 Laravel 的 facades 都定義在 `Illuminate\Support\Facades` 命名空間中。因此，我們可以輕鬆地像這樣存取 facade：
+所有 Laravel 的 Facades 都定義在 `Illuminate\Support\Facades` 命名空間中。因此，我們可以像這樣輕鬆地存取 Facade：
 
 ```php
 use Illuminate\Support\Facades\Cache;
@@ -26,14 +26,14 @@ Route::get('/cache', function () {
 });
 ```
 
-在整個 Laravel 說明文件中，許多範例將使用 facades 來展示框架的各種功能。
+在整個 Laravel 文件中，許多範例將使用 Facades 來演示框架的各種功能。
 
 <a name="helper-functions"></a>
 #### 輔助函式
 
-為了補充 facades，Laravel 提供了各種全域「輔助函式」，讓與常見 Laravel 功能的互動變得更加容易。你可能會互動的一些常見輔助函式有 `view`、`response`、`url`、`config` 等等。Laravel 提供的每個輔助函式都在其對應的功能中進行了說明；然而，完整的列表可在專用的 [輔助函式說明文件](/docs/{{version}}/helpers) 中找到。
+為了補充 Facades，Laravel 提供了各種全域「輔助函式」，讓與常見 Laravel 功能的互動變得更加容易。您可能會用到的一些常見輔助函式包括 `view`、`response`、`url`、`config` 等。Laravel 提供的每個輔助函式都在其對應功能文件中有所說明；然而，完整的列表可在專用的[輔助函式文件](/docs/{{version}}/helpers)中找到。
 
-例如，我們可以使用 `response` 函式來產生 JSON 回應，而不是使用 `Illuminate\Support\Facades\Response` facade。由於輔助函式是全域可用的，因此你不需要匯入任何類別即可使用它們：
+例如，我們可以使用 `response` 函式來產生 JSON 回應，而不是使用 `Illuminate\Support\Facades\Response` Facade。由於輔助函式是全域可用的，您無需匯入任何類別即可使用它們：
 
 ```php
 use Illuminate\Support\Facades\Response;
@@ -54,16 +54,16 @@ Route::get('/users', function () {
 <a name="when-to-use-facades"></a>
 ## 何時使用 Facades
 
-Facades 有許多優點。它們提供了簡潔、易記的語法，讓你可以使用 Laravel 的功能，而無需記住必須手動注入或設定的冗長類別名稱。此外，由於它們獨特地使用了 PHP 的動態方法，因此易於測試。
+Facades 有許多好處。它們提供了簡潔、易於記憶的語法，讓您無需記住必須手動注入或設定的冗長類別名稱，即可使用 Laravel 的功能。此外，由於它們獨特地使用了 PHP 的動態方法，因此易於測試。
 
-然而，使用 facades 時必須小心。Facades 的主要危險是類別「範圍蔓延」。由於 facades 如此易於使用且不需要注入，因此很容易讓你的類別不斷增長並在單一類別中使用許多 facades。使用依賴注入，這種潛力會因大型建構函式給你的視覺回饋而減輕，表明你的類別正在變得太大。因此，在使用 facades 時，請特別注意類別的大小，以使其職責範圍保持狹窄。如果你的類別變得太大，請考慮將其拆分為多個較小的類別。
+然而，使用 Facades 時必須謹慎。Facades 的主要危險是類別「職責蔓延」。由於 Facades 非常易於使用且不需要注入，因此很容易讓您的類別不斷增長，並在單一類別中使用許多 Facades。使用依賴注入，可以透過大型建構子所提供的視覺回饋，提示您的類別正變得過於龐大，從而減輕這種潛在風險。因此，在使用 Facades 時，請特別注意類別的大小，以確保其職責範圍保持狹窄。如果您的類別變得過於龐大，請考慮將其拆分為多個較小的類別。
 
 <a name="facades-vs-dependency-injection"></a>
 ### Facades 與依賴注入的比較
 
-依賴注入的主要優點之一是能夠交換注入類別的實作。這在測試期間很有用，因為你可以注入一個模擬或存根，並斷言存根上呼叫了各種方法。
+依賴注入的主要好處之一是能夠交換注入類別的實作。這在測試期間非常有用，因為您可以注入模擬 (mock) 或替身 (stub)，並斷言替身上的各個方法是否被呼叫。
 
-通常，不可能模擬或存根一個真正的靜態類別方法。然而，由於 facades 使用動態方法將方法呼叫代理到從 service container 解析的物件，我們實際上可以像測試注入的類別實例一樣測試 facades。例如，給定以下路由：
+通常，要模擬或替換一個真正的靜態類別方法是不可能的。然而，由於 Facades 使用動態方法將方法呼叫代理到從服務容器解析的物件，我們實際上可以像測試注入的類別實例一樣測試 Facades。例如，給定以下路由：
 
 ```php
 use Illuminate\Support\Facades\Cache;
@@ -73,7 +73,7 @@ Route::get('/cache', function () {
 });
 ```
 
-使用 Laravel 的 facade 測試方法，我們可以編寫以下測試來驗證 `Cache::get` 方法是否以我們預期的參數呼叫：
+使用 Laravel 的 Facade 測試方法，我們可以編寫以下測試來驗證 `Cache::get` 方法是否以我們預期的參數被呼叫：
 
 ```php tab=Pest
 use Illuminate\Support\Facades\Cache;
@@ -110,7 +110,7 @@ public function test_basic_example(): void
 <a name="facades-vs-helper-functions"></a>
 ### Facades 與輔助函式的比較
 
-除了 facades 之外，Laravel 還包含各種「輔助」函式，可以執行常見任務，例如產生視圖、觸發事件、分派任務或傳送 HTTP 回應。其中許多輔助函式執行的功能與對應的 facade 相同。例如，以下 facade 呼叫和輔助函式呼叫是等效的：
+除了 Facades 之外，Laravel 還包含各種「輔助」函式，可以執行常見任務，例如產生視圖 (views)、觸發事件 (events)、分派任務 (jobs) 或傳送 HTTP 回應。許多這些輔助函式執行與對應 Facade 相同的功能。例如，以下 Facade 呼叫和輔助函式呼叫是等效的：
 
 ```php
 return Illuminate\Support\Facades\View::make('profile');
@@ -118,7 +118,7 @@ return Illuminate\Support\Facades\View::make('profile');
 return view('profile');
 ```
 
-Facades 和輔助函式之間絕對沒有實際差異。使用輔助函式時，你仍然可以像測試對應的 facade 一樣測試它們。例如，給定以下路由：
+Facades 與輔助函式之間絕對沒有實際差異。使用輔助函式時，您仍然可以像測試對應 Facade 一樣測試它們。例如，給定以下路由：
 
 ```php
 Route::get('/cache', function () {
@@ -126,7 +126,7 @@ Route::get('/cache', function () {
 });
 ```
 
-`cache` 輔助函式將呼叫 `Cache` facade 底層類別上的 `get` 方法。因此，即使我們使用輔助函式，我們也可以編寫以下測試來驗證該方法是否以我們預期的參數呼叫：
+`cache` 輔助函式將呼叫 `Cache` Facade 底層類別的 `get` 方法。因此，即使我們使用輔助函式，我們也可以編寫以下測試來驗證該方法是否以我們預期的參數被呼叫：
 
 ```php
 use Illuminate\Support\Facades\Cache;
@@ -149,9 +149,9 @@ public function test_basic_example(): void
 <a name="how-facades-work"></a>
 ## Facades 的運作方式
 
-在 Laravel 應用程式中，facade 是一個提供從容器存取物件的類別。實現此功能的機制在 `Facade` 類別中。Laravel 的 facades 以及你建立的任何自訂 facades 都將擴展基礎 `Illuminate\Support\Facades\Facade` 類別。
+在 Laravel 應用程式中，Facade 是一個提供從容器中存取物件的類別。使其運作的機制在於 `Facade` 類別。Laravel 的 Facades，以及您創建的任何自訂 Facades，都將繼承基礎 `Illuminate\Support\Facades\Facade` 類別。
 
-`Facade` 基礎類別利用 `__callStatic()` 魔術方法將呼叫從你的 facade 延遲到從容器解析的物件。在下面的範例中，對 Laravel 快取系統進行了呼叫。瀏覽此程式碼，人們可能會認為靜態 `get` 方法正在 `Cache` 類別上呼叫：
+`Facade` 基礎類別利用 `__callStatic()` 魔術方法，將 Facade 的呼叫延遲到從容器中解析的物件。在下面的範例中，對 Laravel 快取系統進行了呼叫。瞥一眼這段程式碼，人們可能會認為靜態 `get` 方法正在 `Cache` 類別上被呼叫：
 
 ```php
 <?php
@@ -175,9 +175,9 @@ class UserController extends Controller
 }
 ```
 
-請注意，在檔案頂部附近，我們正在「匯入」`Cache` facade。此 facade 作為存取 `Illuminate\Contracts\Cache\Factory` 介面底層實作的代理。我們使用 facade 進行的任何呼叫都將傳遞給 Laravel 快取服務的底層實例。
+請注意，在檔案頂部我們正在「匯入」`Cache` Facade。此 Facade 充當存取 `Illuminate\Contracts\Cache\Factory` 介面底層實作的代理。我們使用 Facade 進行的任何呼叫都將傳遞給 Laravel 快取服務的底層實例。
 
-如果我們查看 `Illuminate\Support\Facades\Cache` 類別，你會發現沒有靜態方法 `get`：
+如果我們查看 `Illuminate\Support\Facades\Cache` 類別，您會發現沒有靜態方法 `get`：
 
 ```php
 class Cache extends Facade
@@ -192,12 +192,12 @@ class Cache extends Facade
 }
 ```
 
-相反，`Cache` facade 擴展了基礎 `Facade` 類別並定義了方法 `getFacadeAccessor()`。此方法的職責是返回 service container 綁定的名稱。當使用者引用 `Cache` facade 上的任何靜態方法時，Laravel 會從 [service container](/docs/{{version}}/container) 解析 `cache` 綁定，並對該物件執行請求的方法（在本例中為 `get`）。
+相反地，`Cache` Facade 繼承了基礎 `Facade` 類別並定義了 `getFacadeAccessor()` 方法。此方法的作用是回傳服務容器綁定的名稱。當使用者參考 `Cache` Facade 上的任何靜態方法時，Laravel 會從[服務容器](/docs/{{version}}/container)中解析 `cache` 綁定，並針對該物件執行所請求的方法 (在此案例中為 `get`)。
 
 <a name="real-time-facades"></a>
 ## 即時 Facades
 
-使用即時 facades，你可以將應用程式中的任何類別視為 facade。為了說明如何使用此功能，讓我們先檢查一些不使用即時 facades 的程式碼。例如，假設我們的 `Podcast` 模型有一個 `publish` 方法。然而，為了發布 podcast，我們需要注入一個 `Publisher` 實例：
+透過使用即時 Facades，您可以將應用程式中的任何類別視為一個 Facade。為了說明其用法，我們先來看一段不使用即時 Facades 的程式碼。例如，假設我們的 `Podcast` 模型有一個 `publish` 方法。然而，為了發佈 Podcast，我們需要注入一個 `Publisher` 實例：
 
 ```php
 <?php
@@ -221,7 +221,7 @@ class Podcast extends Model
 }
 ```
 
-將 publisher 實作注入到方法中，使我們能夠輕鬆地單獨測試該方法，因為我們可以模擬注入的 publisher。然而，這要求我們每次呼叫 `publish` 方法時都必須明確傳遞一個 publisher 實例。使用即時 facades，我們可以保持相同的可測試性，同時不需要明確傳遞 `Publisher` 實例。要產生即時 facade，請在匯入類別的命名空間前加上 `Facades`：
+將 Publisher 實作注入到方法中，可以讓我們輕鬆地獨立測試該方法，因為我們可以模擬注入的 Publisher。然而，這要求我們每次呼叫 `publish` 方法時，都必須傳遞一個 Publisher 實例。透過使用即時 Facades，我們可以保持相同的可測試性，而無需明確傳遞 `Publisher` 實例。要生成一個即時 Facade，請在匯入類別的命名空間前加上 `Facades`：
 
 ```php
 <?php
@@ -248,7 +248,7 @@ class Podcast extends Model
 }
 ```
 
-當使用即時 facade 時，publisher 實作將從 service container 中解析，使用介面或類別名稱中出現在 `Facades` 前綴之後的部分。測試時，我們可以使用 Laravel 內建的 facade 測試輔助函式來模擬此方法呼叫：
+當使用即時 Facade 時，Publisher 實作將會從服務容器中解析，使用介面或類別名稱中出現在 `Facades` 前綴後面的部分。在測試時，我們可以利用 Laravel 內建的 Facade 測試輔助函式來模擬此方法呼叫：
 
 ```php tab=Pest
 <?php
@@ -299,11 +299,11 @@ class PodcastTest extends TestCase
 <a name="facade-class-reference"></a>
 ## Facade 類別參考
 
-以下你會找到每個 facade 及其底層類別。這是一個有用的工具，可以快速深入了解給定 facade 根的 API 說明文件。如果適用，也包含了 [service container binding](/docs/{{version}}/container) 鍵。
+下方列出了所有 Facade 及其底層類別。這是個快速查閱指定 Facade 根目錄 API 文件的實用工具。在適用情況下，也包含了 [Service Container 綁定](/docs/{{version}}/container) 鍵值。
 
 <div class="overflow-auto">
 
-| Facade | Class | Service Container Binding |
+| Facade | 類別 | Service Container 綁定 |
 | --- | --- | --- |
 | App | [Illuminate\Foundation\Application](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Application.html) | `app` |
 | Artisan | [Illuminate\Contracts\Console\Kernel](https://api.laravel.com/docs/{{version}}/Illuminate/Contracts/Console/Kernel.html) | `artisan` |
@@ -326,7 +326,7 @@ class PodcastTest extends TestCase
 | Exceptions (Instance) | [Illuminate\Contracts\Debug\ExceptionHandler](https://api.laravel.com/docs/{{version}}/Illuminate/Contracts/Debug/ExceptionHandler.html) | &nbsp; |
 | Exceptions | [Illuminate\Foundation\Exceptions\Handler](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Exceptions/Handler.html) | &nbsp; |
 | File | [Illuminate\Filesystem\Filesystem](https://api.laravel.com/docs/{{version}}/Illuminate/Filesystem/Filesystem.html) | `files` |
-| Gate | [Illuminate\Contracts\Auth\Access\Gate](https://api.laravel.com/docs/{{version}}/Illuminate/Contracts/Auth\Access\Gate.html) | &nbsp; |
+| Gate | [Illuminate\Contracts\Auth\Access\Gate](https://api.laravel.com/docs/{{version}}/Illuminate/Contracts/Auth/Access/Gate.html) | &nbsp; |
 | Hash | [Illuminate\Contracts\Hashing\Hasher](https://api.laravel.com/docs/{{version}}/Illuminate/Contracts/Hashing/Hasher.html) | `hash` |
 | Http | [Illuminate\Http\Client\Factory](https://api.laravel.com/docs/{{version}}/Illuminate/Http/Client/Factory.html) | &nbsp; |
 | Lang | [Illuminate\Translation\Translator](https://api.laravel.com/docs/{{version}}/Illuminate/Translation/Translator.html) | `translator` |
@@ -334,7 +334,7 @@ class PodcastTest extends TestCase
 | Mail | [Illuminate\Mail\Mailer](https://api.laravel.com/docs/{{version}}/Illuminate/Mail/Mailer.html) | `mailer` |
 | Notification | [Illuminate\Notifications\ChannelManager](https://api.laravel.com/docs/{{version}}/Illuminate/Notifications/ChannelManager.html) | &nbsp; |
 | Password (Instance) | [Illuminate\Auth\Passwords\PasswordBroker](https://api.laravel.com/docs/{{version}}/Illuminate/Auth/Passwords/PasswordBroker.html) | `auth.password.broker` |
-| Password | [Illuminate\Auth\Passwords\PasswordBrokerManager](https://api.laravel.com/docs/{{version}}/Illuminate/Auth/Passwords/PasswordBrokerManager.html) | `auth.password` |
+| Password | [Illuminate\Auth\Passwords\PasswordBrokerManager](https://api.laravel.com/docs/{{version}}/Illuminate/Auth\Passwords\PasswordBrokerManager.html) | `auth.password` |
 | Pipeline (Instance) | [Illuminate\Pipeline\Pipeline](https://api.laravel.com/docs/{{version}}/Illuminate/Pipeline/Pipeline.html) | &nbsp; |
 | Process | [Illuminate\Process\Factory](https://api.laravel.com/docs/{{version}}/Illuminate/Process/Factory.html) | &nbsp; |
 | Queue (Base Class) | [Illuminate\Queue\Queue](https://api.laravel.com/docs/{{version}}/Illuminate/Queue/Queue.html) | &nbsp; |
@@ -362,4 +362,3 @@ class PodcastTest extends TestCase
 | Vite | [Illuminate\Foundation\Vite](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Vite.html) | &nbsp; |
 
 </div>
-

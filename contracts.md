@@ -1,7 +1,7 @@
 # 契約
 
 - [簡介](#introduction)
-    - [契約與 Facades 的比較](#contracts-vs-facades)
+    - [契約與 Facades](#contracts-vs-facades)
 - [何時使用契約](#when-to-use-contracts)
 - [如何使用契約](#how-to-use-contracts)
 - [契約參考](#contract-reference)
@@ -9,32 +9,35 @@
 <a name="introduction"></a>
 ## 簡介
 
-Laravel 的「契約 (contracts)」是一組定義框架所提供核心服務的介面。例如，`Illuminate\Contracts\Queue\Queue` 契約定義了佇列任務所需的方法，而 `Illuminate\Contracts\Mail\Mailer` 契約則定義了發送電子郵件所需的方法。
+Laravel 的「契約」(contracts) 是一組介面，定義了框架提供的核心服務。例如，`Illuminate\Contracts\Queue\Queue` 契約定義了佇列任務所需的方法，而 `Illuminate\Contracts\Mail\Mailer` 契約則定義了寄送電子郵件所需的方法。
 
-每個契約都有框架提供的對應實作。例如，Laravel 提供了一個具有多種驅動程式的佇列實作，以及一個由 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 驅動的郵件實作。
+每個契約都有框架提供的對應實作。例如，Laravel 提供了一個具有多種驅動的佇列實作，以及一個由 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 提供支援的郵件實作。
 
-所有 Laravel 契約都位於 [它們自己的 GitHub 儲存庫](https://github.com/illuminate/contracts) 中。這為所有可用的契約提供了一個快速參考點，以及一個單一、解耦的套件，可用於建構與 Laravel 服務互動的套件。
+所有 Laravel 的契約都位於 [它們自己的 GitHub 儲存庫](https://github.com/illuminate/contracts) 中。這為所有可用的契約提供了一個快速參考點，也是一個單一、解耦的套件，可在建構與 Laravel 服務互動的套件時使用。
+
 
 <a name="contracts-vs-facades"></a>
-### 契約與 Facades 的比較
+### 契約與 Facades
 
-Laravel 的 [Facades](/docs/{{version}}/facades) 和輔助函數提供了一種簡單的方式來使用 Laravel 的服務，而無需在服務容器中進行型別提示和解析契約。在大多數情況下，每個 Facade 都有一個等效的契約。
+Laravel 的 [Facades](/docs/{{version}}/facades) 與輔助函式提供了一種利用 Laravel 服務的簡單方法，而不需要從服務容器中型別提示並解析契約。在大多數情況下，每個 Facade 都有一個等效的契約。
 
-與 Facades 不同，Facades 不需要您在類別的建構函數中引入它們，而契約允許您為類別定義明確的依賴關係。有些開發人員喜歡以這種方式明確定義他們的依賴關係，因此更喜歡使用契約，而其他開發人員則喜歡 Facades 的便利性。**一般來說，大多數應用程式在開發過程中都可以毫無問題地使用 Facades。**
+與不需要在類別建構子中引入的 Facades 不同，契約允許你為你的類別定義明確的依賴。有些開發者偏好以這種方式明確定義他們的依賴，因此更喜歡使用契約，而其他開發者則享受 Facades 的便利。**一般而言，大多數應用程式在開發期間使用 Facades 都不會有問題。**
+
 
 <a name="when-to-use-contracts"></a>
 ## 何時使用契約
 
-使用契約還是 Facades 的決定將取決於個人品味和您的開發團隊的品味。契約和 Facades 都可以用於建立健壯、經過良好測試的 Laravel 應用程式。契約和 Facades 並非互斥。您的應用程式的某些部分可能使用 Facades，而其他部分則依賴於契約。只要您保持類別的職責集中，您會發現使用契約和 Facades 之間幾乎沒有實際差異。
+使用契約還是 Facades 的決定將取決於個人品味以及你的開發團隊的偏好。契約和 Facades 都可以用於建立健壯、經過良好測試的 Laravel 應用程式。契約和 Facades 並非互斥。你的應用程式的某些部分可能使用 Facades，而另一些部分則依賴於契約。只要你讓類別的職責保持專注，你就會注意到使用契約和 Facades 之間實際差異甚少。
 
-一般來說，大多數應用程式在開發過程中都可以毫無問題地使用 Facades。如果您正在建構一個與多個 PHP 框架整合的套件，您可能希望使用 `illuminate/contracts` 套件來定義您與 Laravel 服務的整合，而無需在套件的 `composer.json` 檔案中引入 Laravel 的具體實作。
+一般而言，大多數應用程式在開發期間使用 Facades 都不會有問題。如果你正在建構一個與多個 PHP 框架整合的套件，你可能會希望使用 `illuminate/contracts` 套件來定義你與 Laravel 服務的整合，而不需要在你的套件的 `composer.json` 檔案中引入 Laravel 的具體實作。
+
 
 <a name="how-to-use-contracts"></a>
 ## 如何使用契約
 
-那麼，如何取得契約的實作呢？這實際上非常簡單。
+那麼，你如何取得契約的實作呢？其實很簡單。
 
-Laravel 中的許多類別類型都是透過 [服務容器](/docs/{{version}}/container) 解析的，包括控制器、事件監聽器、Middleware、佇列任務，甚至路由閉包。因此，要取得契約的實作，您只需在要解析的類別的建構函數中「型別提示」介面即可。
+Laravel 中的許多類別都是透過 [服務容器](/docs/{{version}}/container) 解析的，包括控制器、事件監聽器、中介層 (middleware)、佇列任務，甚至是路由閉包。因此，要取得契約的實作，你只需在被解析類別的建構子中「型別提示」該介面即可。
 
 例如，看看這個事件監聽器：
 
@@ -66,16 +69,16 @@ class CacheOrderInformation
 }
 ```
 
-當事件監聽器被解析時，服務容器將讀取類別建構函數上的型別提示，並注入適當的值。要了解更多關於在服務容器中註冊內容的資訊，請查閱 [其說明文件](/docs/{{version}}/container)。
+當事件監聽器被解析時，服務容器將讀取類別建構子上的型別提示，並注入適當的值。要了解更多關於在服務容器中註冊內容的資訊，請查看 [其文件](/docs/{{version}}/container)。
 
 <a name="contract-reference"></a>
 ## 契約參考
 
-此表格提供了所有 Laravel 契約及其等效 Facades 的快速參考：
+此表格提供了所有 Laravel 契約及其對應 Facades 的快速參考：
 
 <div class="overflow-auto">
 
-| Contract | References Facade |
+| 契約 | 對應 Facade |
 | --- | --- |
 | [Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php) | &nbsp; |
 | [Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Gate.php) | `Gate` |
@@ -83,7 +86,7 @@ class CacheOrderInformation
 | [Illuminate\Contracts\Auth\CanResetPassword](https://github.com/illuminate/contracts/blob/{{version}}/Auth/CanResetPassword.php) | &nbsp; |
 | [Illuminate\Contracts\Auth\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Factory.php) | `Auth` |
 | [Illuminate\Contracts\Auth\Guard](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Guard.php) | `Auth::guard()` |
-| [Illuminate\Contracts\Auth\PasswordBroker](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Password/PasswordBroker.php) | `Password::broker()` |
+| [Illuminate\Contracts\Auth\PasswordBroker](https://github.com/illuminate/contracts/blob/{{version}}/Auth/PasswordBroker.php) | `Password::broker()` |
 | [Illuminate\Contracts\Auth\PasswordBrokerFactory](https://github.com/illuminate/contracts/blob/{{version}}/Auth/PasswordBrokerFactory.php) | `Password` |
 | [Illuminate\Contracts\Auth\StatefulGuard](https://github.com/illuminate/contracts/blob/{{version}}/Auth/StatefulGuard.php) | &nbsp; |
 | [Illuminate\Contracts\Auth\SupportsBasicAuth](https://github.com/illuminate/contracts/blob/{{version}}/Auth/SupportsBasicAuth.php) | &nbsp; |
@@ -157,4 +160,3 @@ class CacheOrderInformation
 | [Illuminate\Contracts\View\View](https://github.com/illuminate/contracts/blob/{{version}}/View/View.php) | `View::make()` |
 
 </div>
-

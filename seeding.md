@@ -1,32 +1,32 @@
-# 資料庫：填充 (Seeding)
+# 資料庫：資料填充
 
-- [簡介](#introduction)
-- [撰寫填充器 (Seeders)](#writing-seeders)
-    - [使用模型工廠 (Model Factories)](#using-model-factories)
-    - [呼叫額外的填充器](#calling-additional-seeders)
-    - [靜音模型事件 (Muting Model Events)](#muting-model-events)
-- [執行填充器](#running-seeders)
+- [介紹](#introduction)
+- [撰寫 Seeder](#writing-seeders)
+    - [使用 Model Factory](#using-model-factories)
+    - [呼叫額外 Seeder](#calling-additional-seeders)
+    - [靜音 Model 事件](#muting-model-events)
+- [執行 Seeder](#running-seeders)
 
 <a name="introduction"></a>
-## 簡介
+## 介紹
 
-Laravel 提供了使用填充類別 (seed classes) 來為資料庫填充資料的功能。所有填充類別都儲存在 `database/seeders` 目錄中。預設情況下，系統會為您定義一個 `DatabaseSeeder` 類別。您可以從這個類別中使用 `call` 方法來執行其他的填充類別，讓您能夠控制填充的順序。
+Laravel 包含了使用 seed class 對資料庫進行資料填充 (seeding) 的能力。所有的 seed class 都儲存在 `database/seeders` 目錄中。預設情況下，已經為您定義了一個 `DatabaseSeeder` class。從這個 class 中，您可以使用 `call` 方法來執行其他 seed class，讓您能夠控制資料填充的順序。
 
 > [!NOTE]
-> 在資料庫填充期間，[大量賦值保護 (Mass assignment protection)](/docs/{{version}}/eloquent#mass-assignment) 會自動停用。
+> [大量指派保護](/docs/{{version}}/eloquent#mass-assignment) 在資料庫填充期間會自動停用。
 
 <a name="writing-seeders"></a>
-## 撰寫填充器
+## 撰寫 Seeder
 
-要生成一個填充器，請執行 `make:seeder` [Artisan 命令](/docs/{{version}}/artisan)。所有由框架生成的填充器都將放置在 `database/seeders` 目錄中：
+要產生一個 seeder，請執行 `make:seeder` [Artisan 指令](/docs/{{version}}/artisan)。所有由框架產生的 seeder 都會被放置在 `database/seeders` 目錄中：
 
 ```shell
 php artisan make:seeder UserSeeder
 ```
 
-填充器類別預設只包含一個方法：`run`。當執行 `db:seed` [Artisan 命令](/docs/{{version}}/artisan) 時，就會呼叫此方法。在 `run` 方法中，您可以依照自己的需求將資料插入到資料庫中。您可以使用 [查詢產生器 (query builder)](/docs/{{version}}/queries) 手動插入資料，或者您也可以使用 [Eloquent 模型工廠 (model factories)](/docs/{{version}}/eloquent-factories)。
+Seeder class 預設只包含一個方法：`run`。當 `db:seed` [Artisan 指令](/docs/{{version}}/artisan) 被執行時，就會呼叫這個方法。在 `run` 方法中，您可以依照自己的意願將資料插入資料庫。您可以使用 [query builder](/docs/{{version}}/queries) 手動插入資料，也可以使用 [Eloquent model factories](/docs/{{version}}/eloquent-factories)。
 
-舉例來說，讓我們修改預設的 `DatabaseSeeder` 類別，並在 `run` 方法中加入一個資料庫插入語句：
+作為一個範例，讓我們修改預設的 `DatabaseSeeder` class，並在 `run` 方法中加入一個資料庫插入語句：
 
 ```php
 <?php
@@ -55,14 +55,14 @@ class DatabaseSeeder extends Seeder
 ```
 
 > [!NOTE]
-> 您可以在 `run` 方法的簽章中型別提示 (type-hint) 任何您需要的依賴。它們將透過 Laravel [服務容器 (service container)](/docs/{{version}}/container) 自動解析。
+> 您可以在 `run` 方法的簽名中對任何所需的依賴項進行型別提示。它們將透過 Laravel [服務容器](/docs/{{version}}/container) 自動解析。
 
 <a name="using-model-factories"></a>
-### 使用模型工廠
+### 使用 Model Factory
 
-當然，手動為每個模型填充指定屬性是件麻煩事。您可以改用 [模型工廠 (model factories)](/docs/{{version}}/eloquent-factories) 來方便地生成大量的資料庫記錄。首先，請查閱 [模型工廠文件](/docs/{{version}}/eloquent-factories) 以了解如何定義您的工廠。
+當然，手動為每個 model seed 指定屬性是很麻煩的。取而代之的是，您可以使用 [model factories](/docs/{{version}}/eloquent-factories) 方便地產生大量的資料庫記錄。首先，請查閱 [model factory 文件](/docs/{{version}}/eloquent-factories) 以了解如何定義您的 factory。
 
-例如，讓我們建立 50 個使用者，每個使用者都有一篇相關的貼文：
+例如，讓我們建立 50 個 User，每個 User 都帶有一個相關的 Post：
 
 ```php
 use App\Models\User;
@@ -80,9 +80,9 @@ public function run(): void
 ```
 
 <a name="calling-additional-seeders"></a>
-### 呼叫額外的填充器
+### 呼叫額外 Seeder
 
-在 `DatabaseSeeder` 類別中，您可以使用 `call` 方法來執行額外的填充類別。使用 `call` 方法可以讓您將資料庫填充拆分成多個檔案，這樣就不會讓單一填充器類別變得過於龐大。`call` 方法接受一個應執行的填充類別陣列：
+在 `DatabaseSeeder` class 中，您可以使用 `call` 方法來執行額外的 seed class。使用 `call` 方法可以讓您將資料庫填充拆分成多個檔案，這樣就不會有任何單一的 seeder class 變得過於龐大。這個 `call` 方法接受一個應該被執行的 seeder class 陣列：
 
 ```php
 /**
@@ -99,9 +99,9 @@ public function run(): void
 ```
 
 <a name="muting-model-events"></a>
-### 靜音模型事件
+### 靜音 Model 事件
 
-在執行填充時，您可能希望阻止模型分派事件。您可以使用 `WithoutModelEvents` Trait 來實現這一點。使用 `WithoutModelEvents` Trait 時，即使透過 `call` 方法執行額外的填充類別，也能確保不會分派任何模型事件：
+在執行填充時，您可能希望阻止 model 派發事件。您可以使用 `WithoutModelEvents` trait 來實現這一點。使用時，`WithoutModelEvents` trait 確保不會派發任何 model 事件，即使是透過 `call` 方法執行額外的 seed class 也是如此：
 
 ```php
 <?php
@@ -128,9 +128,9 @@ class DatabaseSeeder extends Seeder
 ```
 
 <a name="running-seeders"></a>
-## 執行填充器
+## 執行 Seeder
 
-您可以執行 `db:seed` Artisan 命令來填充您的資料庫。預設情況下，`db:seed` 命令會執行 `Database\Seeders\DatabaseSeeder` 類別，該類別又可以呼叫其他的填充類別。但是，您可以使用 `--class` 選項來指定要單獨執行的特定填充器類別：
+您可以執行 `db:seed` Artisan 指令來填充您的資料庫。預設情況下，`db:seed` 指令會執行 `Database\Seeders\DatabaseSeeder` class，而這個 class 又可能會呼叫其他的 seed class。然而，您可以使用 `--class` 選項來指定一個特定的 seeder class 單獨執行：
 
 ```shell
 php artisan db:seed
@@ -138,7 +138,7 @@ php artisan db:seed
 php artisan db:seed --class=UserSeeder
 ```
 
-您也可以結合 `--seed` 選項使用 `migrate:fresh` 命令來填充資料庫，這將會刪除所有資料表並重新執行所有遷移。此命令對於完全重建資料庫非常有用。`--seeder` 選項可用於指定要執行的特定填充器：
+您也可以使用 `migrate:fresh` 指令搭配 `--seed` 選項來填充資料庫，這會刪除所有資料表並重新執行所有的 migration。這個指令對於完全重建您的資料庫非常有用。可以使用 `--seeder` 選項來指定要執行的特定 seeder：
 
 ```shell
 php artisan migrate:fresh --seed
@@ -147,11 +147,10 @@ php artisan migrate:fresh --seed --seeder=UserSeeder
 ```
 
 <a name="forcing-seeding-production"></a>
-#### 強制填充器在正式環境中執行
+#### 在生產環境中強制執行 Seeder
 
-某些填充操作可能會導致您更改或遺失資料。為了保護您免於在正式環境資料庫上執行填充命令，在 `production` 環境中執行填充器之前，系統會提示您進行確認。若要強制填充器在沒有提示的情況下執行，請使用 `--force` 旗標：
+某些填充操作可能會導致您變更或遺失資料。為了保護您，避免對您的生產資料庫執行填充指令，在 `production` 環境中執行 seeder 之前，您會收到確認提示。若要強制 seeder 執行而不顯示提示，請使用 `--force` 旗標：
 
 ```shell
 php artisan db:seed --force
 ```
-
