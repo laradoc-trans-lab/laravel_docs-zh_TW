@@ -4,6 +4,8 @@
 本文件庫為社群自動翻譯版本，使用 AI（目前為 gemini-2.5-flash ）自動翻譯官方 Laravel 文件。  
 翻譯內容可能不完全正確或與官方文件不同，本人/團隊不對任何因使用本翻譯而產生的問題負責。
 
+若您對原始文件沒興趣，可以造訪 [Laradoc](https://laradoc.pigo.idv.tw) ，這是使用 VitePress 將原始文件生成的靜態網站。
+
 ---
 
 ## 切換分支說明
@@ -23,7 +25,7 @@ git checkout -b 12.x origin/12.x
 - 本 repo 的翻譯內容**僅供參考**，請以官方 Laravel 文件為準。  
 - 官方原始 `readme.md` 與 `license.md` 不會進行翻譯，且保留在根目錄。  
 - 如需查看官方 `readme.md`，請點此：[官方 Laravel README](../readme.md)
-- 檔案命名與結構完全沒變，理論上以 [jigsaw](https://jigsaw.tighten.com) 可以建置自己的文件靜態網站。
+- 檔案命名與結構完全沒變，理論上以 [VitePress](https://vitepress.dev/) 或 [jigsaw](https://jigsaw.tighten.com) 可以建置自己的文件靜態網站。
 
 ---
 
