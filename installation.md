@@ -220,7 +220,7 @@ herd open
 ```
 
 您可以透過查閱 [Herd 的 Windows 文件](https://herd.laravel.com/docs/windows) 了解更多關於 Herd 的資訊。
-```
+
 
 <a name="ide-support"></a>
 ## IDE 支援
