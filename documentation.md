@@ -1,3 +1,7 @@
+- ## 前言
+    - [版本說明](/docs/{{version}}/releases)
+    - [升級指南](/docs/{{version}}/upgrade)
+    - [貢獻指南](/docs/{{version}}/contributions)
 - ## 開始使用
     - [安裝](/docs/{{version}}/installation)
     - [設定](/docs/{{version}}/configuration)
