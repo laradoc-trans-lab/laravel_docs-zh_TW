@@ -22,7 +22,7 @@
     - [提示依賴注入](#prompt-dependency-injection)
     - [條件式提示註冊](#conditional-prompt-registration)
     - [提示回應](#prompt-responses)
-- [資源](#creating-resources)
+- [資源](#resources)
     - [建立資源](#creating-resources)
     - [資源 URI 與 MIME 類型](#resource-uri-and-mime-type)
     - [資源請求](#resource-request)
