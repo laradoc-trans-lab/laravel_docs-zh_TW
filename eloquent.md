@@ -1,6 +1,6 @@
 # Eloquent：入門
 
-- [簡介](#introduction)
+- [介紹](#introduction)
 - [產生 Model 類別](#generating-model-classes)
 - [Eloquent Model 慣例](#eloquent-model-conventions)
     - [資料表名稱](#table-names)
@@ -9,21 +9,21 @@
     - [時間戳記](#timestamps)
     - [資料庫連線](#database-connections)
     - [預設屬性值](#default-attribute-values)
-    - [設定 Eloquent 的嚴謹度](#configuring-eloquent-strictness)
+    - [配置 Eloquent 嚴謹性](#configuring-eloquent-strictness)
 - [擷取 Model](#retrieving-models)
     - [集合](#collections)
     - [分批處理結果](#chunking-results)
-    - [使用惰性集合分批處理](#chunking-using-lazy-collections)
-    - [遊標](#cursors)
+    - [使用 Lazy Collection 分批處理](#chunking-using-lazy-collections)
+    - [游標](#cursors)
     - [進階子查詢](#advanced-subqueries)
-- [擷取單一 Model / 聚合結果](#retrieving-single-models)
+- [擷取單一 Model / 彙總資料](#retrieving-single-models)
     - [擷取或建立 Model](#retrieving-or-creating-models)
-    - [擷取聚合結果](#retrieving-aggregates)
-- [新增與更新 Model](#inserting-and-updating-models)
-    - [新增](#inserts)
+    - [擷取彙總資料](#retrieving-aggregates)
+- [插入與更新 Model](#inserting-and-updating-models)
+    - [插入](#inserts)
     - [更新](#updates)
-    - [批量指派](#mass-assignment)
-    - [Upsert](#upserts)
+    - [大量指派](#mass-assignment)
+    - [更新插入](#upserts)
 - [刪除 Model](#deleting-models)
     - [軟刪除](#soft-deleting)
     - [查詢軟刪除的 Model](#querying-soft-deleted-models)
@@ -31,38 +31,38 @@
 - [複製 Model](#replicating-models)
 - [查詢 Scope](#query-scopes)
     - [全域 Scope](#global-scopes)
-    - [本地 Scope](#local-scopes)
-    - [待處理屬性](#pending-attributes)
+    - [區域 Scope](#local-scopes)
+    - [待定屬性](#pending-attributes)
 - [比較 Model](#comparing-models)
 - [事件](#events)
     - [使用閉包](#events-using-closures)
     - [觀察者](#observers)
-    - [靜音事件](#muting-events)
+    - [事件靜默](#muting-events)
 
 <a name="introduction"></a>
-## 簡介
+## 介紹
 
-Laravel 內建了 Eloquent，這是一個物件關聯對映 (ORM)，讓與資料庫的互動變得更加愉快。使用 Eloquent 時，每個資料庫資料表都有一個對應的「Model」，用於與該資料表進行互動。除了從資料庫資料表擷取記錄外，Eloquent Model 也允許你對資料表新增、更新及刪除記錄。
+Laravel 包含 Eloquent，這是一個物件關聯對映 (ORM)，讓您能愉快地與資料庫互動。使用 Eloquent 時，每個資料庫資料表都會有一個對應的「Model」來與該資料表互動。除了從資料庫資料表中擷取記錄之外，Eloquent Model 還允許您從資料表中插入、更新和刪除記錄。
 
 > [!NOTE]
-> 在開始之前，請務必在應用程式的 `config/database.php` 設定檔中設定資料庫連線。有關設定資料庫的更多資訊，請查閱[資料庫設定文件](/docs/{{version}}/database#configuration)。
+> 開始之前，請務必在應用程式的 `config/database.php` 設定檔中設定資料庫連線。有關設定資料庫的更多資訊，請查閱[資料庫設定文件](/docs/{{version}}/database#configuration)。
 
 <a name="generating-model-classes"></a>
 ## 產生 Model 類別
 
-首先，讓我們先來建立一個 Eloquent Model。Model 通常位於 `app\Models` 目錄中，並繼承 `Illuminate\Database\Eloquent\Model` 類別。你可以使用 `make:model` [Artisan 指令](/docs/{{version}}/artisan)來產生一個新的 Model：
+首先，讓我們先建立一個 Eloquent Model。Model 通常位於 `app\Models` 目錄中，並會延伸 `Illuminate\Database\Eloquent\Model` 類別。您可以使用 `make:model` [Artisan 命令](/docs/{{version}}/artisan)來產生一個新的 Model：
 
 ```shell
 php artisan make:model Flight
 ```
 
-如果你想在產生 Model 時一併產生[資料庫遷移](/docs/{{version}}/migrations)檔案，可以使用 `--migration` 或 `-m` 選項：
+如果您想在產生 Model 時一併產生[資料庫遷移檔](/docs/{{version}}/migrations)，可以使用 `--migration` 或 `-m` 選項：
 
 ```shell
 php artisan make:model Flight --migration
 ```
 
-在產生 Model 時，你可以產生各種其他類型的類別，例如 factories、seeders、policies、controllers 及 form requests。此外，這些選項可以組合使用，一次建立多個類別：
+產生 Model 時，您還可以產生其他各種型別的類別，例如 Factory、Seeder、Policy、Controller 和表單請求 (form requests)。此外，這些選項可以組合使用，一次建立多個類別：
 
 ```shell
 # Generate a model and a FlightFactory class...
@@ -99,7 +99,7 @@ php artisan make:model Member -p
 <a name="inspecting-models"></a>
 #### 檢查 Model
 
-有時候，單憑瀏覽 Model 的程式碼很難判斷其所有可用的屬性與關聯。你可以嘗試使用 `model:show` Artisan 指令，它會提供 Model 所有屬性與關聯的方便總覽：
+有時，僅透過瀏覽 Model 的程式碼很難判斷其所有可用的屬性與關聯。您可以改用 `model:show` Artisan 命令，它能提供 Model 所有屬性與關聯的便捷概覽：
 
 ```shell
 php artisan model:show Flight
@@ -108,7 +108,7 @@ php artisan model:show Flight
 <a name="eloquent-model-conventions"></a>
 ## Eloquent Model 慣例
 
-由 `make:model` 命令產生的 Model 會被放置在 `app/Models` 目錄中。讓我們來檢視一個基本的 Model 類別，並討論一些 Eloquent 的主要慣例：
+透過 `make:model` 命令產生的 Model 將會放置於 `app/Models` 目錄中。讓我們檢查一個基本的 Model 類別，並討論一些 Eloquent 的主要慣例：
 
 ```php
 <?php
@@ -126,9 +126,9 @@ class Flight extends Model
 <a name="table-names"></a>
 ### 資料表名稱
 
-看過上面的範例後，您可能已經注意到我們沒有告訴 Eloquent 哪個資料庫資料表對應到我們的 `Flight` Model。依照慣例，類別的「snake case」複數名稱會被用作資料表名稱，除非明確指定其他名稱。因此，在這種情況下，Eloquent 會假設 `Flight` Model 將紀錄儲存在 `flights` 資料表中，而 `AirTrafficController` Model 會將紀錄儲存在 `air_traffic_controllers` 資料表中。
+在看過上述範例後，您可能已經注意到我們沒有告訴 Eloquent 哪個資料庫資料表對應我們的 `Flight` Model。按照慣例，除非明確指定其他名稱，否則類別的「snake case」複數名稱將會被用作資料表名稱。因此，在此情況下，Eloquent 將會假設 `Flight` Model 將記錄儲存於 `flights` 資料表中，而 `AirTrafficController` Model 將會把記錄儲存於 `air_traffic_controllers` 資料表中。
 
-如果您的 Model 對應的資料庫資料表不符合此慣例，您可以透過在 Model 上定義一個 `table` 屬性來手動指定 Model 的資料表名稱：
+如果您的 Model 所對應的資料庫資料表不符合此慣例，您可以在 Model 上定義一個 `table` 屬性來手動指定 Model 的資料表名稱：
 
 ```php
 <?php
@@ -151,7 +151,7 @@ class Flight extends Model
 <a name="primary-keys"></a>
 ### 主鍵
 
-Eloquent 也會假設每個 Model 對應的資料庫資料表都有一個名為 `id` 的主鍵欄位。如有必要，您可以在 Model 上定義一個保護的 `$primaryKey` 屬性，以指定作為 Model 主鍵的不同欄位：
+Eloquent 也會假設每個 Model 對應的資料庫資料表都有一個名為 `id` 的主鍵欄位。如果需要，您可以在 Model 上定義一個受保護的 `$primaryKey` 屬性來指定作為 Model 主鍵的不同欄位：
 
 ```php
 <?php
@@ -171,7 +171,7 @@ class Flight extends Model
 }
 ```
 
-此外，Eloquent 假設主鍵是一個遞增的整數值，這表示 Eloquent 會自動將主鍵轉換為整數。如果您希望使用非遞增或非數值的主鍵，則必須在 Model 上定義一個設定為 `false` 的公共 `$incrementing` 屬性：
+此外，Eloquent 假設主鍵是一個遞增的整數值，這表示 Eloquent 會自動將主鍵轉換為整數。如果您希望使用非遞增或非數字的主鍵，您必須在 Model 上定義一個設定為 `false` 的公開 `$incrementing` 屬性：
 
 ```php
 <?php
@@ -187,7 +187,7 @@ class Flight extends Model
 }
 ```
 
-如果您的 Model 的主鍵不是整數，您應該在 Model 上定義一個保護的 `$keyType` 屬性。此屬性應具有 `string` 值：
+如果您的 Model 的主鍵不是整數，您應該在 Model 上定義一個受保護的 `$keyType` 屬性。此屬性應具有 `string` 值：
 
 ```php
 <?php
@@ -206,14 +206,14 @@ class Flight extends Model
 <a name="composite-primary-keys"></a>
 #### 「複合式」主鍵
 
-Eloquent 要求每個 Model 至少有一個唯一的識別碼「ID」作為其主鍵。Eloquent Model 不支援「複合式」主鍵。但是，除了資料表唯一的識別主鍵之外，您可以自由地在資料庫資料表中新增多欄位的唯一索引。
+Eloquent 要求每個 Model 至少有一個可以用作其主鍵的唯一識別「ID」。Eloquent Model 不支援「複合式」主鍵。但是，除了資料表唯一的識別主鍵之外，您可以自由地為資料庫資料表新增其他多欄位、唯一索引。
 
 <a name="uuid-and-ulid-keys"></a>
 ### UUID 與 ULID 鍵
 
-您可以選擇使用 UUIDs 作為 Eloquent Model 的主鍵，而不是使用自動遞增的整數。UUIDs 是通用唯一字母數字識別碼，長度為 36 個字元。
+除了使用自動遞增整數作為 Eloquent Model 的主鍵外，您也可以選擇使用 UUID。UUID 是通用唯一的英數字元識別碼，長度為 36 個字元。
 
-如果您希望 Model 使用 UUID 鍵而非自動遞增的整數鍵，您可以在 Model 上使用 `Illuminate\Database\Eloquent\Concerns\HasUuids` trait。當然，您應該確保 Model 具有 [UUID 對應的主鍵欄位](/docs/{{version}}/migrations#column-method-uuid)：
+如果您希望 Model 使用 UUID 鍵而非自動遞增整數鍵，您可以在 Model 上使用 `Illuminate\Database\Eloquent\Concerns\HasUuids` Trait。當然，您應該確保 Model 具有一個 [UUID 對應的主鍵欄位](/docs/{{version}}/migrations#column-method-uuid)：
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -231,9 +231,9 @@ $article = Article::create(['title' => 'Traveling to Europe']);
 $article->id; // "8f8e8478-9035-4d23-b9a7-62f4d2612ce5"
 ```
 
-預設情況下，`HasUuids` trait 會為您的 Model 產生「有序」的 [UUIDs](/docs/{{version}}/strings#method-str-ordered-uuid)。這些 UUIDs 對於索引資料庫儲存更有效率，因為它們可以按字典順序排序。
+預設情況下，`HasUuids` Trait 將為您的 Model 生成 ["有序" UUID](/docs/{{version}}/strings#method-str-ordered-uuid)。這些 UUID 對於索引的資料庫儲存更有效率，因為它們可以按字典序排序。
 
-您可以透過在 Model 上定義 `newUniqueId` 方法來覆寫給定 Model 的 UUID 產生過程。此外，您可以透過在 Model 上定義 `uniqueIds` 方法來指定哪些欄位應該接收 UUIDs：
+您可以透過在 Model 上定義 `newUniqueId` 方法來覆寫特定 Model 的 UUID 生成過程。此外，您還可以透過在 Model 上定義 `uniqueIds` 方法來指定哪些欄位應該接收 UUID：
 
 ```php
 use Ramsey\Uuid\Uuid;
@@ -257,7 +257,7 @@ public function uniqueIds(): array
 }
 ```
 
-如果您願意，您可以選擇使用「ULIDs」而不是 UUIDs。ULIDs 與 UUIDs 相似；但是，它們的長度僅為 26 個字元。如同有序 UUIDs，ULIDs 可以按字典順序排序，以實現高效的資料庫索引。要使用 ULIDs，您應該在 Model 上使用 `Illuminate\Database\Eloquent\Concerns\HasUlids` trait。您還應該確保 Model 具有 [ULID 對應的主鍵欄位](/docs/{{version}}/migrations#column-method-ulid)：
+如果您願意，您可以選擇使用「ULID」而不是 UUID。ULID 類似於 UUID；但是，它們的長度僅為 26 個字元。與有序 UUID 一樣，ULID 也可以按字典序排序以實現高效的資料庫索引。要使用 ULID，您應該在 Model 上使用 `Illuminate\Database\Eloquent\Concerns\HasUlids` Trait。您還應該確保 Model 具有 [ULID 對應的主鍵欄位](/docs/{{version}}/migrations#column-method-ulid)：
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -278,7 +278,7 @@ $article->id; // "01gd4d3tgrrfqeda94gdbtdk5c"
 <a name="timestamps"></a>
 ### 時間戳記
 
-預設情況下，Eloquent 預期 Model 對應的資料庫資料表上存在 `created_at` 和 `updated_at` 欄位。當 Model 建立或更新時，Eloquent 會自動設定這些欄位的值。如果您不希望這些欄位由 Eloquent 自動管理，您應該在 Model 上定義一個 `$timestamps` 屬性並將其值設定為 `false`：
+預設情況下，Eloquent 預期您的 Model 對應的資料庫資料表上存在 `created_at` 和 `updated_at` 欄位。當 Model 被建立或更新時，Eloquent 將會自動設定這些欄位的值。如果您不希望這些欄位由 Eloquent 自動管理，您應該在 Model 上定義一個值為 `false` 的 `$timestamps` 屬性：
 
 ```php
 <?php
@@ -298,7 +298,7 @@ class Flight extends Model
 }
 ```
 
-如果您需要自訂 Model 時間戳記的格式，請在 Model 上設定 `$dateFormat` 屬性。此屬性決定了日期屬性在資料庫中如何儲存，以及當 Model 序列化為陣列或 JSON 時的格式：
+如果您需要自訂 Model 時間戳記的格式，請在 Model 上設定 `$dateFormat` 屬性。此屬性決定日期屬性如何儲存於資料庫中，以及當 Model 序列化為陣列或 JSON 時的格式：
 
 ```php
 <?php
@@ -330,7 +330,7 @@ class Flight extends Model
 }
 ```
 
-如果您希望在不修改 Model 的 `updated_at` 時間戳記的情況下執行 Model 操作，您可以在 `withoutTimestamps` 方法給定的閉包中對 Model 進行操作：
+如果您希望執行 Model 操作時不修改 Model 的 `updated_at` 時間戳記，您可以在給定 `withoutTimestamps` 方法的閉包中對 Model 執行操作：
 
 ```php
 Model::withoutTimestamps(fn () => $post->increment('reads'));
@@ -339,7 +339,7 @@ Model::withoutTimestamps(fn () => $post->increment('reads'));
 <a name="database-connections"></a>
 ### 資料庫連線
 
-預設情況下，所有 Eloquent Model 都會使用為您的應用程式設定的預設資料庫連線。如果您希望指定與特定 Model 互動時應使用的不同連線，您應該在 Model 上定義 `$connection` 屬性：
+預設情況下，所有 Eloquent Model 都會使用您應用程式配置的預設資料庫連線。如果您希望指定與特定 Model 互動時應使用的不同連線，您應該在 Model 上定義一個 `$connection` 屬性：
 
 ```php
 <?php
@@ -362,7 +362,7 @@ class Flight extends Model
 <a name="default-attribute-values"></a>
 ### 預設屬性值
 
-預設情況下，新實例化的 Model 實例將不包含任何屬性值。如果您想為 Model 的一些屬性定義預設值，可以在 Model 上定義 `$attributes` 屬性。放置在 `$attributes` 陣列中的屬性值，應以其原始的「可儲存」格式呈現，就像它們是剛從資料庫中讀取出來一樣：
+預設情況下，新建立的 Model 實例不會包含任何屬性值。如果您想定義 Model 某些屬性的預設值，您可以在 Model 上定義 `$attributes` 屬性。放置在 `$attributes` 陣列中的屬性值應該是原始的、「可儲存」的格式，就像它們剛從資料庫讀取出來一樣：
 
 ```php
 <?php
@@ -386,11 +386,11 @@ class Flight extends Model
 ```
 
 <a name="configuring-eloquent-strictness"></a>
-### 設定 Eloquent 的嚴謹度
+### 配置 Eloquent 嚴謹性
 
-Laravel 提供了多種方法，讓您可以在各種情況下設定 Eloquent 的行為和「嚴謹度」。
+Laravel 提供了幾種方法，讓您可以在各種情況下配置 Eloquent 的行為與「嚴謹性」。
 
-首先，`preventLazyLoading` 方法接受一個可選的布林引數，用於指示是否應阻止延遲載入 (lazy loading)。例如，您可能只希望在非生產環境中停用延遲載入，這樣即使生產程式碼中意外存在延遲載入的關聯，您的生產環境也能繼續正常運作。通常，此方法應在應用程式的 `AppServiceProvider` 的 `boot` 方法中呼叫：
+首先，`preventLazyLoading` 方法接受一個選用性的布林參數，指示是否應阻止延遲載入 (lazy loading)。例如，您可能只希望在非正式環境中禁用延遲載入，這樣即使在正式環境的程式碼中不小心出現延遲載入的關係，您的正式環境也能繼續正常運作。通常，此方法應在您應用程式的 `AppServiceProvider` 中的 `boot` 方法裡被調用：
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -404,7 +404,7 @@ public function boot(): void
 }
 ```
 
-此外，您可以透過呼叫 `preventSilentlyDiscardingAttributes` 方法，指示 Laravel 在嘗試填充一個不可填充 (unfillable) 屬性時拋出例外。這有助於在本地開發期間，當嘗試設定一個尚未新增到 Model 的 `fillable` 陣列中的屬性時，防止發生意外錯誤。
+此外，您可以透過調用 `preventSilentlyDiscardingAttributes` 方法，指示 Laravel 在嘗試填充無法填充的屬性時拋出例外。這有助於在本地開發期間，當嘗試設定尚未新增到 Model 的 `fillable` 陣列中的屬性時，防止發生意外錯誤：
 
 ```php
 Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
@@ -413,7 +413,7 @@ Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 <a name="retrieving-models"></a>
 ## 擷取 Model
 
-一旦您建立了 Model 及其[關聯的資料庫資料表](/docs/{{version}}/migrations#generating-migrations)，就可以開始從資料庫中擷取資料了。您可以將每個 Eloquent Model 視為一個強大的[查詢產生器](/docs/{{version}}/queries)，讓您能夠流暢地查詢與 Model 相關聯的資料庫資料表。Model 的 `all` 方法將會擷取 Model 關聯資料庫資料表中的所有記錄：
+一旦你建立了一個 Model 及其[關聯的資料庫資料表](/docs/{{version}}/migrations#generating-migrations)，你就可以開始從資料庫中擷取資料了。你可以將每個 Eloquent Model 視為一個強大的[查詢產生器](/docs/{{version}}/queries)，它讓你可以流暢地查詢與 Model 關聯的資料庫資料表。Model 的 `all` 方法將會擷取 Model 關聯資料庫資料表中的所有記錄：
 
 ```php
 use App\Models\Flight;
@@ -423,11 +423,10 @@ foreach (Flight::all() as $flight) {
 }
 ```
 
-
 <a name="building-queries"></a>
-#### 建構查詢
+#### 建立查詢
 
-Eloquent 的 `all` 方法會回傳 Model 資料表中的所有結果。然而，由於每個 Eloquent Model 都作為一個[查詢產生器](/docs/{{version}}/queries)，您可以為查詢添加額外的約束，然後調用 `get` 方法來擷取結果：
+Eloquent 的 `all` 方法會回傳 Model 資料表中的所有結果。然而，由於每個 Eloquent Model 都作為一個[查詢產生器](/docs/{{version}}/queries)，你可以為查詢增加額外的限制，然後呼叫 `get` 方法來擷取結果：
 
 ```php
 $flights = Flight::where('active', 1)
@@ -437,13 +436,12 @@ $flights = Flight::where('active', 1)
 ```
 
 > [!NOTE]
-> 由於 Eloquent Model 是查詢產生器，您應該查閱 Laravel [查詢產生器](/docs/{{version}}/queries)提供的所有方法。在撰寫 Eloquent 查詢時，您可以使用其中任何方法。
-
+> 由於 Eloquent Model 也是查詢產生器，你應該檢閱 Laravel [查詢產生器](/docs/{{version}}/queries)提供的所有方法。在撰寫 Eloquent 查詢時，你可以使用其中任何方法。
 
 <a name="refreshing-models"></a>
 #### 重新整理 Model
 
-如果您已經有一個從資料庫中擷取到的 Eloquent Model 實例，您可以使用 `fresh` 和 `refresh` 方法來「重新整理」Model。`fresh` 方法將會從資料庫中重新擷取 Model。現有的 Model 實例將不會受到影響：
+如果你已經有一個從資料庫中擷取的 Eloquent Model 實例，你可以使用 `fresh` 和 `refresh` 方法來「重新整理」Model。`fresh` 方法將會從資料庫中重新擷取 Model。現有的 Model 實例不會受到影響：
 
 ```php
 $flight = Flight::where('number', 'FR 900')->first();
@@ -451,7 +449,7 @@ $flight = Flight::where('number', 'FR 900')->first();
 $freshFlight = $flight->fresh();
 ```
 
-`refresh` 方法將會使用來自資料庫的新資料重新載入現有的 Model。此外，其所有已載入的關係也會一併重新整理：
+`refresh` 方法將會使用來自資料庫的最新資料來重新建立現有的 Model。此外，所有已載入的關聯也將會重新整理：
 
 ```php
 $flight = Flight::where('number', 'FR 900')->first();
@@ -463,13 +461,12 @@ $flight->refresh();
 $flight->number; // "FR 900"
 ```
 
-
 <a name="collections"></a>
 ### 集合
 
-如我們所見，Eloquent 方法如 `all` 和 `get` 會從資料庫中擷取多筆記錄。然而，這些方法並不會回傳普通的 PHP 陣列。相反地，它會回傳 `Illuminate\Database\Eloquent\Collection` 的實例。
+正如我們所見，Eloquent 方法如 `all` 和 `get` 會從資料庫中擷取多條記錄。然而，這些方法並不會回傳一個普通的 PHP 陣列。相反地，它會回傳一個 `Illuminate\Database\Eloquent\Collection` 的實例。
 
-Eloquent 的 `Collection` 類別擴展了 Laravel 的基礎 `Illuminate\Support\Collection` 類別，該類別提供了[多種有用的方法](/docs/{{version}}/collections#available-methods)來與資料集合互動。例如，`reject` 方法可用於根據調用的閉包結果從集合中移除 Model：
+Eloquent `Collection` 類別繼承了 Laravel 的基礎 `Illuminate\Support\Collection` 類別，該類別提供了[多種實用的方法](/docs/{{version}}/collections#available-methods)來與資料集合互動。例如，`reject` 方法可以用來根據所呼叫閉包的結果，從集合中移除 Model：
 
 ```php
 $flights = Flight::where('destination', 'Paris')->get();
@@ -481,7 +478,7 @@ $flights = $flights->reject(function (Flight $flight) {
 
 除了 Laravel 基礎集合類別提供的方法之外，Eloquent 集合類別還提供了[一些額外的方法](/docs/{{version}}/eloquent-collections#available-methods)，這些方法專門用於與 Eloquent Model 集合互動。
 
-由於 Laravel 的所有集合都實作了 PHP 的可迭代介面，您可以像遍歷陣列一樣遍歷集合：
+由於 Laravel 的所有集合都實現了 PHP 的可迭代介面，你可以像遍歷陣列一樣遍歷集合：
 
 ```php
 foreach ($flights as $flight) {
@@ -489,13 +486,12 @@ foreach ($flights as $flight) {
 }
 ```
 
-
 <a name="chunking-results"></a>
 ### 分批處理結果
 
-如果嘗試透過 `all` 或 `get` 方法載入數萬筆 Eloquent 記錄，您的應用程式可能會耗盡記憶體。為了替代這些方法，可以使用 `chunk` 方法來更有效地處理大量 Model。
+如果你嘗試透過 `all` 或 `get` 方法載入數萬條 Eloquent 記錄，你的應用程式可能會耗盡記憶體。為了避免使用這些方法，`chunk` 方法可以用來更有效地處理大量的 Model。
 
-`chunk` 方法會擷取 Eloquent Model 的子集，並將其傳遞給閉包進行處理。由於每次只擷取當前批次的 Eloquent Model，因此在使用大量 Model 時，`chunk` 方法將顯著減少記憶體使用量：
+`chunk` 方法將會擷取 Eloquent Model 的子集，並將它們傳遞給一個閉包進行處理。由於每次只會擷取當前的 Eloquent Model 區塊，因此在使用大量 Model 時，`chunk` 方法將會顯著減少記憶體使用量：
 
 ```php
 use App\Models\Flight;
@@ -508,9 +504,9 @@ Flight::chunk(200, function (Collection $flights) {
 });
 ```
 
-傳遞給 `chunk` 方法的第一個參數是您希望每個「批次」接收的記錄數。作為第二個參數傳遞的閉包將會對從資料庫中擷取的每個批次執行。每次擷取記錄批次時，都會執行一次資料庫查詢。
+傳遞給 `chunk` 方法的第一個參數是你希望每個「區塊」接收的記錄數。作為第二個參數傳遞的閉包將會針對從資料庫中擷取的每個區塊被呼叫。每次擷取傳遞給閉包的記錄區塊時，都會執行一次資料庫查詢。
 
-如果您正在根據一個在遍歷結果時也會更新的欄位來過濾 `chunk` 方法的結果，則應該使用 `chunkById` 方法。在這些情況下使用 `chunk` 方法可能會導致意外且不一致的結果。在內部，`chunkById` 方法始終會擷取 `id` 欄位大於前一個批次中最後一個 Model 的 Model：
+如果你正在根據一個欄位過濾 `chunk` 方法的結果，並且在遍歷結果時也會更新該欄位，你應該使用 `chunkById` 方法。在這些情況下使用 `chunk` 方法可能會導致意外和不一致的結果。在內部，`chunkById` 方法將會始終擷取 `id` 欄位大於前一個區塊中最後一個 Model 的 Model：
 
 ```php
 Flight::where('departed', true)
@@ -519,7 +515,7 @@ Flight::where('departed', true)
     }, column: 'id');
 ```
 
-由於 `chunkById` 和 `lazyById` 方法會將其自己的「where」條件添加到正在執行的查詢中，因此您通常應該在閉包中[邏輯分組](/docs/{{version}}/queries#logical-grouping)您自己的條件：
+由於 `chunkById` 和 `lazyById` 方法會為正在執行的查詢添加自己的「where」條件，你通常應該在閉包中[邏輯分組](/docs/{{version}}/queries#logical-grouping)自己的條件：
 
 ```php
 Flight::where(function ($query) {
@@ -532,11 +528,10 @@ Flight::where(function ($query) {
 }, column: 'id');
 ```
 
-
 <a name="chunking-using-lazy-collections"></a>
-### 使用惰性集合分批處理
+### 使用 Lazy Collection 分批處理
 
-`lazy` 方法與[ `chunk` 方法](#chunking-results)的工作方式相似，即在幕後它會分批執行查詢。然而，`lazy` 方法不會將每個批次直接傳遞給回調，而是回傳一個扁平化的 Eloquent Model [LazyCollection](/docs/{{version}}/collections#lazy-collections)，這讓您可以將結果作為單一流進行互動：
+`lazy` 方法的工作方式與[ `chunk` 方法](#chunking-results)類似，從底層來看，它會分批執行查詢。然而，`lazy` 方法並不會直接將每個區塊傳遞給回呼，而是回傳一個扁平化的 Eloquent Model [LazyCollection](/docs/{{version}}/collections#lazy-collections)，讓你可以像單一串流一樣與結果互動：
 
 ```php
 use App\Models\Flight;
@@ -546,7 +541,7 @@ foreach (Flight::lazy() as $flight) {
 }
 ```
 
-如果您正在根據一個在遍歷結果時也會更新的欄位來過濾 `lazy` 方法的結果，則應該使用 `lazyById` 方法。在內部，`lazyById` 方法始終會擷取 `id` 欄位大於前一個批次中最後一個 Model 的 Model：
+如果你正在根據一個欄位過濾 `lazy` 方法的結果，並且在遍歷結果時也會更新該欄位，你應該使用 `lazyById` 方法。在內部，`lazyById` 方法將會始終擷取 `id` 欄位大於前一個區塊中最後一個 Model 的 Model：
 
 ```php
 Flight::where('departed', true)
@@ -554,19 +549,19 @@ Flight::where('departed', true)
     ->each->update(['departed' => false]);
 ```
 
-您可以使用 `lazyByIdDesc` 方法根據 `id` 的降序來過濾結果。
+你可以使用 `lazyByIdDesc` 方法，根據 `id` 的降序來過濾結果。
 
 <a name="cursors"></a>
-### 遊標
+### 游標
 
-與 `lazy` 方法類似，`cursor` 方法可用於在遍歷數萬個 Eloquent Model 記錄時，顯著降低應用程式的記憶體消耗。
+與 `lazy` 方法類似，`cursor` 方法可用於在迭代數萬筆 Eloquent Model 記錄時，顯著減少應用程式的記憶體消耗。
 
-`cursor` 方法只會執行單一資料庫查詢；然而，個別的 Eloquent Model 在實際遍歷之前不會被實例化 (hydrated)。因此，在遍歷遊標時，記憶體中一次只會保留一個 Eloquent Model。
+「`cursor` 方法」只會執行一次資料庫查詢；然而，個別的 Eloquent Model 在實際迭代之前不會被具現化 (hydrated)。因此，在迭代游標時，記憶體中只會保留一個 Eloquent Model。
 
 > [!WARNING]
-> 由於 `cursor` 方法在記憶體中一次只保留一個 Eloquent Model，因此它無法預先載入 (eager load) 關聯。如果您需要預先載入關聯，請考慮改用 [the `lazy` method](#chunking-using-lazy-collections)。
+> 由於 `cursor` 方法在記憶體中一次只會保留一個 Eloquent Model，因此它無法預載入 (eager load) 關聯。如果您需要預載入關聯，請考慮使用[「`lazy` 方法」](#chunking-using-lazy-collections)。
 
-在內部，`cursor` 方法使用 PHP 的 [生成器 (generators)](https://www.php.net/manual/en/language.generators.overview.php) 來實作此功能：
+在內部，「`cursor` 方法」使用 PHP [生成器](https://www.php.net/manual/en/language.generators.overview.php)來實現此功能：
 
 ```php
 use App\Models\Flight;
@@ -576,7 +571,7 @@ foreach (Flight::where('destination', 'Zurich')->cursor() as $flight) {
 }
 ```
 
-`cursor` 會回傳一個 `Illuminate\Support\LazyCollection` 實例。[惰性集合 (Lazy collections)](/docs/{{version}}/collections#lazy-collections) 允許您使用典型 Laravel 集合上的許多集合方法，同時一次只載入一個 Model 到記憶體中：
+「`cursor`」回傳一個 `Illuminate\Support\LazyCollection` 實例。[Lazy Collection](/docs/{{version}}/collections#lazy-collections) 允許您使用典型 Laravel 集合上的許多集合方法，同時一次只載入一個 Model 到記憶體中：
 
 ```php
 use App\Models\User;
@@ -590,17 +585,17 @@ foreach ($users as $user) {
 }
 ```
 
-儘管 `cursor` 方法比常規查詢使用的記憶體少得多（因為它一次只在記憶體中保留一個 Eloquent Model），但它最終仍會耗盡記憶體。這是由於 [PHP 的 PDO 驅動程式會在其緩衝區中內部快取所有原始查詢結果](https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php)。如果您正在處理大量的 Eloquent 記錄，請考慮改用 [the `lazy` method](#chunking-using-lazy-collections)。
+儘管「`cursor` 方法」比一般查詢使用的記憶體少得多 (因為它一次只在記憶體中保留一個 Eloquent Model)，但它最終仍會耗盡記憶體。這是[由於 PHP 的 PDO 驅動程式內部會將所有原始查詢結果快取在其緩衝區中](https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php)。如果您正在處理大量 Eloquent 記錄，請考慮使用[「`lazy` 方法」](#chunking-using-lazy-collections)來代替。
 
 <a name="advanced-subqueries"></a>
 ### 進階子查詢
 
 <a name="subquery-selects"></a>
-#### 子查詢選取
+#### 子查詢選擇
 
-Eloquent 也提供進階子查詢 (subquery) 支援，讓您可以透過單一查詢從相關資料表中提取資訊。例如，假設我們有一個航班的 `destinations` (目的地) 資料表和一個前往目的地的 `flights` (航班) 資料表。`flights` 資料表包含一個 `arrived_at` 欄位，表示航班抵達目的地的時間。
+Eloquent 還提供進階的子查詢支援，讓您可以透過單一查詢從關聯資料表中提取資訊。例如，假設我們有一個航班目的地 `destinations` 資料表和一個飛往目的地的 `flights` 資料表。「`flights` 資料表」包含一個 `arrived_at` 欄位，表示航班抵達目的地的時間。
 
-透過查詢產生器 (query builder) 的 `select` 與 `addSelect` 方法提供的子查詢功能，我們可以使用單一查詢選取所有 `destinations` 以及最近抵達該目的地的航班名稱：
+利用查詢建構器 (query builder) 的 `select` 和 `addSelect` 方法提供的子查詢功能，我們可以使用單一查詢選取所有 `destinations` (目的地) 和最近抵達該目的地的航班名稱：
 
 ```php
 use App\Models\Destination;
@@ -616,7 +611,7 @@ return Destination::addSelect(['last_flight' => Flight::select('name')
 <a name="subquery-ordering"></a>
 #### 子查詢排序
 
-此外，查詢產生器 (query builder) 的 `orderBy` 函數支援子查詢。繼續以我們的航班範例為例，我們可以利用此功能，根據上次航班抵達目的地的時間來排序所有目的地。同樣地，這可以在執行單一資料庫查詢時完成：
+此外，查詢建構器 (query builder) 的 `orderBy` 函數支援子查詢。繼續使用我們的航班範例，我們可以利用此功能，根據最後一班航班抵達該目的地的時間來排序所有目的地。同樣地，這可以在執行單一資料庫查詢時完成：
 
 ```php
 return Destination::orderByDesc(
@@ -628,9 +623,9 @@ return Destination::orderByDesc(
 ```
 
 <a name="retrieving-single-models"></a>
-## 擷取單一 Model / 聚合結果
+## 擷取單一 Model / 彙總資料
 
-除了擷取符合指定查詢的所有紀錄之外，您也可以使用 `find`、`first` 或 `firstWhere` 方法來擷取單一紀錄。這些方法並非回傳 Model 集合，而是回傳單一 Model 實例：
+除了擷取符合給定查詢的所有記錄外，您還可以使用 `find`、`first` 或 `firstWhere` 方法來擷取單一記錄。這些方法不會回傳 model 的集合，而是回傳單一 model 實例：
 
 ```php
 use App\Models\Flight;
@@ -645,7 +640,7 @@ $flight = Flight::where('active', 1)->first();
 $flight = Flight::firstWhere('active', 1);
 ```
 
-有時候，如果找不到任何結果，您可能希望執行其他動作。`findOr` 和 `firstOr` 方法將會回傳單一 Model 實例，如果找不到任何結果，則會執行給定的閉包。閉包回傳的值將被視為該方法的結果：
+有時您可能希望在沒有找到結果時執行其他操作。`findOr` 和 `firstOr` 方法將回傳單一 model 實例，如果沒有找到結果，則會執行給定的閉包。閉包所回傳的值將被視為該方法的結果：
 
 ```php
 $flight = Flight::findOr(1, function () {
@@ -661,7 +656,7 @@ $flight = Flight::where('legs', '>', 3)->firstOr(function () {
 <a name="not-found-exceptions"></a>
 #### 找不到例外
 
-有時候，如果找不到 Model，您可能希望拋出例外。這在路由或控制器中特別有用。`findOrFail` 和 `firstOrFail` 方法會擷取查詢的第一個結果；然而，如果找不到結果，則會拋出 `Illuminate\Database\Eloquent\ModelNotFoundException` 例外：
+有時，您可能希望在找不到 model 時拋出例外。這在路由或控制器中特別有用。`findOrFail` 和 `firstOrFail` 方法將擷取查詢的第一個結果；然而，如果沒有找到結果，將會拋出 `Illuminate\Database\Eloquent\ModelNotFoundException` 例外：
 
 ```php
 $flight = Flight::findOrFail(1);
@@ -669,7 +664,7 @@ $flight = Flight::findOrFail(1);
 $flight = Flight::where('legs', '>', 3)->firstOrFail();
 ```
 
-如果未捕捉到 `ModelNotFoundException`，則會自動向用戶端傳送 404 HTTP 回應：
+如果 `ModelNotFoundException` 未被捕捉，則會自動向客戶端回傳 404 HTTP 回應：
 
 ```php
 use App\Models\Flight;
@@ -683,9 +678,9 @@ Route::get('/api/flights/{id}', function (string $id) {
 <a name="retrieving-or-creating-models"></a>
 ### 擷取或建立 Model
 
-`firstOrCreate` 方法會嘗試使用給定的欄位/值對來尋找資料庫紀錄。如果在資料庫中找不到該 Model，則會插入一條新紀錄，其屬性會合併第一個陣列引數與選用的第二個陣列引數。
+`firstOrCreate` 方法將嘗試使用給定的欄位/值對來定位資料庫記錄。如果資料庫中找不到 model，將插入一條記錄，其屬性是將第一個陣列引數與可選的第二個陣列引數合併後的結果。
 
-`firstOrNew` 方法，與 `firstOrCreate` 類似，會嘗試在資料庫中尋找符合給定屬性的紀錄。然而，如果找不到 Model，則會回傳一個新的 Model 實例。請注意，`firstOrNew` 回傳的 Model 尚未持久化到資料庫。您需要手動呼叫 `save` 方法來將其持久化：
+`firstOrNew` 方法與 `firstOrCreate` 類似，它將嘗試在資料庫中定位符合給定屬性的記錄。然而，如果找不到 model，將回傳一個新的 model 實例。請注意，`firstOrNew` 回傳的 model 尚未被持久化到資料庫中。您需要手動呼叫 `save` 方法來持久化它：
 
 ```php
 use App\Models\Flight;
@@ -715,9 +710,9 @@ $flight = Flight::firstOrNew(
 
 
 <a name="retrieving-aggregates"></a>
-### 擷取聚合結果
+### 擷取彙總資料
 
-在與 Eloquent Model 互動時，您也可以使用 Laravel [查詢產生器](/docs/{{version}}/queries) 提供的 `count`、`sum`、`max` 和其他 [聚合方法](/docs/{{version}}/queries#aggregates)。如您所料，這些方法會回傳純量值，而非 Eloquent Model 實例：
+在與 Eloquent model 互動時，您還可以使用 Laravel [查詢建構器](/docs/{{version}}/queries)提供的 `count`、`sum`、`max` 和其他[彙總方法](/docs/{{version}}/queries#aggregates)。正如您所預期的，這些方法回傳的是一個純量值，而不是 Eloquent model 實例：
 
 ```php
 $count = Flight::where('active', 1)->count();
@@ -726,13 +721,13 @@ $max = Flight::where('active', 1)->max('price');
 ```
 
 <a name="inserting-and-updating-models"></a>
-## 新增與更新 Model
+## 插入與更新 Model
 
 
 <a name="inserts"></a>
-### 新增
+### 插入
 
-當然，使用 Eloquent 時，我們不只從資料庫擷取 Model。我們還需要新增記錄。幸運的是，Eloquent 讓這一切變得簡單。若要新增記錄到資料庫，您應該實例化一個新的 Model 實例並設定 Model 的屬性。然後，呼叫 Model 實例的 `save` 方法：
+當然，在使用 Eloquent 時，我們不只需要從資料庫中擷取 Model。我們也需要插入新的紀錄。值得慶幸的是，Eloquent 讓這一切變得簡單。若要插入一筆新的資料到資料庫中，您應該先實例化一個新的 Model 實例，並設定 Model 的屬性。然後，呼叫該 Model 實例的 `save` 方法：
 
 ```php
 <?php
@@ -763,9 +758,9 @@ class FlightController extends Controller
 }
 ```
 
-在此範例中，我們將傳入 HTTP 請求的 `name` 欄位指派給 `App\Models\Flight` Model 實例的 `name` 屬性。當我們呼叫 `save` 方法時，記錄將會新增到資料庫。Model 的 `created_at` 和 `updated_at` 時間戳記在呼叫 `save` 方法時將會自動設定，因此無需手動設定。
+在此範例中，我們將傳入 HTTP 請求的 `name` 欄位指派給 `App\Models\Flight` Model 實例的 `name` 屬性。當我們呼叫 `save` 方法時，一筆紀錄將會被插入到資料庫中。當 `save` 方法被呼叫時，Model 的 `created_at` 和 `updated_at` 時間戳記將會自動設定，因此不需要手動設定它們。
 
-或者，您可以使用 `create` 方法，以單一 PHP 語句來「儲存」一個新的 Model。`create` 方法會傳回新增的 Model 實例給您：
+此外，您可以使用 `create` 方法，透過單一 PHP 陳述式來「儲存」一個新的 Model。`create` 方法將會回傳已插入的 Model 實例給您：
 
 ```php
 use App\Models\Flight;
@@ -775,13 +770,13 @@ $flight = Flight::create([
 ]);
 ```
 
-然而，在使用 `create` 方法之前，您需要為您的 Model 類別指定 `fillable` 或 `guarded` 屬性。這些屬性是必需的，因為所有 Eloquent Model 預設都受到批量指派 (mass assignment) 漏洞的保護。若要深入了解批量指派，請參閱[批量指派文件](#mass-assignment)。
+然而，在使用 `create` 方法之前，您需要為 Model 類別指定 `fillable` 或 `guarded` 屬性。這些屬性是必要的，因為所有 Eloquent Model 預設都受到大量指派 (mass assignment) 漏洞的保護。若要了解更多關於大量指派的資訊，請參閱 [大量指派文件](#mass-assignment)。
 
 
 <a name="updates"></a>
 ### 更新
 
-`save` 方法也可以用於更新資料庫中已存在的 Model。若要更新 Model，您應該擷取它並設定您希望更新的任何屬性。然後，您應該呼叫 Model 的 `save` 方法。同樣地，`updated_at` 時間戳記將會自動更新，因此無需手動設定其值：
+`save` 方法也可以用於更新資料庫中已存在的 Model。若要更新一個 Model，您應該先擷取它，然後設定您想更新的任何屬性。接著，您應該呼叫 Model 的 `save` 方法。同樣地，`updated_at` 時間戳記將會自動更新，因此不需要手動設定其值：
 
 ```php
 use App\Models\Flight;
@@ -793,9 +788,9 @@ $flight->name = 'Paris to London';
 $flight->save();
 ```
 
-有時，您可能需要更新現有的 Model，或者在沒有匹配 Model 存在時建立一個新的 Model。與 `firstOrCreate` 方法一樣，`updateOrCreate` 方法會持久化 Model，因此無需手動呼叫 `save` 方法。
+有時候，您可能需要更新一個已存在的 Model，或者在沒有匹配 Model 時建立一個新的 Model。與 `firstOrCreate` 方法類似，`updateOrCreate` 方法會持久化 Model，因此不需要手動呼叫 `save` 方法。
 
-在下面的範例中，如果存在一個 `departure` 位置為 `Oakland` 且 `destination` 位置為 `San Diego` 的 Flight，其 `price` 和 `discounted` 欄位將會更新。如果不存在這樣的 Flight，則會建立一個新的 Flight，其屬性是將第一個陣列引數與第二個陣列引數合併後的結果：
+在以下範例中，如果存在一個 `departure` 地點為 `Oakland` 且 `destination` 地點為 `San Diego` 的航班，其 `price` 和 `discounted` 欄位將會被更新。如果不存在這樣的航班，則會建立一個新的航班，其屬性是將第一個引數陣列與第二個引數陣列合併後的結果：
 
 ```php
 $flight = Flight::updateOrCreate(
@@ -804,7 +799,7 @@ $flight = Flight::updateOrCreate(
 );
 ```
 
-當使用諸如 `firstOrCreate` 或 `updateOrCreate` 等方法時，您可能不知道是建立了新的 Model 還是更新了現有的 Model。`wasRecentlyCreated` 屬性會指示 Model 是否在其當前生命週期中被建立：
+當使用 `firstOrCreate` 或 `updateOrCreate` 等方法時，您可能不知道是建立了一個新的 Model 還是更新了一個已存在的 Model。`wasRecentlyCreated` 屬性會指示 Model 是否在其當前生命週期內被建立：
 
 ```php
 $flight = Flight::updateOrCreate(
@@ -818,9 +813,9 @@ if ($flight->wasRecentlyCreated) {
 
 
 <a name="mass-updates"></a>
-#### 批量更新
+#### 大量更新
 
-更新也可以針對符合給定查詢的 Model 進行。在此範例中，所有 `active` 且 `destination` 為 `San Diego` 的 Flight 都將被標記為延誤：
+更新也可以針對符合特定查詢的 Model 執行。在此範例中，所有 `active` 且 `destination` 為 `San Diego` 的航班將會被標記為延遲：
 
 ```php
 Flight::where('active', 1)
@@ -828,18 +823,18 @@ Flight::where('active', 1)
     ->update(['delayed' => 1]);
 ```
 
-`update` 方法預期一個由欄位與值組成的陣列，代表應更新的欄位。`update` 方法會傳回受影響的列數。
+`update` 方法預期一個包含欄位與值對的陣列，代表應更新的欄位。`update` 方法會回傳受影響的行數。
 
 > [!WARNING]
-> 當透過 Eloquent 發出批量更新時，`saving`、`saved`、`updating` 和 `updated` Model 事件將不會針對更新後的 Model 觸發。這是因為在發出批量更新時，Model 從未實際被擷取。
+> 當透過 Eloquent 發出大量更新時，`saving`、`saved`、`updating` 和 `updated` 等 Model 事件將不會針對已更新的 Model 觸發。這是因為在執行大量更新時，Model 從未被實際擷取。
 
 
 <a name="examining-attribute-changes"></a>
 #### 檢查屬性變更
 
-Eloquent 提供了 `isDirty`、`isClean` 和 `wasChanged` 方法來檢查 Model 的內部狀態，並判斷其屬性自 Model 原始擷取以來是否發生了變化。
+Eloquent 提供 `isDirty`、`isClean` 和 `wasChanged` 方法，以檢查 Model 的內部狀態，並判斷其屬性自 Model 最初被擷取以來發生了哪些變化。
 
-`isDirty` 方法判斷 Model 的任何屬性自擷取以來是否已更改。您可以將特定的屬性名稱或屬性陣列傳遞給 `isDirty` 方法，以判斷任何屬性是否「髒」。`isClean` 方法將判斷屬性自 Model 擷取以來是否保持不變。此方法也接受一個可選的屬性引數：
+`isDirty` 方法會判斷 Model 的任何屬性是否自 Model 擷取以來已被修改。您可以傳遞特定的屬性名稱或屬性陣列給 `isDirty` 方法，以判斷這些屬性中是否有任何一個是「變更過的 (dirty)」。`isClean` 方法會判斷某個屬性是否自 Model 擷取以來保持未變。此方法也接受一個可選的屬性引數：
 
 ```php
 use App\Models\User;
@@ -868,7 +863,7 @@ $user->isDirty(); // false
 $user->isClean(); // true
 ```
 
-`wasChanged` 方法判斷在當前請求週期中，Model 最後一次儲存時是否有任何屬性被更改。如果需要，您可以傳遞一個屬性名稱來查看特定屬性是否被更改：
+`wasChanged` 方法會判斷在當前請求生命週期內，Model 上次儲存時是否有任何屬性被變更。如有需要，您可以傳遞屬性名稱來查看特定屬性是否已變更：
 
 ```php
 $user = User::create([
@@ -888,7 +883,7 @@ $user->wasChanged('first_name'); // false
 $user->wasChanged(['first_name', 'title']); // true
 ```
 
-`getOriginal` 方法傳回一個陣列，其中包含 Model 的原始屬性，無論 Model 自擷取以來發生了什麼變化。如果需要，您可以傳遞一個特定的屬性名稱來獲取該屬性的原始值：
+無論 Model 自擷取以來發生了任何變化，`getOriginal` 方法都會回傳一個包含 Model 原始屬性的陣列。如有需要，您可以傳遞特定的屬性名稱來取得特定屬性的原始值：
 
 ```php
 $user = User::find(1);
@@ -903,7 +898,7 @@ $user->getOriginal('name'); // John
 $user->getOriginal(); // Array of original attributes...
 ```
 
-`getChanges` 方法傳回一個陣列，其中包含 Model 最後一次儲存時更改的屬性，而 `getPrevious` 方法傳回一個陣列，其中包含 Model 最後一次儲存之前的原始屬性值：
+`getChanges` 方法會回傳一個包含 Model 上次儲存時變更的屬性陣列，而 `getPrevious` 方法則會回傳一個包含 Model 上次儲存前的原始屬性值陣列：
 
 ```php
 $user = User::find(1);
@@ -936,9 +931,9 @@ $user->getPrevious();
 ```
 
 <a name="mass-assignment"></a>
-### 批量指派
+### 大量指派
 
-您可以使用 `create` 方法，以單一 PHP 語句「儲存」新的 Model。此方法會回傳已插入的 Model 實例：
+您可以使用 `create` 方法，以單一 PHP 敘述「儲存」一個新的 Model。此方法會回傳新插入的 Model 實例：
 
 ```php
 use App\Models\Flight;
@@ -948,11 +943,11 @@ $flight = Flight::create([
 ]);
 ```
 
-然而，在使用 `create` 方法之前，您需要在您的 Model 類別上指定 `fillable` 或 `guarded` 屬性。這些屬性是必需的，因為所有 Eloquent Model 預設都受到批量指派漏洞的保護。
+然而，在使用 `create` 方法之前，您需要先在 Model 類別上指定 `fillable` 或 `guarded` 屬性。這些屬性是必要的，因為所有 Eloquent Model 預設都受到大量指派漏洞的保護。
 
-當使用者傳入非預期的 HTTP 請求欄位，並且該欄位改變了資料庫中您不希望被改變的欄位時，就會發生批量指派漏洞。例如，惡意使用者可能會透過 HTTP 請求傳送 `is_admin` 參數，然後將該參數傳遞給您 Model 的 `create` 方法，從而允許該使用者將自己提升為管理員。
+當使用者傳入非預期的 HTTP 請求欄位，且該欄位更改了您不希望被更改的資料庫欄位時，就會發生大量指派漏洞。舉例來說，惡意使用者可能會透過 HTTP 請求傳送 `is_admin` 參數，然後該參數被傳遞到 Model 的 `create` 方法中，允許該使用者將自己提升為管理員。
 
-因此，首先您應該定義哪些 Model 屬性可以批量指派。您可以透過 Model 上的 `$fillable` 屬性來實現。例如，讓我們將 `Flight` Model 的 `name` 屬性設定為可批量指派：
+因此，首先您應該定義哪些 Model 屬性允許大量指派。您可以使用 Model 上的 `$fillable` 屬性來達成此目的。例如，讓 `Flight` Model 的 `name` 屬性允許大量指派：
 
 ```php
 <?php
@@ -972,22 +967,23 @@ class Flight extends Model
 }
 ```
 
-一旦您指定了哪些屬性可以批量指派，您就可以使用 `create` 方法在資料庫中插入新紀錄。`create` 方法會回傳新建立的 Model 實例：
+一旦您指定了哪些屬性允許大量指派，您就可以使用 `create` 方法在資料庫中插入新記錄。`create` 方法會回傳新建立的 Model 實例：
 
 ```php
 $flight = Flight::create(['name' => 'London to Paris']);
 ```
 
-如果您已經有一個 Model 實例，您可以使用 `fill` 方法以屬性陣列填充它：
+如果您已經有一個 Model 實例，您可以使用 `fill` 方法來填充其屬性陣列：
 
 ```php
 $flight->fill(['name' => 'Amsterdam to Frankfurt']);
 ```
 
-<a name="mass-assignment-json-columns"></a>
-#### 批量指派與 JSON 欄位
 
-在指派 JSON 欄位時，每個欄位的可批量指派鍵都必須在 Model 的 `$fillable` 陣列中指定。為了安全性，Laravel 不支援在使用 `guarded` 屬性時更新巢狀 JSON 屬性：
+<a name="mass-assignment-json-columns"></a>
+#### 大量指派與 JSON 欄位
+
+在指派 JSON 欄位時，每個欄位的可大量指派鍵必須在 Model 的 `$fillable` 陣列中指定。為了安全性，Laravel 在使用 `guarded` 屬性時不支援更新巢狀 JSON 屬性：
 
 ```php
 /**
@@ -1000,10 +996,11 @@ protected $fillable = [
 ];
 ```
 
-<a name="allowing-mass-assignment"></a>
-#### 允許批量指派
 
-如果您想讓所有屬性都可以批量指派，您可以將 Model 的 `$guarded` 屬性定義為一個空陣列。如果您選擇解除 Model 的保護，則應該特別注意始終手動建立傳遞給 Eloquent 的 `fill`、`create` 和 `update` 方法的陣列：
+<a name="allowing-mass-assignment"></a>
+#### 允許大量指派
+
+如果您想讓所有屬性都允許大量指派，您可以將 Model 的 `$guarded` 屬性定義為一個空陣列。如果您選擇取消保護 Model，則應該特別注意始終手動建構傳遞給 Eloquent 的 `fill`、`create` 和 `update` 方法的陣列：
 
 ```php
 /**
@@ -1014,12 +1011,13 @@ protected $fillable = [
 protected $guarded = [];
 ```
 
+
 <a name="mass-assignment-exceptions"></a>
-#### 批量指派例外
+#### 大量指派例外
 
-預設情況下，在執行批量指派操作時，未包含在 `$fillable` 陣列中的屬性會被靜默地丟棄。在正式環境中，這是預期的行為；然而，在本地開發期間，這可能會導致 Model 變更未生效的困惑。
+預設情況下，執行大量指派操作時，未包含在 `$fillable` 陣列中的屬性會被靜默丟棄。在正式環境中，這是預期的行為；然而，在本地開發期間，這可能會導致 Model 更改未生效而產生困惑。
 
-如果您願意，可以透過呼叫 `preventSilentlyDiscardingAttributes` 方法，指示 Laravel 在嘗試填充不可填充的屬性時拋出例外。通常，此方法應在應用程式 `AppServiceProvider` 類別的 `boot` 方法中調用：
+如果您希望，可以透過呼叫 `preventSilentlyDiscardingAttributes` 方法，指示 Laravel 在嘗試填充不可填充的屬性時拋出例外。通常，此方法應在應用程式 `AppServiceProvider` 類別的 `boot` 方法中調用：
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -1033,10 +1031,11 @@ public function boot(): void
 }
 ```
 
-<a name="upserts"></a>
-### Upsert
 
-Eloquent 的 `upsert` 方法可用於在單一原子操作中更新或建立記錄。該方法的第一個參數包含要插入或更新的值，第二個參數列出在關聯資料表中唯一識別記錄的欄位。該方法的第三個也是最後一個參數是一個欄位陣列，如果資料庫中已經存在匹配的記錄，則這些欄位將被更新。如果 Model 上啟用時間戳記，`upsert` 方法會自動設定 `created_at` 和 `updated_at` 時間戳記：
+<a name="upserts"></a>
+### 更新插入
+
+Eloquent 的 `upsert` 方法可用於在單一原子操作中更新或建立記錄。該方法的第一個引數包含要插入或更新的值，而第二個引數列出了在關聯資料表中唯一識別記錄的欄位。該方法的第三個也是最後一個引數是一個陣列，包含如果資料庫中已存在匹配記錄時應更新的欄位。如果 Model 上啟用了時間戳記，`upsert` 方法會自動設定 `created_at` 和 `updated_at` 時間戳記：
 
 ```php
 Flight::upsert([
@@ -1046,12 +1045,12 @@ Flight::upsert([
 ```
 
 > [!WARNING]
-> 除 SQL Server 外，所有資料庫都要求 `upsert` 方法的第二個參數中的欄位具有「主鍵」或「唯一」索引。此外，MariaDB 和 MySQL 資料庫驅動程式會忽略 `upsert` 方法的第二個參數，並始終使用資料表的主鍵和唯一索引來偵測現有記錄。
+> 除 SQL Server 外的所有資料庫都要求 `upsert` 方法第二個引數中的欄位必須具備「主鍵」或「唯一」索引。此外，MariaDB 和 MySQL 資料庫驅動會忽略 `upsert` 方法的第二個引數，並始終使用資料表的「主鍵」和「唯一」索引來檢測現有記錄。
 
 <a name="deleting-models"></a>
 ## 刪除 Model
 
-若要刪除 Model，您可以對 Model 實例呼叫 `delete` 方法：
+要刪除 Model，您可以在 Model 實例上呼叫 `delete` 方法：
 
 ```php
 use App\Models\Flight;
@@ -1063,9 +1062,9 @@ $flight->delete();
 
 
 <a name="deleting-an-existing-model-by-its-primary-key"></a>
-#### 依主鍵刪除現有 Model
+#### 透過主鍵刪除現有 Model
 
-在上面的範例中，我們在呼叫 `delete` 方法之前，先從資料庫中擷取 Model。然而，如果您知道 Model 的主鍵，您可以透過呼叫 `destroy` 方法，而無需明確擷取 Model 即可刪除 Model。除了接受單一主鍵之外，`destroy` 方法還可以接受多個主鍵、一個主鍵陣列或一個 [集合](/docs/{{version}}/collections) 的主鍵：
+在上述範例中，我們在呼叫 `delete` 方法之前從資料庫中擷取 Model。然而，如果您知道 Model 的主鍵，您可以透過呼叫 `destroy` 方法，不需明確擷取 Model 即可刪除。除了接受單一主鍵外，`destroy` 方法還可接受多個主鍵、主鍵陣列，或是主鍵的 [collection](/docs/{{version}}/collections)：
 
 ```php
 Flight::destroy(1);
@@ -1077,39 +1076,39 @@ Flight::destroy([1, 2, 3]);
 Flight::destroy(collect([1, 2, 3]));
 ```
 
-如果您正在使用 [軟刪除的 Model](#soft-deleting)，您可以透過 `forceDestroy` 方法永久刪除 Model：
+如果您正在使用 [軟刪除 Model](#soft-deleting)，您可以透過 `forceDestroy` 方法永久刪除 Model：
 
 ```php
 Flight::forceDestroy(1);
 ```
 
 > [!WARNING]
-> `destroy` 方法會單獨載入每個 Model 並呼叫 `delete` 方法，以便正確地為每個 Model 觸發 `deleting` 和 `deleted` 事件。
+> `destroy` 方法會單獨載入每個 Model 並呼叫 `delete` 方法，以便為每個 Model 正確地派發 `deleting` 和 `deleted` 事件。
 
 
 <a name="deleting-models-using-queries"></a>
-#### 使用查詢來刪除 Model
+#### 透過查詢刪除 Model
 
-當然，您可以建立一個 Eloquent 查詢來刪除所有符合您查詢條件的 Model。在此範例中，我們將刪除所有標記為非活動狀態的航班。與批量更新一樣，批量刪除也不會為已刪除的 Model 觸發 Model 事件：
+當然，您可以建立一個 Eloquent 查詢來刪除所有符合查詢條件的 Model。在此範例中，我們將刪除所有標記為非活動狀態的航班。如同大量更新，大量刪除將不會為被刪除的 Model 派發 Model 事件：
 
 ```php
 $deleted = Flight::where('active', 0)->delete();
 ```
 
-若要刪除資料表中的所有 Model，您應該在不添加任何條件的情況下執行查詢：
+若要刪除資料表中的所有 Model，您應該執行一個不帶任何條件的查詢：
 
 ```php
 $deleted = Flight::query()->delete();
 ```
 
 > [!WARNING]
-> 當透過 Eloquent 執行批量刪除語句時，`deleting` 和 `deleted` Model 事件將不會針對已刪除的 Model 觸發。這是因為在執行刪除語句時，Model 從未實際被擷取。
+> 當透過 Eloquent 執行大量刪除語句時，`deleting` 和 `deleted` Model 事件將不會為被刪除的 Model 派發。這是因為在執行刪除語句時，Model 從未實際被擷取。
 
 
 <a name="soft-deleting"></a>
 ### 軟刪除
 
-除了實際從資料庫中刪除記錄之外，Eloquent 還可以「軟刪除」Model。當 Model 被軟刪除時，它們並不會實際從資料庫中移除。相反地，Model 上會設定一個 `deleted_at` 屬性，指示 Model 被「刪除」的日期和時間。若要為 Model 啟用軟刪除，請將 `Illuminate\Database\Eloquent\SoftDeletes` trait 新增至 Model：
+除了實際從資料庫中移除記錄之外，Eloquent 還可以「軟刪除」Model。當 Model 被軟刪除時，它們並未實際從資料庫中移除。相反地，Model 上會設定一個 `deleted_at` 屬性，指示 Model 被「刪除」的日期和時間。要為 Model 啟用軟刪除，請將 `Illuminate\Database\Eloquent\SoftDeletes` Trait 加入 Model：
 
 ```php
 <?php
@@ -1126,9 +1125,9 @@ class Flight extends Model
 ```
 
 > [!NOTE]
-> `SoftDeletes` trait 會自動將 `deleted_at` 屬性轉換為 `DateTime` / `Carbon` 實例。
+> `SoftDeletes` Trait 將自動為您將 `deleted_at` 屬性轉換為 `DateTime` / `Carbon` 實例。
 
-您也應該將 `deleted_at` 欄位新增至您的資料庫資料表。Laravel [資料表結構產生器](/docs/{{version}}/migrations) 包含一個協助方法來建立此欄位：
+您還應該在資料庫資料表中新增 `deleted_at` 欄位。Laravel 的 [schema builder](/docs/{{version}}/migrations) 包含一個輔助方法來建立此欄位：
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -1143,7 +1142,7 @@ Schema::table('flights', function (Blueprint $table) {
 });
 ```
 
-現在，當您在 Model 上呼叫 `delete` 方法時，`deleted_at` 欄位將會設定為目前的日期和時間。然而，Model 的資料庫記錄將會保留在資料表中。當查詢使用軟刪除的 Model 時，軟刪除的 Model 將會自動從所有查詢結果中排除。
+現在，當您在 Model 上呼叫 `delete` 方法時，`deleted_at` 欄位將被設定為目前的日期和時間。然而，Model 的資料庫記錄將會保留在資料表中。當查詢使用軟刪除的 Model 時，軟刪除的 Model 將自動從所有查詢結果中排除。
 
 若要判斷給定的 Model 實例是否已被軟刪除，您可以使用 `trashed` 方法：
 
@@ -1157,13 +1156,13 @@ if ($flight->trashed()) {
 <a name="restoring-soft-deleted-models"></a>
 #### 復原軟刪除的 Model
 
-有時您可能希望「復原」一個軟刪除的 Model。若要復原軟刪除的 Model，您可以對 Model 實例呼叫 `restore` 方法。`restore` 方法會將 Model 的 `deleted_at` 欄位設定為 `null`：
+有時您可能希望「取消刪除」一個軟刪除的 Model。若要復原一個軟刪除的 Model，您可以在 Model 實例上呼叫 `restore` 方法。`restore` 方法會將 Model 的 `deleted_at` 欄位設定為 `null`：
 
 ```php
 $flight->restore();
 ```
 
-您也可以在查詢中使用 `restore` 方法來復原多個 Model。同樣地，與其他「批量」操作一樣，這不會為已復原的 Model 觸發任何 Model 事件：
+您也可以在查詢中使用 `restore` 方法來復原多個 Model。同樣地，如同其他「大量」操作，這將不會為被復原的 Model 派發任何 Model 事件：
 
 ```php
 Flight::withTrashed()
@@ -1171,7 +1170,7 @@ Flight::withTrashed()
     ->restore();
 ```
 
-`restore` 方法也可以在建立 [關聯](/docs/{{version}}/eloquent-relationships) 查詢時使用：
+`restore` 方法也可以在建構 [關聯](/docs/{{version}}/eloquent-relationships) 查詢時使用：
 
 ```php
 $flight->history()->restore();
@@ -1181,13 +1180,13 @@ $flight->history()->restore();
 <a name="permanently-deleting-models"></a>
 #### 永久刪除 Model
 
-有時您可能需要真正從資料庫中移除 Model。您可以使用 `forceDelete` 方法來永久從資料庫資料表中移除軟刪除的 Model：
+有時您可能需要真正地從資料庫中移除 Model。您可以使用 `forceDelete` 方法從資料庫資料表中永久移除軟刪除的 Model：
 
 ```php
 $flight->forceDelete();
 ```
 
-您也可以在建立 Eloquent 關聯查詢時使用 `forceDelete` 方法：
+您也可以在建構 Eloquent 關聯查詢時使用 `forceDelete` 方法：
 
 ```php
 $flight->history()->forceDelete();
@@ -1201,7 +1200,7 @@ $flight->history()->forceDelete();
 <a name="including-soft-deleted-models"></a>
 #### 包含軟刪除的 Model
 
-如上所述，軟刪除的 Model 將會自動從查詢結果中排除。然而，您可以透過在查詢上呼叫 `withTrashed` 方法，強制將軟刪除的 Model 包含在查詢結果中：
+如前所述，軟刪除的 Model 將自動從查詢結果中排除。然而，您可以透過在查詢上呼叫 `withTrashed` 方法，強制將軟刪除的 Model 包含在查詢結果中：
 
 ```php
 use App\Models\Flight;
@@ -1211,7 +1210,7 @@ $flights = Flight::withTrashed()
     ->get();
 ```
 
-`withTrashed` 方法也可以在建立 [關聯](/docs/{{version}}/eloquent-relationships) 查詢時呼叫：
+`withTrashed` 方法也可以在建構 [關聯](/docs/{{version}}/eloquent-relationships) 查詢時使用：
 
 ```php
 $flight->history()->withTrashed()->get();
@@ -1219,9 +1218,9 @@ $flight->history()->withTrashed()->get();
 
 
 <a name="retrieving-only-soft-deleted-models"></a>
-#### 僅擷取軟刪除的 Model
+#### 只擷取軟刪除的 Model
 
-`onlyTrashed` 方法將**僅限**擷取軟刪除的 Model：
+`onlyTrashed` 方法將**只**擷取軟刪除的 Model：
 
 ```php
 $flights = Flight::onlyTrashed()
@@ -1232,7 +1231,7 @@ $flights = Flight::onlyTrashed()
 <a name="pruning-models"></a>
 ## 修剪 Model
 
-有時您可能希望定期刪除不再需要的 Model。為此，您可以將 `Illuminate\Database\Eloquent\Prunable` 或 `Illuminate\Database\Eloquent\MassPrunable` Trait 新增至您希望定期修剪的 Model 中。將其中一個 Trait 新增至 Model 後，實作一個 `prunable` 方法，此方法會回傳一個 Eloquent 查詢建構器，用來解析不再需要的 Model：
+有時候，您可能會想要定期刪除不再需要的 Model。為此，您可以將 `Illuminate\Database\Eloquent\Prunable` 或 `Illuminate\Database\Eloquent\MassPrunable` Trait 加入到您想要定期修剪的 Model 中。將其中一個 Trait 加入 Model 後，實作一個 `prunable` 方法，此方法會回傳一個 Eloquent 查詢建構器，用於解析不再需要的 Model：
 
 ```php
 <?php
@@ -1252,12 +1251,12 @@ class Flight extends Model
      */
     public function prunable(): Builder
     {
-        return static::where('created_at', '<=', now()->subMonth());
+        return static::where('created_at', '<=', now()->minus(months: 1));
     }
 }
 ```
 
-當將 Model 標記為 `Prunable` 時，您也可以在 Model 上定義一個 `pruning` 方法。此方法將在 Model 刪除之前被呼叫。此方法可用於在 Model 永久從資料庫中移除之前，刪除與 Model 相關聯的任何額外資源，例如儲存的檔案：
+將 Model 標記為 `Prunable` 時，您也可以在 Model 中定義一個 `pruning` 方法。這個方法會在 Model 刪除之前被呼叫。這個方法對於在 Model 從資料庫中永久移除之前，刪除任何與該 Model 相關聯的額外資源 (例如儲存的檔案) 非常有用：
 
 ```php
 /**
@@ -1269,7 +1268,7 @@ protected function pruning(): void
 }
 ```
 
-設定完可修剪的 Model 後，您應該在應用程式的 `routes/console.php` 檔案中排程 `model:prune` Artisan 指令。您可以自由選擇此指令執行的適當時間間隔：
+設定好可修剪的 Model 後，您應該在應用程式的 `routes/console.php` 檔案中安排 `model:prune` Artisan 命令。您可以自由選擇此命令應執行的適當間隔：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -1277,7 +1276,7 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('model:prune')->daily();
 ```
 
-在幕後，`model:prune` 指令將自動偵測應用程式 `app/Models` 目錄中的「Prunable」Model。如果您的 Model 位於不同的位置，您可以使用 `--model` 選項來指定 Model 的類別名稱：
+在幕後，`model:prune` 命令會自動偵測應用程式 `app/Models` 目錄中的「Prunable」Model。如果您的 Model 位於不同的位置，您可以使用 `--model` 選項來指定 Model 類別名稱：
 
 ```php
 Schedule::command('model:prune', [
@@ -1293,7 +1292,7 @@ Schedule::command('model:prune', [
 ])->daily();
 ```
 
-您可以使用 `--pretend` 選項執行 `model:prune` 指令來測試您的 `prunable` 查詢。在模擬時，`model:prune` 指令只會報告如果實際執行該指令將會修剪多少筆記錄：
+您可以透過執行帶有 `--pretend` 選項的 `model:prune` 命令來測試您的 `prunable` 查詢。在模擬模式下，`model:prune` 命令只會報告如果實際執行該命令會修剪多少筆記錄：
 
 ```shell
 php artisan model:prune --pretend
@@ -1305,7 +1304,7 @@ php artisan model:prune --pretend
 <a name="mass-pruning"></a>
 #### 批量修剪
 
-當 Model 被標記為 `Illuminate\Database\Eloquent\MassPrunable` Trait 時，Model 會使用批量刪除查詢從資料庫中刪除。因此，`pruning` 方法將不會被呼叫，`deleting` 和 `deleted` Model 事件也不會被派發。這是因為在刪除之前 Model 從未實際被擷取，從而使修剪過程更加高效：
+當 Model 被標記為 `Illuminate\Database\Eloquent\MassPrunable` Trait 時，Model 會使用批量刪除查詢從資料庫中刪除。因此，`pruning` 方法將不會被呼叫，`deleting` 和 `deleted` Model 事件也不會被分派。這是因為在刪除之前 Model 從未實際被擷取，從而使修剪過程更加高效：
 
 ```php
 <?php
@@ -1325,7 +1324,7 @@ class Flight extends Model
      */
     public function prunable(): Builder
     {
-        return static::where('created_at', '<=', now()->subMonth());
+        return static::where('created_at', '<=', now()->minus(months: 1));
     }
 }
 ```
@@ -1333,7 +1332,7 @@ class Flight extends Model
 <a name="replicating-models"></a>
 ## 複製 Model
 
-您可以使用 `replicate` 方法建立現有 Model 實例的未儲存副本。當您擁有多個共用許多相同屬性的 Model 實例時，此方法特別有用：
+您可以使用 `replicate` 方法來建立現有 Model 實例的未儲存副本。當您有多個 Model 實例共享許多相同屬性時，這個方法特別有用：
 
 ```php
 use App\Models\Address;
@@ -1376,13 +1375,13 @@ $flight = $flight->replicate([
 <a name="global-scopes"></a>
 ### 全域 Scope
 
-全域 Scope 讓您可以為指定 Model 的所有查詢新增限制。Laravel 內建的 [軟刪除](#soft-deleting) 功能就利用全域 Scope 來僅從資料庫中擷取「未刪除」的 Model。撰寫自己的全域 Scope 可以提供一個方便、簡單的方式，來確保 Model 的每個查詢都收到特定的限制。
+全域 Scope 讓您可以針對給定 model 的所有查詢加入限制。Laravel 自帶的 [軟刪除](#soft-deleting) 功能便利用全域 Scope，以便僅從資料庫中擷取「未刪除」的 model。編寫自己的全域 Scope 可以提供一種方便、簡單的方式，確保針對給定 model 的每個查詢都接收到特定的限制。
 
 
 <a name="generating-scopes"></a>
 #### 產生 Scope
 
-若要產生新的全域 Scope，您可以呼叫 `make:scope` Artisan 指令，這會將產生的 Scope 放置在您應用程式的 `app/Models/Scopes` 目錄中：
+若要產生新的全域 Scope，您可以使用 `make:scope` Artisan 命令，該命令會將產生的 Scope 放在應用程式的 `app/Models/Scopes` 目錄中：
 
 ```shell
 php artisan make:scope AncientScope
@@ -1390,9 +1389,9 @@ php artisan make:scope AncientScope
 
 
 <a name="writing-global-scopes"></a>
-#### 撰寫全域 Scope
+#### 編寫全域 Scope
 
-撰寫全域 Scope 很簡單。首先，使用 `make:scope` 指令產生一個實作 `Illuminate\Database\Eloquent\Scope` 介面的類別。`Scope` 介面要求您實作一個方法：`apply`。`apply` 方法可以視需要向查詢新增 `where` 限制或其他類型的子句：
+編寫全域 Scope 很簡單。首先，使用 `make:scope` 命令產生一個實作 `Illuminate\Database\Eloquent\Scope` 介面的類別。`Scope` 介面要求您實作一個方法：`apply`。`apply` 方法可以根據需要，為查詢加入 `where` 限制或其他類型的子句：
 
 ```php
 <?php
@@ -1410,19 +1409,19 @@ class AncientScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('created_at', '<', now()->subYears(2000));
+        $builder->where('created_at', '<', now()->minus(years: 2000));
     }
 }
 ```
 
 > [!NOTE]
-> 如果您的全域 Scope 要為查詢的 select 子句新增欄位，您應該使用 `addSelect` 方法而不是 `select`。這將防止意外替換查詢中現有的 select 子句。
+> 如果您的全域 Scope 正在為查詢的 select 子句加入欄位，您應該使用 `addSelect` 方法而不是 `select`。這將防止查詢現有的 select 子句被意外替換。
 
 
 <a name="applying-global-scopes"></a>
 #### 應用全域 Scope
 
-若要將全域 Scope 指派給 Model，您可以在 Model 上放置 `ScopedBy` 屬性：
+若要將全域 Scope 指派給 model，您可以簡單地將 `ScopedBy` attribute 放置在 model 上：
 
 ```php
 <?php
@@ -1439,7 +1438,7 @@ class User extends Model
 }
 ```
 
-或者，您可以透過覆寫 Model 的 `booted` 方法並呼叫 Model 的 `addGlobalScope` 方法來手動註冊全域 Scope。`addGlobalScope` 方法接受一個 Scope 實例作為其唯一引數：
+或者，您可以透過覆寫 model 的 `booted` 方法並呼叫 model 的 `addGlobalScope` 方法來手動註冊全域 Scope。`addGlobalScope` 方法只接受您的 Scope 實例作為其唯一引數：
 
 ```php
 <?php
@@ -1461,7 +1460,7 @@ class User extends Model
 }
 ```
 
-在上方範例中將 Scope 新增到 `App\Models\User` Model 後，呼叫 `User::all()` 方法將執行以下 SQL 查詢：
+在將上述範例中的 Scope 加入 `App\Models\User` model 後，呼叫 `User::all()` 方法將執行以下 SQL 查詢：
 
 ```sql
 select * from `users` where `created_at` < 0021-02-18 00:00:00
@@ -1471,7 +1470,7 @@ select * from `users` where `created_at` < 0021-02-18 00:00:00
 <a name="anonymous-global-scopes"></a>
 #### 匿名全域 Scope
 
-Eloquent 也允許您使用閉包定義全域 Scope，這對於不需要單獨類別的簡單 Scope 特別有用。當使用閉包定義全域 Scope 時，您應該提供一個自選的 Scope 名稱作為 `addGlobalScope` 方法的第一個引數：
+Eloquent 也允許您使用閉包定義全域 Scope，這對於不需要單獨類別的簡單 Scope 尤其有用。當使用閉包定義全域 Scope 時，您應該提供一個自訂的 Scope 名稱作為 `addGlobalScope` 方法的第一個引數：
 
 ```php
 <?php
@@ -1489,7 +1488,7 @@ class User extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('ancient', function (Builder $builder) {
-            $builder->where('created_at', '<', now()->subYears(2000));
+            $builder->where('created_at', '<', now()->minus(years: 2000));
         });
     }
 }
@@ -1499,19 +1498,19 @@ class User extends Model
 <a name="removing-global-scopes"></a>
 #### 移除全域 Scope
 
-如果您想為指定查詢移除全域 Scope，您可以使用 `withoutGlobalScope` 方法。此方法接受全域 Scope 的類別名稱作為其唯一引數：
+如果您想移除針對給定查詢的全域 Scope，您可以使用 `withoutGlobalScope` 方法。此方法只接受全域 Scope 的類別名稱作為其唯一引數：
 
 ```php
 User::withoutGlobalScope(AncientScope::class)->get();
 ```
 
-或者，如果您是使用閉包定義全域 Scope，您應該傳遞您指派給全域 Scope 的字串名稱：
+或者，如果您使用閉包定義全域 Scope，您應該傳遞您為全域 Scope 指派的字串名稱：
 
 ```php
 User::withoutGlobalScope('ancient')->get();
 ```
 
-如果您想移除查詢中的多個甚至所有全域 Scope，您可以使用 `withoutGlobalScopes` 和 `withoutGlobalScopesExcept` 方法：
+如果您想移除查詢中的數個甚至所有全域 Scope，您可以使用 `withoutGlobalScopes` 和 `withoutGlobalScopesExcept` 方法：
 
 ```php
 // Remove all of the global scopes...
@@ -1530,11 +1529,11 @@ User::withoutGlobalScopesExcept([
 
 
 <a name="local-scopes"></a>
-### 本地 Scope
+### 區域 Scope
 
-本地 Scope 允許您定義一組常見的查詢限制，您可以在整個應用程式中輕鬆重複使用這些限制。例如，您可能需要經常擷取所有被視為「熱門」的使用者。若要定義 Scope，請將 `Scope` 屬性新增到 Eloquent 方法中。
+區域 Scope 允許您定義可在應用程式中輕鬆重複使用的常見查詢限制集合。例如，您可能需要頻繁擷取所有被認為是「熱門」的使用者。若要定義 Scope，請將 `Scope` attribute 加入 Eloquent 方法。
 
-Scope 應始終傳回相同的查詢 Builder 實例或 `void`：
+Scope 應始終傳回相同的查詢建構器實例或 `void`：
 
 ```php
 <?php
@@ -1569,9 +1568,9 @@ class User extends Model
 
 
 <a name="utilizing-a-local-scope"></a>
-#### 利用本地 Scope
+#### 利用區域 Scope
 
-一旦 Scope 被定義，您可以在查詢 Model 時呼叫 Scope 方法。您甚至可以鏈結呼叫各種 Scope：
+一旦定義了 Scope，您可以在查詢 model 時呼叫 Scope 方法。您甚至可以將對多個 Scope 的呼叫串聯起來：
 
 ```php
 use App\Models\User;
@@ -1579,7 +1578,7 @@ use App\Models\User;
 $users = User::popular()->active()->orderBy('created_at')->get();
 ```
 
-透過 `or` 查詢運算子組合多個 Eloquent Model Scope 可能需要使用閉包來實現正確的 [邏輯分組](/docs/{{version}}/queries#logical-grouping)：
+透過 `or` 查詢運算子結合多個 Eloquent model Scope 時，可能需要使用閉包來實現正確的 [邏輯分組](/docs/{{version}}/queries#logical-grouping)：
 
 ```php
 $users = User::popular()->orWhere(function (Builder $query) {
@@ -1587,7 +1586,7 @@ $users = User::popular()->orWhere(function (Builder $query) {
 })->get();
 ```
 
-然而，由於這可能很繁瑣，Laravel 提供了一個「高階」`orWhere` 方法，讓您可以無需使用閉包即可流暢地鏈結 Scope：
+然而，由於這可能很繁瑣，Laravel 提供了一個「高階」`orWhere` 方法，讓您可以流暢地串聯 Scope，無需使用閉包：
 
 ```php
 $users = User::popular()->orWhere->active()->get();
@@ -1597,7 +1596,7 @@ $users = User::popular()->orWhere->active()->get();
 <a name="dynamic-scopes"></a>
 #### 動態 Scope
 
-有時您可能希望定義一個接受參數的 Scope。首先，只需將您的額外參數新增到 Scope 方法的簽章中。Scope 參數應在 `$query` 參數之後定義：
+有時您可能希望定義一個接受參數的 Scope。首先，只需將您的額外參數加入您的 Scope 方法簽章中。Scope 參數應定義在 `$query` 參數之後：
 
 ```php
 <?php
@@ -1621,16 +1620,16 @@ class User extends Model
 }
 ```
 
-一旦預期的引數已新增到 Scope 方法的簽章中，您就可以在呼叫 Scope 時傳遞這些引數：
+一旦預期的引數已加入您的 Scope 方法簽章中，您可以在呼叫 Scope 時傳遞這些引數：
 
 ```php
 $users = User::ofType('admin')->get();
 ```
 
 <a name="pending-attributes"></a>
-### 待處理屬性
+### 待定屬性
 
-如果您想使用 Scope 來建立與用來約束該 Scope 的 Model 擁有相同屬性的 Model，您可以在建構 Scope 查詢時使用 `withAttributes` 方法：
+如果您想使用 scope 來建立具有與限制該 scope 相同的屬性的 Model，您可以在建構 scope 查詢時使用 `withAttributes` 方法：
 
 ```php
 <?php
@@ -1656,7 +1655,7 @@ class Post extends Model
 }
 ```
 
-`withAttributes` 方法會使用給定的屬性將 `where` 條件新增到查詢中，並且還會將這些給定的屬性新增到透過該 Scope 建立的任何 Model 中：
+`withAttributes` 方法會使用給定的屬性向查詢新增 `where` 條件，並且也會將給定的屬性新增到透過 scope 建立的任何 Model 中：
 
 ```php
 $draft = Post::draft()->create(['title' => 'In Progress']);
@@ -1664,7 +1663,7 @@ $draft = Post::draft()->create(['title' => 'In Progress']);
 $draft->hidden; // true
 ```
 
-若要指示 `withAttributes` 方法不要將 `where` 條件新增到查詢中，您可以將 `asConditions` 引數設定為 `false`：
+若要指示 `withAttributes` 方法不要向查詢新增 `where` 條件，您可以將 `asConditions` 引數設為 `false`：
 
 ```php
 $query->withAttributes([
@@ -1675,7 +1674,7 @@ $query->withAttributes([
 <a name="comparing-models"></a>
 ## 比較 Model
 
-有時候您可能需要判斷兩個 Model 是否「相同」。`is` 與 `isNot` 方法可用來快速驗證兩個 Model 是否擁有相同的主鍵、資料表及資料庫連線：
+有時候，您可能需要判斷兩個 Model 是否「相同」。`is` 與 `isNot` 方法可用來快速驗證兩個 Model 是否擁有相同的主鍵、資料表和資料庫連線：
 
 ```php
 if ($post->is($anotherPost)) {
@@ -1687,7 +1686,7 @@ if ($post->isNot($anotherPost)) {
 }
 ```
 
-`is` 與 `isNot` 方法在運用 `belongsTo`、`hasOne`、`morphTo` 和 `morphOne` [關聯](/docs/{{version}}/eloquent-relationships) 時也同樣適用。此方法在您想比較關聯 Model 而不發出查詢來擷取該 Model 時特別有用：
+`is` 與 `isNot` 方法也可用於 `belongsTo`、`hasOne`、`morphTo` 和 `morphOne` 等 [關聯](/docs/{{version}}/eloquent-relationships)。當您想在不發出查詢來擷取關聯 Model 的情況下比較它們時，這個方法會特別有用：
 
 ```php
 if ($post->author()->is($user)) {
@@ -1699,13 +1698,13 @@ if ($post->author()->is($user)) {
 ## 事件
 
 > [!NOTE]
-> 想要將您的 Eloquent 事件直接廣播至您的用戶端應用程式嗎？請參考 Laravel 的 [Model 事件廣播](/docs/{{version}}/broadcasting#model-broadcasting)。
+> 想要將您的 Eloquent 事件直接廣播至客戶端應用程式？請查看 Laravel 的[模型事件廣播](/docs/{{version}}/broadcasting#model-broadcasting)。
 
-Eloquent Model 會派送多個事件，讓您可以介入 Model 生命週期中的以下時刻：`retrieved`、`creating`、`created`、`updating`、`updated`、`saving`、`saved`、`deleting`、`deleted`、`trashed`、`forceDeleting`、`forceDeleted`、`restoring`、`restored` 以及 `replicating`。
+Eloquent Model 會分派數個事件，讓您能夠掛接到 Model 生命週期中的以下時刻：`retrieved`、`creating`、`created`、`updating`、`updated`、`saving`、`saved`、`deleting`、`deleted`、`trashed`、`forceDeleting`、`forceDeleted`、`restoring`、`restored` 以及 `replicating`。
 
-當現有 Model 從資料庫中擷取出來時，會派送 `retrieved` 事件。當新 Model 第一次儲存時，會派送 `creating` 和 `created` 事件。當現有 Model 被修改並呼叫 `save` 方法時，會派送 `updating` / `updated` 事件。當 Model 被建立或更新時，即使 Model 的屬性未改變，也會派送 `saving` / `saved` 事件。以 `-ing` 結尾的事件名稱會在 Model 的任何變更被永久儲存之前派送，而以 `-ed` 結尾的事件則在 Model 的變更被永久儲存之後派送。
+`retrieved` 事件會在從資料庫中擷取現有 Model 時分派。當新的 Model 首次儲存時，會分派 `creating` 和 `created` 事件。當現有 Model 被修改並呼叫 `save` 方法時，會分派 `updating` / `updated` 事件。當 Model 建立或更新時，即使 Model 的屬性未變更，也會分派 `saving` / `saved` 事件。以 `-ing` 結尾的事件會在 Model 的任何變更被持久化之前分派，而以 `-ed` 結尾的事件會在 Model 的變更被持久化之後分派。
 
-要開始監聽 Model 事件，請在您的 Eloquent Model 上定義 `$dispatchesEvents` 屬性。此屬性會將 Eloquent Model 生命週期中的各個點對應到您自己的[事件類別](/docs/{{version}}/events)。每個 Model 事件類別都應預期透過其建構子接收受影響 Model 的實例：
+要開始監聽 Model 事件，請在您的 Eloquent Model 上定義一個 `$dispatchesEvents` 屬性。此屬性將 Eloquent Model 生命週期的各個點對應到您自己的[事件類別](/docs/{{version}}/events)。每個 Model 事件類別都應預期透過其建構函式接收受影響 Model 的實例：
 
 ```php
 <?php
@@ -1733,15 +1732,15 @@ class User extends Authenticatable
 }
 ```
 
-在定義並對應您的 Eloquent 事件之後，您可以使用[事件監聽器](/docs/{{version}}/events#defining-listeners)來處理這些事件。
+在定義並映射您的 Eloquent 事件之後，您可以使用[事件監聽器](/docs/{{version}}/events#defining-listeners)來處理這些事件。
 
 > [!WARNING]
-> 當透過 Eloquent 發出批量更新或刪除查詢時，`saved`、`updated`、`deleting` 和 `deleted` Model 事件將不會為受影響的 Model 派送。這是因為在執行批量更新或刪除時，Model 從未實際被擷取。
+> 當透過 Eloquent 發出大量更新或刪除查詢時，受影響 Model 的 `saved`、`updated`、`deleting` 和 `deleted` 模型事件將不會被分派。這是因為在執行大量更新或刪除時，Model 從未實際被擷取。
 
 <a name="events-using-closures"></a>
 ### 使用閉包
 
-除了使用自訂事件類別外，您還可以註冊閉包，讓這些閉包在各種 Model 事件派送時執行。通常，您應該在 Model 的 `booted` 方法中註冊這些閉包：
+除了使用自訂事件類別之外，您還可以註冊在分派各種 Model 事件時執行的閉包。通常，您應該在 Model 的 `booted` 方法中註冊這些閉包：
 
 ```php
 <?php
@@ -1764,7 +1763,7 @@ class User extends Model
 }
 ```
 
-如果需要，您可以在註冊 Model 事件時利用[可佇列的匿名事件監聽器](/docs/{{version}}/events#queuable-anonymous-event-listeners)。這將指示 Laravel 使用您應用程式的[佇列](/docs/{{version}}/queues)在背景中執行 Model 事件監聽器：
+如果需要，您可以在註冊 Model 事件時使用[可排入佇列的匿名事件監聽器](/docs/{{version}}/events#queuable-anonymous-event-listeners)。這將指示 Laravel 使用您的應用程式[佇列](/docs/{{version}}/queues)在背景執行 Model 事件監聽器：
 
 ```php
 use function Illuminate\Events\queueable;
@@ -1780,13 +1779,13 @@ static::created(queueable(function (User $user) {
 <a name="defining-observers"></a>
 #### 定義觀察者
 
-如果您正在監聽一個 Model 上的許多事件，您可以使用觀察者 (observer) 將所有監聽器分組到單一類別中。觀察者類別的方法名稱會反映您希望監聽的 Eloquent 事件。每個方法都會接收受影響的 Model 作為其唯一引數。`make:observer` Artisan 指令是建立新觀察者類別最簡單的方法：
+如果您監聽許多 Model 上的事件，可以使用觀察者 (Observers) 將所有監聽器分組到一個類別中。觀察者類別的方法名稱會反映您希望監聽的 Eloquent 事件。每個方法都會將受影響的 Model 作為其唯一參數。`make:observer` Artisan 命令是建立新觀察者類別最簡單的方法：
 
 ```shell
 php artisan make:observer UserObserver --model=User
 ```
 
-此指令會將新觀察者放置在您的 `app/Observers` 目錄中。如果此目錄不存在，Artisan 會為您建立它。您的新觀察者會如下所示：
+此命令會將新的觀察者放置在您的 `app/Observers` 目錄中。如果此目錄不存在，Artisan 會為您建立它。您的全新觀察者會如下所示：
 
 ```php
 <?php
@@ -1839,7 +1838,7 @@ class UserObserver
 }
 ```
 
-要註冊觀察者，您可以將 `ObservedBy` 屬性放置在對應的 Model 上：
+要註冊一個觀察者，您可以將 `ObservedBy` 屬性放置在對應的 Model 上：
 
 ```php
 use App\Observers\UserObserver;
@@ -1868,12 +1867,12 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> 觀察者可以監聽額外的事件，例如 `saving` 和 `retrieved`。這些事件在[事件](#events)文件中有所說明。
+> 觀察者可以監聽額外的事件，例如 `saving` 和 `retrieved`。這些事件在[事件](#events)文件中有所描述。
 
 <a name="observers-and-database-transactions"></a>
 #### 觀察者與資料庫交易
 
-當 Model 在資料庫交易中建立時，您可能希望指示觀察者只在資料庫交易提交之後才執行其事件處理器。您可以透過在觀察者上實作 `ShouldHandleEventsAfterCommit` 介面來達成此目的。如果資料庫交易未在進行中，事件處理器將會立即執行：
+當 Model 在資料庫交易中建立時，您可能希望指示觀察者僅在資料庫交易提交後才執行其事件處理器。您可以透過在觀察者上實作 `ShouldHandleEventsAfterCommit` 介面來實現此目的。如果資料庫交易未進行中，事件處理器將立即執行：
 
 ```php
 <?php
@@ -1896,9 +1895,9 @@ class UserObserver implements ShouldHandleEventsAfterCommit
 ```
 
 <a name="muting-events"></a>
-### 靜音事件
+### 事件靜默
 
-您有時可能需要暫時「靜音」由 Model 派送的所有事件。您可以透過使用 `withoutEvents` 方法來達成此目的。`withoutEvents` 方法接受一個閉包作為其唯一引數。在此閉包內執行的任何程式碼將不會派送 Model 事件，並且閉包返回的任何值都將由 `withoutEvents` 方法返回：
+您可能偶爾需要暫時「靜默」Model 觸發的所有事件。您可以使用 `withoutEvents` 方法來實現此目的。`withoutEvents` 方法接受一個閉包作為其唯一參數。在此閉包中執行的任何程式碼都不會分派 Model 事件，並且閉包返回的任何值都將由 `withoutEvents` 方法返回：
 
 ```php
 use App\Models\User;
@@ -1911,9 +1910,9 @@ $user = User::withoutEvents(function () {
 ```
 
 <a name="saving-a-single-model-without-events"></a>
-#### 不派送事件地儲存單一 Model
+#### 不觸發事件來儲存單一 Model
 
-有時您可能希望在不派送任何事件的情況下「儲存」給定 Model。您可以透過使用 `saveQuietly` 方法來達成此目的：
+有時您可能希望「儲存」給定的 Model 而不分派任何事件。您可以使用 `saveQuietly` 方法來實現此目的：
 
 ```php
 $user = User::findOrFail(1);
@@ -1923,7 +1922,7 @@ $user->name = 'Victoria Faith';
 $user->saveQuietly();
 ```
 
-您也可以在不派送任何事件的情況下「更新」、「刪除」、「軟刪除」、「還原」以及「複製」給定 Model：
+您也可以在不分派任何事件的情況下「更新」、「刪除」、「軟刪除」、「復原」和「複製」給定的 Model：
 
 ```php
 $user->deleteQuietly();

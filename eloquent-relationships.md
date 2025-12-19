@@ -1,80 +1,80 @@
 # Eloquent：關聯
 
-- [介紹](#introduction)
+- [簡介](#introduction)
 - [定義關聯](#defining-relationships)
     - [一對一 / Has One](#one-to-one)
     - [一對多 / Has Many](#one-to-many)
     - [一對多 (反向) / Belongs To](#one-to-many-inverse)
-    - [Has One of Many](#has-one-of-many)
-    - [Has One Through](#has-one-through)
-    - [Has Many Through](#has-many-through)
-- [作用域關聯](#scoped-relationships)
+    - [多個中的一個 (Has One of Many)](#has-one-of-many)
+    - [遠處一對一 (Has One Through)](#has-one-through)
+    - [遠處一對多 (Has Many Through)](#has-many-through)
+- [限定範圍關聯 (Scoped Relationships)](#scoped-relationships)
 - [多對多關聯](#many-to-many)
-    - [取得中介資料表欄位](#retrieving-intermediate-table-columns)
-    - [透過中介資料表欄位篩選查詢](#filtering-queries-via-intermediate-table-columns)
-    - [透過中介資料表欄位排序查詢](#ordering-queries-via-intermediate-table-columns)
-    - [定義自訂中介資料表 Model](#defining-custom-intermediate-table-models)
-- [多態關聯](#polymorphic-relationships)
+    - [取出中間表欄位](#retrieving-intermediate-table-columns)
+    - [透過中間表欄位過濾查詢](#filtering-queries-via-intermediate-table-columns)
+    - [透過中間表欄位排序查詢](#ordering-queries-via-intermediate-table-columns)
+    - [定義自定義中間表模型](#defining-custom-intermediate-table-models)
+- [多型關聯 (Polymorphic Relationships)](#polymorphic-relationships)
     - [一對一](#one-to-one-polymorphic-relations)
     - [一對多](#one-to-many-polymorphic-relations)
-    - [一對多中的其一](#one-of-many-polymorphic-relations)
-    - [多對多 (Polymorphic)](#many-to-many-polymorphic-relations)
-    - [自訂多態型別](#custom-polymorphic-types)
+    - [多個中的一個](#one-of-many-polymorphic-relations)
+    - [多對多](#many-to-many-polymorphic-relations)
+    - [自定義多型類型](#custom-polymorphic-types)
 - [動態關聯](#dynamic-relationships)
 - [查詢關聯](#querying-relations)
-    - [關聯方法 vs. 動態屬性](#relationship-methods-vs-dynamic-properties)
-    - [查詢關聯的存在](#querying-relationship-existence)
-    - [查詢關聯的不存在](#querying-relationship-absence)
+    - [關聯方法與動態屬性](#relationship-methods-vs-dynamic-properties)
+    - [查詢關聯是否存在](#querying-relationship-existence)
+    - [查詢關聯是否不存在](#querying-relationship-absence)
     - [查詢 Morph To 關聯](#querying-morph-to-relationships)
-- [聚合關聯 Model](#aggregating-related-models)
-    - [計數關聯 Model](#counting-related-models)
+- [聚合相關模型](#aggregating-related-models)
+    - [計算相關模型數量](#counting-related-models)
     - [其他聚合函式](#other-aggregate-functions)
-    - [在 Morph To 關聯上計數關聯 Model](#counting-related-models-on-morph-to-relationships)
-- [預先載入 (Eager Loading)](#eager-loading)
-    - [限制預先載入](#constraining-eager-loads)
-    - [延遲預先載入 (Lazy Eager Loading)](#lazy-eager-loading)
-    - [自動預先載入](#automatic-eager-loading)
-    - [避免延遲載入 (Lazy Loading)](#preventing-lazy-loading)
-- [新增與更新關聯 Model](#inserting-and-updating-related-models)
+    - [計算 Morph To 關聯的模型數量](#counting-related-models-on-morph-to-relationships)
+- [積極載入 (Eager Loading)](#eager-loading)
+    - [限制積極載入](#constraining-eager-loads)
+    - [延遲積極載入 (Lazy Eager Loading)](#lazy-eager-loading)
+    - [自動積極載入](#automatic-eager-loading)
+    - [防止延遲載入](#preventing-lazy-loading)
+- [新增與更新相關模型](#inserting-and-updating-related-models)
     - [`save` 方法](#the-save-method)
     - [`create` 方法](#the-create-method)
     - [Belongs To 關聯](#updating-belongs-to-relationships)
     - [多對多關聯](#updating-many-to-many-relationships)
-- [接觸 (Touch) 父項時間戳記](#touching-parent-timestamps)
+- [更新父級時間戳記 (Touching Parent Timestamps)](#touching-parent-timestamps)
 
 <a name="introduction"></a>
-## 介紹
+## 簡介
 
-資料庫的資料表之間常有關聯。舉例來說，一篇部落格文章可能有很多則留言，或是一筆訂單可能與下單的使用者有關。Eloquent 讓管理與操作這些關聯變得簡單，並支援多種常見的關聯：
+資料庫表通常彼此相關。例如，一篇部落格文章可能有許多留言，或者一筆訂單可能與下單的使用者相關。Eloquent 讓管理與處理這些關聯變得簡單，並且支援各種常見的關聯：
 
 <div class="content-list" markdown="1">
 
 - [一對一](#one-to-one)
 - [一對多](#one-to-many)
 - [多對多](#many-to-many)
-- [Has One Through](#has-one-through)
-- [Has Many Through](#has-many-through)
-- [一對一 (多態)](#one-to-one-polymorphic-relations)
-- [一對多 (多態)](#one-to-many-polymorphic-relations)
-- [多對多 (多態)](#many-to-many-polymorphic-relations)
+- [遠處一對一](#has-one-through)
+- [遠處一對多](#has-many-through)
+- [一對一 (多型)](#one-to-one-polymorphic-relations)
+- [一對多 (多型)](#one-to-many-polymorphic-relations)
+- [多對多 (多型)](#many-to-many-polymorphic-relations)
 
 </div>
 
 <a name="defining-relationships"></a>
 ## 定義關聯
 
-Eloquent 關련是以方法的形式定義在 Eloquent Model 類別上。由於關聯同時也作為強大的[查詢產生器](/docs/{{version}}/queries)，因此將關聯定義為方法可提供強大的方法鏈式呼叫與查詢功能。舉例來說，我們可以在這個 `posts` 關聯上鏈式呼叫其他的查詢限制：
+Eloquent 關聯是在您的 Eloquent 模型類別中以方法的方式定義的。由於關聯也具備強大的 [查詢產生器 (query builders)](/docs/{{version}}/queries) 功能，將關聯定義為方法提供了強大的方法鏈結與查詢能力。例如，我們可以在這個 `posts` 關聯上鏈結額外的查詢約束：
 
 ```php
 $user->posts()->where('active', 1)->get();
 ```
 
-不過，在深入使用關聯前，讓我們先來學習如何定義 Eloquent 所支援的每種關聯類型。
+但在深入了解如何使用關聯之前，讓我們學習如何定義 Eloquent 支援的每種關聯類型。
 
 <a name="one-to-one"></a>
 ### 一對一 / Has One
 
-「一對一」關聯是一種非常基本的資料庫關聯。舉例來說，一個 `User` Model 可能會關聯到一個 `Phone` Model。為定義這個關聯，我們會在 `User` Model 上放置一個 `phone` 方法。`phone` 方法應呼叫 `hasOne` 方法並回傳其結果。`hasOne` 方法是透過 Model 的 `Illuminate\Database\Eloquent\Model` 基底類別提供給你的 Model 使用：
+一對一關聯是非常基本的資料庫關聯類型。例如，一個 `User` 模型可能關聯到一個 `Phone` 模型。要定義這種關聯，我們會在 `User` 模型上放置一個 `phone` 方法。這個 `phone` 方法應該呼叫 `hasOne` 方法並回傳其結果。透過模型的 `Illuminate\Database\Eloquent\Model` 基底類別，您的模型可以使用 `hasOne` 方法：
 
 ```php
 <?php
@@ -96,19 +96,19 @@ class User extends Model
 }
 ```
 
-傳給 `hasOne` 方法的第一個引數是關聯 Model 的類別名稱。關聯定義好後，我們就可以使用 Eloquent 的動態屬性來取得關聯的紀錄。動態屬性能讓你在存取關聯方法時，像在存取 Model 上定義的屬性一樣：
+傳遞給 `hasOne` 方法的第一個參數是關聯模型的類別名稱。一旦定義了關聯，我們就可以使用 Eloquent 的動態屬性來取出相關紀錄。動態屬性允許您像訪問模型上定義的屬性一樣訪問關聯方法：
 
 ```php
 $phone = User::find(1)->phone;
 ```
 
-Eloquent 會根據父 Model 的名稱來判斷關聯的外鍵。在這個例子中，`Phone` Model 會自動被假設有一個 `user_id` 外鍵。若想覆寫這個慣例，可以傳入第二個引數給 `hasOne` 方法：
+Eloquent 根據父模型名稱來決定關聯的外鍵。在這種情況下，自動假設 `Phone` 模型有一個 `user_id` 外鍵。如果您希望覆蓋此慣例，可以將第二個參數傳遞給 `hasOne` 方法：
 
 ```php
 return $this->hasOne(Phone::class, 'foreign_key');
 ```
 
-此外，Eloquent 會假設外鍵應有一個符合父項主鍵欄位的值。換句話說，Eloquent 會在 `Phone` 紀錄的 `user_id` 欄位中尋找使用者的 `id` 欄位的值。若想讓關聯使用 `id` 或 Model 的 `$primaryKey` 屬性以外的主鍵值，可以傳入第三個引數給 `hasOne` 方法：
+此外，Eloquent 假設外鍵的值應該與父模型的主鍵欄位匹配。換句話說，Eloquent 會在 `Phone` 紀錄的 `user_id` 欄位中尋找使用者的 `id` 欄位值。如果您希望關聯使用 `id` 或模型的 `$primaryKey` 屬性以外的主鍵值，可以將第三個參數傳遞給 `hasOne` 方法：
 
 ```php
 return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
@@ -117,7 +117,7 @@ return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
 <a name="one-to-one-defining-the-inverse-of-the-relationship"></a>
 #### 定義關聯的反向
 
-這樣，我們就能從 `User` Model 存取 `Phone` Model 了。接著，讓我們在 `Phone` Model 上定義一個關聯，讓我們能存取擁有該電話的使用者。我們可以使用 `belongsTo` 方法來定義 `hasOne` 關聯的反向：
+所以，我們可以從 `User` 模型訪問 `Phone` 模型。接下來，讓我們在 `Phone` 模型上定義一個關聯，讓我們能夠訪問擁有該電話的使用者。我們可以使用 `belongsTo` 方法定義 `hasOne` 關聯的反向：
 
 ```php
 <?php
@@ -139,9 +139,9 @@ class Phone extends Model
 }
 ```
 
-叫用 `user` 方法時，Eloquent 會嘗試尋找一個 `id` 符合 `Phone` Model 上 `user_id` 欄位的 `User` Model。
+呼叫 `user` 方法時，Eloquent 會嘗試尋找一個 `User` 模型，其 `id` 與 `Phone` 模型上的 `user_id` 欄位匹配。
 
-Eloquent 會檢查關聯方法的名稱並在後面加上 `_id` 來判斷外鍵的名稱。因此，在這個例子中，Eloquent 會假設 `Phone` Model 有一個 `user_id` 欄位。不過，若 `Phone` Model 上的外鍵不是 `user_id`，則可以傳入一個自訂的鍵名作為 `belongsTo` 方法的第二個引數：
+Eloquent 透過檢查關聯方法的名稱並在方法名稱後加上 `_id` 綴詞來決定外鍵名稱。因此，在這種情況下，Eloquent 假設 `Phone` 模型有一個 `user_id` 欄位。但是，如果 `Phone` 模型上的外鍵不是 `user_id`，您可以將自定義鍵名作為第二個參數傳遞給 `belongsTo` 方法：
 
 ```php
 /**
@@ -153,7 +153,7 @@ public function user(): BelongsTo
 }
 ```
 
-若父 Model 不使用 `id` 作為主鍵，或想使用不同的欄位來尋找關聯的 Model，則可以傳入第三個引數給 `belongsTo` 方法，以指定父資料表的自訂鍵：
+如果父模型不使用 `id` 作為主鍵，或者您希望使用不同的欄位來尋找相關聯的模型，您可以將第三個參數傳遞給 `belongsTo` 方法，指定父資料表的自定義鍵：
 
 ```php
 /**
@@ -168,7 +168,7 @@ public function user(): BelongsTo
 <a name="one-to-many"></a>
 ### 一對多 / Has Many
 
-「一對多」關聯是用來定義一個 Model 是多個子 Model 的父項的關聯。舉例來說，一篇部落格文章可能會有無限則留言。與所有其他的 Eloquent 關聯一樣，一對多關聯也是透過在 Eloquent Model 上定義方法來定義的：
+一對多關聯用於定義單個模型是多個子模型父級的關聯。例如，一篇部落格文章可能有無限數量的留言。與所有其他 Eloquent 關聯一樣，一對多關聯是透過在您的 Eloquent 模型中定義一個方法來定義的：
 
 ```php
 <?php
@@ -190,9 +190,9 @@ class Post extends Model
 }
 ```
 
-記得，Eloquent 會自動為 `Comment` Model 判斷正確的外鍵欄位。依照慣例，Eloquent 會取用父 Model 名稱的「蛇形命名法 (snake case)」並在後面加上 `_id`。因此，在這個例子中，Eloquent 會假設 `Comment` Model 上的外鍵欄位是 `post_id`。
+請記住，Eloquent 將自動為 `Comment` 模型決定適當的外鍵欄位。按照慣例，Eloquent 將採用父模型的「蛇形命名 (snake case)」名稱並加上 `_id` 字尾。因此，在此範例中，Eloquent 會假設 `Comment` 模型上的外鍵欄位是 `post_id`。
 
-關聯方法定義好後，我們就可以透過存取 `comments` 屬性來存取關聯留言的[集合 (Collection)](/docs/{{version}}/eloquent-collections)。記得，因為 Eloquent 提供了「動態關聯屬性」，所以我們可以在存取關聯方法時，像在存取 Model 上定義的屬性一樣：
+一旦定義了關聯方法，我們就可以透過訪問 `comments` 屬性來取出相關留言的 [集合 (collection)](/docs/{{version}}/eloquent-collections)。請記住，由於 Eloquent 提供「動態關聯屬性」，我們可以像訪問模型上定義的屬性一樣訪問關聯方法：
 
 ```php
 use App\Models\Post;
@@ -204,7 +204,7 @@ foreach ($comments as $comment) {
 }
 ```
 
-由於所有的關聯都可作為查詢產生器，因此可以透過呼叫 `comments` 方法並繼續鏈式呼叫條件到查詢上，來為關聯查詢加上更多限制：
+由於所有關聯也都作為查詢產生器，您可以透過呼叫 `comments` 方法並繼續鏈結查詢條件，向關聯查詢添加進一步的約束：
 
 ```php
 $comment = Post::find(1)->comments()
@@ -212,7 +212,7 @@ $comment = Post::find(1)->comments()
     ->first();
 ```
 
-與 `hasOne` 方法一樣，也可以傳入額外的引數給 `hasMany` 方法來覆寫外鍵與本地鍵：
+與 `hasOne` 方法一樣，您也可以透過向 `hasMany` 方法傳遞額外參數來覆蓋外鍵與本地鍵：
 
 ```php
 return $this->hasMany(Comment::class, 'foreign_key');
@@ -221,9 +221,9 @@ return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
 ```
 
 <a name="automatically-hydrating-parent-models-on-children"></a>
-#### 自動填充子 Model 上的父 Model
+#### 自動在子模型上填充父模型
 
-即便使用了 Eloquent 的預先載入 (Eager Loading)，若在遍歷子 Model 時嘗試從子 Model 存取父 Model，還是可能會出現「N + 1」查詢問題：
+即使使用了 Eloquent 積極載入，如果您在遍歷子模型時嘗試從子模型訪問父模型，也可能會出現「N + 1」查詢問題：
 
 ```php
 $posts = Post::with('comments')->get();
@@ -235,9 +235,9 @@ foreach ($posts as $post) {
 }
 ```
 
-在上方程式碼中，之所以會出現「N + 1」查詢問題，是因為雖然每個 `Post` Model 都預先載入了留言，但 Eloquent 並沒有自動在每個子 `Comment` Model 上填充 (Hydrate) 父 `Post`。
+在上面的範例中，引入了「N + 1」查詢問題，因為即使為每個 `Post` 模型積極載入了留言，Eloquent 也不會自動為每個子 `Comment` 模型填充父 `Post` 模型。
 
-若想讓 Eloquent 自動在子 Model 上填充父 Model，可以在定義 `hasMany` 關聯時叫用 `chaperone` 方法：
+如果您希望 Eloquent 自動將父模型填充到其子模型上，您可以在定義 `hasMany` 關聯時呼叫 `chaperone` 方法：
 
 ```php
 <?php
@@ -259,7 +259,7 @@ class Post extends Model
 }
 ```
 
-或者，若想在執行時才選擇性地自動填充父項，可以在預先載入關聯時叫用 `chaperone` 方法：
+或者，如果您希望在執行時選擇加入自動父模型填充，可以在積極載入關聯時呼叫 `chaperone` 方法：
 
 ```php
 use App\Models\Post;
@@ -272,7 +272,7 @@ $posts = Post::with([
 <a name="one-to-many-inverse"></a>
 ### 一對多 (反向) / Belongs To
 
-現在我們已經可以存取一篇文章的所有留言了，接著讓我們來定義一個關聯，讓留言可以存取其父文章。若要定義 `hasMany` 關聯的反向關聯，請在子 Model 上定義一個關聯方法，並在其中呼叫 `belongsTo` 方法：
+既然我們已經可以存取貼文的所有留言了，接著讓我們定義一個關聯，讓留言可以存取其所屬的父級貼文。若要定義 `hasMany` 關聯的反向，請在子模型上定義一個呼叫 `belongsTo` 方法的關聯方法：
 
 ```php
 <?php
@@ -294,7 +294,7 @@ class Comment extends Model
 }
 ```
 
-關聯定義好後，我們就可以存取 `post` 這個「動態關聯屬性」來取得留言的父文章：
+關聯定義完成後，我們就可以透過存取 `post`「動態關聯屬性」來取得留言的父級貼文：
 
 ```php
 use App\Models\Comment;
@@ -304,11 +304,11 @@ $comment = Comment::find(1);
 return $comment->post->title;
 ```
 
-在上方程式碼中，Eloquent 會試著在 `Comment` Model 上找到一個 `id` 與 `post_id` 欄位符合的 `Post` Model。
+在上述範例中，Eloquent 會嘗試尋找一個 `Post` 模型，其 `id` 與 `Comment` 模型上的 `post_id` 欄位匹配。
 
-Eloquent 會檢查關聯方法的名稱，並在方法名稱後方加上 `_` 與父 Model 的主鍵欄位名稱來當作預設的外鍵名稱。因此，在這個範例中，Eloquent 會假設 `comments` 資料表上 `Post` Model 的外鍵為 `post_id`。
+Eloquent 會透過檢查關聯方法的名稱，並在該名稱後方加上 `_` 以及父模型主鍵欄位的名稱來決定預設的外鍵名稱。因此，在這個範例中，Eloquent 會假設 `Post` 模型在 `comments` 資料表上的外鍵是 `post_id`。
 
-不過，若關聯的外鍵不符合這些慣例，則可以傳入一個自訂的外鍵名稱作為 `belongsTo` 方法的第二個引數：
+然而，如果您的關聯外鍵不符合這些慣例，您可以將自定義的外鍵名稱作為第二個參數傳遞給 `belongsTo` 方法：
 
 ```php
 /**
@@ -320,7 +320,7 @@ public function post(): BelongsTo
 }
 ```
 
-若父 Model 不使用 `id` 作為主鍵，或希望能使用不同的欄位來尋找關聯的 Model，則可以傳入第三個引數到 `belongsTo` 方法來指定父資料表的自訂鍵：
+如果您的父模型不使用 `id` 作為主鍵，或者您希望使用不同的欄位來尋找關聯模型，您可以向 `belongsTo` 方法傳遞第三個參數，指定父資料表的自定義鍵名：
 
 ```php
 /**
@@ -334,9 +334,9 @@ public function post(): BelongsTo
 
 
 <a name="default-models"></a>
-#### 預設 Model
+#### 預設模型
 
-`belongsTo`、`hasOne`、`hasOneThrough`、`morphOne` 等關聯可讓你在給定關聯為 `null` 的情況下定義一個要回傳的預設 Model。這個模式通常被稱為 [空物件模式 (Null Object pattern)](https://en.wikipedia.org/wiki/Null_Object_pattern)，且有助於移除程式碼中的條件式檢查。在下列範例中，若沒有使用者附加到 `Post` Model，則 `user` 關聯會回傳一個空的 `App\Models\User` Model：
+`belongsTo`、`hasOne`、`hasOneThrough` 以及 `morphOne` 關聯允許您定義一個預設模型，當給定的關聯為 `null` 時將會回傳該模型。這種模式通常被稱為 [Null Object 模式](https://en.wikipedia.org/wiki/Null_Object_pattern)，有助於移除程式碼中的條件檢查。在以下範例中，如果 `Post` 模型沒有關聯任何使用者，則 `user` 關聯將回傳一個空的 `App\Models\User` 模型：
 
 ```php
 /**
@@ -348,7 +348,7 @@ public function user(): BelongsTo
 }
 ```
 
-若要為預設 Model 填入屬性，可以傳入陣列或閉包到 `withDefault` 方法：
+若要使用屬性填充預設模型，您可以向 `withDefault` 方法傳遞一個陣列或閉包：
 
 ```php
 /**
@@ -376,7 +376,7 @@ public function user(): BelongsTo
 <a name="querying-belongs-to-relationships"></a>
 #### 查詢 Belongs To 關聯
 
-在查詢「belongs to」關聯的子項時，可以手動建立 `where` 子句來取得對應的 Eloquent Model：
+當查詢「屬於 (belongs to)」關聯的子模型時，您可以手動建立 `where` 子句來取得對應的 Eloquent 模型：
 
 ```php
 use App\Models\Post;
@@ -384,13 +384,13 @@ use App\Models\Post;
 $posts = Post::where('user_id', $user->id)->get();
 ```
 
-不過，我們可能會覺得使用 `whereBelongsTo` 方法更方便，該方法會自動為給定的 Model 判斷正確的關聯與外鍵：
+不過，您可能會發現使用 `whereBelongsTo` 方法更方便，它會自動為給定的模型判斷正確的關聯與外鍵：
 
 ```php
 $posts = Post::whereBelongsTo($user)->get();
 ```
 
-也可以提供 [Collection](/docs/{{version}}/eloquent-collections) 實體給 `whereBelongsTo` 方法。當這麼做時，Laravel 會擷取屬於該 Collection 中任何一個父 Model 的 Model：
+您也可以將 [Collection](/docs/{{version}}/eloquent-collections) 實例提供給 `whereBelongsTo` 方法。這樣做時，Laravel 將會取得屬於該 Collection 中任何父模型的所有子模型：
 
 ```php
 $users = User::where('vip', true)->get();
@@ -398,16 +398,16 @@ $users = User::where('vip', true)->get();
 $posts = Post::whereBelongsTo($users)->get();
 ```
 
-預設情況下，Laravel 會根據給定 Model 的類別名稱來判斷要與哪個關聯關聯；不過，我們也可以手動將關聯名稱作為第二個引數傳給 `whereBelongsTo` 方法來指定關聯名稱：
+預設情況下，Laravel 會根據模型的類別名稱來判斷與給定模型相關聯的關聯；不過，您可以透過向 `whereBelongsTo` 方法提供第二個參數來手動指定關聯名稱：
 
 ```php
 $posts = Post::whereBelongsTo($user, 'author')->get();
 ```
 
 <a name="has-one-of-many"></a>
-### Has One of Many
+### 多個中的一個 (Has One of Many)
 
-有時候，一個 Model 可能會有很多個關聯 Model，但我們只想輕鬆地取得關聯中「最新」或「最舊」的那個關聯 Model。舉例來說，一個 `User` Model 可能會關聯到多個 `Order` Model，但我們想定義一個方便的方法來與該使用者最近下的一筆訂單互動。我們可以結合 `hasOne` 關聯類型與 `ofMany` 方法來達成此目的：
+有時一個模型可能有多個相關模型，但您希望輕鬆取出該關聯中「最新」或「最舊」的相關模型。例如，一個 `User` 模型可能與許多 `Order` 模型相關聯，但您想定義一個方便的方法來與該使用者最近下的一筆訂單進行互動。您可以使用 `hasOne` 關聯類型結合 `ofMany` 方法來實現這一點：
 
 ```php
 /**
@@ -419,7 +419,7 @@ public function latestOrder(): HasOne
 }
 ```
 
-同樣地，我們也可以定義一個方法來取得關聯中「最舊的」，也就是第一個關聯 Model：
+同樣地，您可以定義一個方法來取出關聯中「最舊」或第一個相關的模型：
 
 ```php
 /**
@@ -431,9 +431,9 @@ public function oldestOrder(): HasOne
 }
 ```
 
-預設情況下，`latestOfMany` 與 `oldestOfMany` 方法會根據 Model 的主鍵來取得最新或最舊的關聯 Model，因此主鍵必須是可排序的。不過，有時候我們可能會想用不同的排序條件來從一個較大的關聯中取得單一 Model。
+預設情況下，`latestOfMany` 和 `oldestOfMany` 方法會根據模型的初級鍵 (Primary Key) 來取出最新或最舊的相關模型，該鍵必須是可排序的。然而，有時您可能希望使用不同的排序標準從較大的關聯中取出單個模型。
 
-舉例來說，使用 `ofMany` 方法，我們可以取得某個使用者最貴的一筆訂單。`ofMany` 方法的第一個引數是可排序的欄位，第二個引數則是要在查詢關聯 Model 時要套用的聚合函式 (`min` 或 `max`)：
+例如，使用 `ofMany` 方法，您可以取出使用者最昂貴的訂單。`ofMany` 方法接受可排序的欄位作為其第一個參數，以及在查詢相關模型時要套用的聚合函式 (`min` 或 `max`)：
 
 ```php
 /**
@@ -446,12 +446,13 @@ public function largestOrder(): HasOne
 ```
 
 > [!WARNING]
-> 由於 PostgreSQL 不支援對 UUID 欄位執行 `MAX` 函式，因此目前無法將「一對多中的其一」關聯與 PostgreSQL 的 UUID 欄位一起使用。
+> 由於 PostgreSQL 不支援對 UUID 欄位執行 `MAX` 函式，目前無法將「多個中的一個」關聯與 PostgreSQL UUID 欄位結合使用。
+
 
 <a name="converting-many-relationships-to-has-one-relationships"></a>
-#### 將「多」關聯轉為 Has One 關聯
+#### 將「多」個關聯轉換為 Has One 關聯
 
-通常，在使用 `latestOfMany`、`oldestOfMany`、或 `ofMany` 方法來取得單一 Model 時，我們可能已經為同一個 Model 定義了一個「一對多」關聯。為方便起見，Laravel 允許我們在關聯上叫用 `one` 方法，來輕鬆地將這個關聯轉為「一對一」關聯：
+通常，在使用 `latestOfMany`、`oldestOfMany` 或 `ofMany` 方法取出單個模型時，您已經為同一個模型定義了「has many」關聯。為了方便起見，Laravel 允許您透過在關聯上呼叫 `one` 方法，輕鬆地將此關聯轉換為「has one」關聯：
 
 ```php
 /**
@@ -471,7 +472,7 @@ public function largestOrder(): HasOne
 }
 ```
 
-也可以使用 `one` 方法來將 `HasManyThrough` 關聯轉為 `HasOneThrough` 關聯：
+您還可以使用 `one` 方法將 `HasManyThrough` 關聯轉換為 `HasOneThrough` 關聯：
 
 ```php
 public function latestDeployment(): HasOneThrough
@@ -480,12 +481,13 @@ public function latestDeployment(): HasOneThrough
 }
 ```
 
+
 <a name="advanced-has-one-of-many-relationships"></a>
-#### 進階 Has One of Many 關聯
+#### 進階的多個中的一個關聯
 
-我們也可以建構更進階的「一對多中的其一」關聯。举例来说，一个 `Product` Model 可能会关联到多个 `Price` Model，且这些价格在发布新价格后仍会保留在系统中。此外，產品的新價格資料也可能可以預先發布，並透過一個 `published_at` 欄位在未來的某個日期生效。
+建構更進階的「多個中的一個」關聯是可行的。例如，一個 `Product` 模型可能有多個關聯的 `Price` 模型，即使在發布新價格後，這些模型仍保留在系統中。此外，產品的新價格數據可能可以提前發布，透過 `published_at` 欄位在未來的日期生效。
 
-總結來說，我們需要取得已發布的最新價格，且其發布日期不能在未來。此外，若有兩個價格的發布日期相同，我們會偏好 ID 較大的那個價格。為此，我們必須傳遞一個陣列給 `ofMany` 方法，其中包含用來判斷最新價格的可排序欄位。此外，我們還會提供一個閉包作為 `ofMany` 方法的第二個引數。這個閉包會負責為關聯查詢加上額外的發布日期限制：
+總結來說，我們需要取出發布日期不在未來且最新發布的價格。此外，如果兩個價格具有相同的發布日期，我們將優先選擇 ID 較大的價格。為了實現這一點，我們必須向 `ofMany` 方法傳遞一個陣列，其中包含決定最新價格的可排序欄位。此外，將提供一個閉包 (Closure) 作為 `ofMany` 方法的第二個參數。此閉包將負責向關聯查詢添加額外的發布日期限制：
 
 ```php
 /**
@@ -502,12 +504,13 @@ public function currentPricing(): HasOne
 }
 ```
 
+
 <a name="has-one-through"></a>
-### Has One Through
+### 遠處一對一 (Has One Through)
 
-「Has-one-through (遠層一對一)」關聯用來定義與另一個 Model 的一對一關聯。不過，這個關聯表示，定義關聯的 Model 可以藉由 _通過_ 第三個 Model 來與另一個 Model 的一個實體匹配。
+「遠處一對一 (has-one-through)」關聯定義了與另一個模型的一對一關聯。然而，此關聯表示宣告模型可以透過「經過 (through)」第三個模型來與另一個模型的單個實例匹配。
 
-舉例來說，在一個車輛維修廠的應用程式中，每個 `Mechanic` (技師) Model 可能會關聯到一個 `Car` (汽車) Model，而每個 `Car` Model 可能會關聯到一個 `Owner` (車主) Model。雖然技師與車主在資料庫中沒有直接的關聯，但技師可以 _透過_ `Car` Model 來存取車主。讓我們先來看看定義這個關聯所需的資料表：
+例如，在一個車輛維修場應用程式中，每個 `Mechanic` 模型可能與一個 `Car` 模型相關聯，而每個 `Car` 模型可能與一個 `Owner` 模型相關聯。雖然技師和車主在資料庫中沒有直接關係，但技師可以「透過」 `Car` 模型存取車主。讓我們看看定義此關聯所需的資料表：
 
 ```text
 mechanics
@@ -525,7 +528,7 @@ owners
     car_id - integer
 ```
 
-看完關聯的資料表結構後，讓我在 `Mechanic` Model 上定義關聯：
+既然我們已經檢查了關聯的資料表結構，讓我們在 `Mechanic` 模型上定義該關聯：
 
 ```php
 <?php
@@ -547,9 +550,9 @@ class Mechanic extends Model
 }
 ```
 
-傳給 `hasOneThrough` 方法的第一個引數是我們想存取的最終 Model 名稱，而第二個引數則是中介 Model 的名稱。
+傳遞給 `hasOneThrough` 方法的第一個參數是我們希望存取的最終模型名稱，而第二個參數是中間模型的名稱。
 
-或者，若關聯中牽涉到的所有 Model 都已經定義好了相關的關聯，我們也可以叫用 `through` 方法並提供這些關聯的名稱來流暢地定義一個「has-one-through」關聯。舉例來說，若 `Mechanic` Model 有一個 `cars` 關聯、且 `Car` Model 有一個 `owner` 關聯，我們可以像這樣定義一個連接技師與車主的「has-one-through」關聯：
+或者，如果相關關聯已經在關聯中涉及的所有模型上定義，您可以透過呼叫 `through` 方法並提供這些關聯的名稱來流暢地定義「遠處一對一」關聯。例如，如果 `Mechanic` 模型具有 `cars` 關聯，而 `Car` 模型具有 `owner` 關聯，您可以定義一個連接技師和車主的「遠處一對一」關聯，如下所示：
 
 ```php
 // String based syntax...
@@ -559,10 +562,11 @@ return $this->through('cars')->has('owner');
 return $this->throughCars()->hasOwner();
 ```
 
-<a name="has-one-through-key-conventions"></a>
-#### 鍵的慣例
 
-在執行關聯查詢時，會使用典型的 Eloquent 外鍵慣例。若想自訂關聯的鍵，可以將其作為第三與第四個引數傳給 `hasOneThrough` 方法。第三個引數是中介 Model 上的外鍵名稱。第四個引數是最終 Model 上的外鍵名稱。第五個引數是本地鍵，而第六個引數則是中介 Model 上的本地鍵：
+<a name="has-one-through-key-conventions"></a>
+#### 鍵值慣例
+
+執行關聯查詢時，將使用典型的 Eloquent 外鍵 (Foreign Key) 慣例。如果您想自定義關聯的鍵，可以將它們作為第三和第四個參數傳遞給 `hasOneThrough` 方法。第三個參數是中間模型上的外鍵名稱。第四個參數是最終模型上的外鍵名稱。第五個參數是本地鍵 (Local Key)，而第六個參數是中間模型的本地鍵：
 
 ```php
 class Mechanic extends Model
@@ -584,7 +588,7 @@ class Mechanic extends Model
 }
 ```
 
-或者，如前所述，若關聯中牽涉到的所有 Model 都已經定義好了相關的關聯，我們也可以叫用 `through` 方法並提供這些關聯的名稱來流暢地定義一個「has-one-through」關聯。這個做法的優點是可以重用已定義在現有關聯上的鍵慣例：
+或者，如前所述，如果相關關聯已經在關聯中涉及的所有模型上定義，您可以透過呼叫 `through` 方法並提供這些關聯的名稱來流暢地定義「遠處一對一」關聯。這種方法的優點是重用了現有關聯上已經定義的鍵值慣例：
 
 ```php
 // String based syntax...
@@ -595,9 +599,9 @@ return $this->throughCars()->hasOwner();
 ```
 
 <a name="has-many-through"></a>
-### Has Many Through
+### 遠處一對多 (Has Many Through)
 
-「has-many-through」關聯提供了一種方便的方法，能透過一個中介關聯來存取遠程的關聯。舉例來說，假設我們正在建立一個像 [Laravel Cloud](https://cloud.laravel.com) 這樣的部署平台。一個 `Application` Model 可能會透過一個中介的 `Environment` Model 來存取多個 `Deployment` Model。使用這個範例，你可以輕鬆地為給定的應用程式收集所有的部署。讓我們來看看定義這個關聯所需的資料表：
+「遠處一對多 (has-many-through)」關聯提供了一種方便的方法，可以透過中間關聯來存取遠處的關聯。例如，假設我們正在建立一個像 [Laravel Cloud](https://cloud.laravel.com) 這樣的部署平台。一個 `Application` 模型可能會透過中間的 `Environment` 模型存取許多 `Deployment` 模型。利用這個範例，您可以輕鬆地收集特定應用程式的所有部署。讓我們看看定義此關聯所需的資料表：
 
 ```text
 applications
@@ -615,7 +619,7 @@ deployments
     commit_hash - string
 ```
 
-現在我們已經檢查了關聯的資料表結構，讓我們在 `Application` Model 上定義關聯：
+現在我們已經檢查了資料表結構，讓我們在 `Application` 模型上定義這個關聯：
 
 ```php
 <?php
@@ -637,9 +641,9 @@ class Application extends Model
 }
 ```
 
-傳遞給 `hasManyThrough` 方法的第一個引數是我們希望存取的最終 Model 的名稱，而第二個引數是中介 Model 的名稱。
+傳遞給 `hasManyThrough` 方法的第一個參數是我們希望存取的最終模型名稱，而第二個參數是中間模型的名稱。
 
-或者，如果關聯中涉及的所有 Model 上都已經定義了相關的關聯，你可以透過叫用 `through` 方法並提供這些關聯的名稱，來流暢地定義一個「has-many-through」關聯。例如，如果 `Application` Model 有一個 `environments` 關聯，而 `Environment` Model 有一個 `deployments` 關聯，你可以像這樣定義一個連接應用程式和部署的「has-many-through」關聯：
+或者，如果所有涉及的模型都已經定義了相關的關聯，您可以使用 `through` 方法並提供這些關聯的名稱，來流暢地定義一個「遠處一對多」關聯。例如，如果 `Application` 模型具有 `environments` 關聯，而 `Environment` 模型具有 `deployments` 關聯，您可以像這樣定義連接應用程式與部署的「遠處一對多」關聯：
 
 ```php
 // String based syntax...
@@ -649,13 +653,12 @@ return $this->through('environments')->has('deployments');
 return $this->throughEnvironments()->hasDeployments();
 ```
 
-雖然 `Deployment` Model 的資料表不包含 `application_id` 欄位，但 `hasManyThrough` 關聯提供了透過 `$application->deployments` 存取應用程式部署的功能。為了取得這些 Model，Eloquent 會檢查中介的 `Environment` Model 資料表上的 `application_id` 欄位。找到相關的環境 ID 後，它們會被用來查詢 `Deployment` Model 的資料表。
-
+雖然 `Deployment` 模型的資料表不包含 `application_id` 欄位，但 `hasManyThrough` 關聯提供了透過 `$application->deployments` 存取應用程式部署的方法。為了取得這些模型，Eloquent 會檢查中間 `Environment` 模型資料表中的 `application_id` 欄位。在找到相關的環境 ID 後，它們將被用於查詢 `Deployment` 模型的資料表。
 
 <a name="has-many-through-key-conventions"></a>
-#### 鍵的慣例
+#### 鍵值慣例 (Key Conventions)
 
-在執行關聯查詢時，將會使用典型的 Eloquent 外鍵慣例。如果你想要自訂關聯的鍵，你可以將它們作為第三和第四個引數傳遞給 `hasManyThrough` 方法。第三個引數是中介 Model 上的外鍵名稱。第四個引數是最終 Model 上的外鍵名稱。第五個引數是本地鍵，而第六個引數是中介 Model 的本地鍵：
+執行關聯查詢時，將使用典型的 Eloquent 外鍵慣例。如果您想自定義關聯的鍵值，可以將它們作為第三個和第四個參數傳遞給 `hasManyThrough` 方法。第三個參數是中間模型上的外鍵名稱。第四個參數是最終模型上的外鍵名稱。第五個參數是本地鍵，而第六個參數是中間模型的本地鍵：
 
 ```php
 class Application extends Model
@@ -674,7 +677,7 @@ class Application extends Model
 }
 ```
 
-或者，如前所述，如果關聯中涉及的所有 Model 上都已經定義了相關的關聯，你可以透過叫用 `through` 方法並提供這些關聯的名稱，來流暢地定義一個「has-many-through」關聯。這種方法的好處是能重用現有關聯上已定義的鍵慣例：
+或者，如前所述，如果所有涉及的模型都已經定義了相關關聯，您可以透過調用 `through` 方法並提供這些關聯的名稱來流暢地定義一個「遠處一對多」關聯。這種方法的優點在於可以重複使用現有關聯中已經定義的鍵值慣例：
 
 ```php
 // String based syntax...
@@ -684,11 +687,10 @@ return $this->through('environments')->has('deployments');
 return $this->throughEnvironments()->hasDeployments();
 ```
 
-
 <a name="scoped-relationships"></a>
-### 作用域關聯
+### 限定範圍關聯 (Scoped Relationships)
 
-在 Model 中新增額外的方法來限制關聯是很常見的。例如，你可能會在 `User` Model 中新增一個 `featuredPosts` 方法，該方法會以一個額外的 `where` 限制式來限制更廣泛的 `posts` 關聯：
+通常會在模型中增加額外的方法來約束關聯。例如，您可能會在 `User` 模型中增加一個 `featuredPosts` 方法，該方法會透過額外的 `where` 約束來限制更廣泛的 `posts` 關聯：
 
 ```php
 <?php
@@ -718,7 +720,7 @@ class User extends Model
 }
 ```
 
-然而，如果你嘗試透過 `featuredPosts` 方法來建立一個 Model，它的 `featured` 屬性將不會被設定為 `true`。如果你希望透過關聯方法來建立 Model，同時也指定應被新增到所有透過該關聯建立的 Model 上的屬性，你可以在建立關聯查詢時使用 `withAttributes` 方法：
+但是，如果您嘗試透過 `featuredPosts` 方法建立模型，其 `featured` 屬性不會被設置為 `true`。如果您想透過關聯方法建立模型，並同時指定應添加到透過該關聯建立的所有模型中的屬性，您可以在建構關聯查詢時使用 `withAttributes` 方法：
 
 ```php
 /**
@@ -730,7 +732,7 @@ public function featuredPosts(): HasMany
 }
 ```
 
-`withAttributes` 方法會使用給定的屬性在查詢中新增 `where` 條件，並且它也會將給定的屬性新增到任何透過該關聯方法建立的 Model 上：
+`withAttributes` 方法將使用給定的屬性在查詢中增加 `where` 條件，它還會將給定的屬性增加到透過該關聯方法建立的任何模型中：
 
 ```php
 $post = $user->featuredPosts()->create(['title' => 'Featured Post']);
@@ -738,7 +740,7 @@ $post = $user->featuredPosts()->create(['title' => 'Featured Post']);
 $post->featured; // true
 ```
 
-若要指示 `withAttributes` 方法不要在查詢中新增 `where` 條件，你可以將 `asConditions` 引數設定為 `false`：
+要指示 `withAttributes` 方法不要在查詢中增加 `where` 條件，您可以將 `asConditions` 參數設置為 `false`：
 
 ```php
 return $this->posts()->withAttributes(['featured' => true], asConditions: false);
@@ -747,15 +749,15 @@ return $this->posts()->withAttributes(['featured' => true], asConditions: false)
 <a name="many-to-many"></a>
 ## 多對多關聯
 
-多對多關聯比 `hasOne` 與 `hasMany` 關聯要來得複雜一些。多對多關聯的一個例子是，一個使用者可以有多個角色，而這些角色也可以被應用程式中的其他使用者共用。例如，一個使用者可能會被指派「作者」與「編輯」的角色；然而，這些角色也可能會被指派給其他使用者。所以，一個使用者有多個角色，而一個角色也有多個使用者。
+多對多關聯比 `hasOne` 和 `hasMany` 關聯稍微複雜一點。多對多關聯的一個例子是一個 User (使用者) 擁有多個 Role (角色)，且這些角色也同時被應用程式中的其他使用者共享。例如，一個使用者可能被分配了「作者」和「編輯」角色；然而，這些角色也可能被分配給其他使用者。因此，一個使用者有多個角色，而一個角色也有多個使用者。
 
 
 <a name="many-to-many-table-structure"></a>
 #### 資料表結構
 
-為了定義這種關聯，需要三個資料庫資料表：`users`、`roles`、與 `role_user`。`role_user` 資料表的名稱是從關聯 Model 名稱的字母順序衍生而來，其中包含 `user_id` 與 `role_id` 欄位。這個資料表被用來作為連結使用者與角色的中介資料表。
+要定義這種關聯，需要三個資料表：`users`、`roles` 和 `role_user`。`role_user` 資料表的名稱是根據相關模型名稱的字母順序衍生的，並包含 `user_id` 和 `role_id` 欄位。此資料表用作連結使用者和角色的中間表。
 
-請記住，由於一個角色可以屬於多個使用者，我們不能只在 `roles` 資料表上放一個 `user_id` 欄位。這樣做的話，一個角色就只能屬於單一使用者。為了支援將角色指派給多個使用者，就需要 `role_user` 這個資料表。我們可以像這樣總結這個關聯的資料表結構：
+請記住，由於一個角色可以屬於多個使用者，我們不能簡單地在 `roles` 資料表中放置一個 `user_id` 欄位。這意味著一個角色只能屬於單個使用者。為了支援將角色分配給多個使用者，需要 `role_user` 資料表。我們可以將該關聯的資料表結構總結如下：
 
 ```text
 users
@@ -773,9 +775,9 @@ role_user
 
 
 <a name="many-to-many-model-structure"></a>
-#### Model 結構
+#### 模型結構
 
-多對多關聯是透過撰寫一個方法來定義的，該方法會回傳 `belongsToMany` 方法的結果。`belongsToMany` 方法是由 `Illuminate\Database\Eloquent\Model` 這個基礎類別提供的，你應用程式中所有的 Eloquent Model 都會使用到這個基礎類別。舉例來說，我們來在 `User` Model 上定義一個 `roles` 方法。傳給這個方法的第一個引數是關聯 Model 的類別名稱：
+多對多關聯是透過編寫一個回傳 `belongsToMany` 方法結果的方法來定義的。`belongsToMany` 方法由 `Illuminate\Database\Eloquent\Model` 基底類別提供，該類別被應用程式中所有的 Eloquent 模型所使用。例如，讓我們在 `User` 模型上定義一個 `roles` 方法。傳遞給此方法的第一個參數是相關模型類別的名稱：
 
 ```php
 <?php
@@ -797,7 +799,7 @@ class User extends Model
 }
 ```
 
-定義好關聯後，就可以使用 `roles` 動態關聯屬性來存取使用者的角色：
+一旦定義了關聯，您就可以使用 `roles` 動態關聯屬性來存取使用者的角色：
 
 ```php
 use App\Models\User;
@@ -809,19 +811,19 @@ foreach ($user->roles as $role) {
 }
 ```
 
-由於所有的關聯同時也都是查詢產生器，因此可以呼叫 `roles` 方法並繼續在查詢上鏈式地附加條件來為關聯查詢增加更多限制：
+由於所有關聯也都充當查詢產生器，您可以透過呼叫 `roles` 方法並繼續在查詢上鏈結條件來為關聯查詢增加進一步的約束：
 
 ```php
 $roles = User::find(1)->roles()->orderBy('name')->get();
 ```
 
-為了判斷關聯中介資料表的名稱，Eloquent 會將兩個關聯 Model 的名稱按字母順序合併。不過，你也可以自由地覆寫這個慣例。只要傳遞第二個引數給 `belongsToMany` 方法即可：
+為了確定關聯中間表的名稱，Eloquent 將按字母順序連接兩個相關模型的名稱。但是，您可以自由地覆蓋此慣例。您可以透過向 `belongsToMany` 方法傳遞第二個參數來做到這一點：
 
 ```php
 return $this->belongsToMany(Role::class, 'role_user');
 ```
 
-除了自訂中介資料表的名稱外，你也可以透過傳遞額外的引數給 `belongsToMany` 方法來自訂資料表上鍵(Key)的欄位名稱。第三個引數是你正在定義關聯的那個 Model 的外鍵名稱，而第四個引數則是要連結的那個 Model 的外鍵名稱：
+除了自定義中間表的名稱外，您還可以透過向 `belongsToMany` 方法傳遞額外參數來自定義資料表上鍵的欄位名稱。第三個參數是您正在定義關聯的模型的外鍵名稱，而第四個參數是您要連接的模型的外鍵名稱：
 
 ```php
 return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
@@ -831,7 +833,7 @@ return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
 <a name="many-to-many-defining-the-inverse-of-the-relationship"></a>
 #### 定義反向關聯
 
-若要定義多對多關聯的「反向」關聯，應在關聯的 Model 上定義一個方法，該方法也應回傳 `belongsToMany` 方法的結果。為了完成我們的使用者／角色範例，我們來在 `Role` Model 上定義 `users` 方法：
+要定義多對多關聯的「反向」關聯，您應該在相關模型上定義一個同樣回傳 `belongsToMany` 方法結果的方法。為了完成我們的使用者 / 角色範例，讓我們在 `Role` 模型上定義 `users` 方法：
 
 ```php
 <?php
@@ -853,13 +855,13 @@ class Role extends Model
 }
 ```
 
-如你所見，除了參照的 Model 是 `App\Models\User` 外，這個關聯的定義與其在 `User` Model 上的對應部分完全相同。由於我們重複使用了 `belongsToMany` 方法，因此在定義多對多關聯的「反向」關聯時，所有常見的資料表與鍵的自訂選項都可以使用。
+如您所見，除了引用 `App\Models\User` 模型外，該關聯的定義與其 `User` 模型對應項完全相同。由於我們重複使用了 `belongsToMany` 方法，因此在定義多對多關聯的「反向」關聯時，所有常用的資料表和鍵自定義選項都是可用的。
 
 
 <a name="retrieving-intermediate-table-columns"></a>
-### 取得中介資料表欄位
+### 取出中間表欄位
 
-如你所學，處理多對多關聯需要一個中介資料表。Eloquent 提供了一些非常有用的方法來與這個資料表互動。舉例來說，假設我們的 `User` Model 與多個 `Role` Model 有關聯。在存取這個關聯後，我們可以使用 Model 上的 `pivot` 屬性來存取中介資料表：
+正如您已經學過的，處理多對多關聯需要中間表的存在。Eloquent 提供了一些非常有用的方式來與此表進行互動。例如，讓我們假設我們的 `User` 模型與許多 `Role` 模型相關聯。在存取此關聯後，我們可以使用模型上的 `pivot` 屬性來存取中間表：
 
 ```php
 use App\Models\User;
@@ -871,30 +873,30 @@ foreach ($user->roles as $role) {
 }
 ```
 
-請注意，我們取出的每個 `Role` Model 都會自動被指派一個 `pivot` 屬性。這個屬性包含一個代表中介資料表的 Model。
+請注意，我們取出的每個 `Role` 模型都會自動被分配一個 `pivot` 屬性。此屬性包含一個代表中間表的模型。
 
-預設情況下，只有 Model 的鍵會出現在 `pivot` Model 上。如果你的中介資料表包含額外的屬性，則必須在定義關聯時指定它們：
+預設情況下，`pivot` 模型上只會存在模型鍵。如果您的中間表包含額外的屬性，您必須在定義關聯時指定它們：
 
 ```php
 return $this->belongsToMany(Role::class)->withPivot('active', 'created_by');
 ```
 
-若想讓你的中介資料表有 `created_at` 與 `updated_at` 時間戳記，並由 Eloquent 自動維護，請在定義關聯時呼叫 `withTimestamps` 方法：
+如果您希望中間表具有由 Eloquent 自動維護的 `created_at` 和 `updated_at` 時間戳記，請在定義關聯時呼叫 `withTimestamps` 方法：
 
 ```php
 return $this->belongsToMany(Role::class)->withTimestamps();
 ```
 
 > [!WARNING]
-> 使用 Eloquent 自動維護的時間戳記的中介資料表，必須同時有 `created_at` 與 `updated_at` 這兩個時間戳記欄位。
+> 使用 Eloquent 自動維護時間戳記的中間表必須同時具備 `created_at` 和 `updated_at` 時間戳記欄位。
 
 
 <a name="customizing-the-pivot-attribute-name"></a>
-#### 自訂 `pivot` 屬性名稱
+#### 自定義 `pivot` 屬性名稱
 
-如前所述，可以透過 `pivot` 屬性在 Model 上存取中介資料表的屬性。不過，你也可以自由地自訂這個屬性的名稱，以更好地反映其在你應用程式中的用途。
+如前所述，中間表的屬性可以透過 `pivot` 屬性在模型上存取。但是，您可以自由地自定義此屬性的名稱，以更好地反映其在應用程式中的用途。
 
-例如，若你的應用程式中有使用者可以訂閱 Podcast，那你很可能在使用者與 Podcast 之間有一個多對多關聯。在這種情況下，你可能會想把中介資料表的屬性從 `pivot` 重新命名為 `subscription`。這可以在定義關聯時使用 `as` 方法來完成：
+例如，如果您的應用程式包含可以訂閱 Podcast 的使用者，那麼使用者和 Podcast 之間可能存在多對多關聯。如果是這種情況，您可能希望將中間表屬性重命名為 `subscription` 而不是 `pivot`。這可以在定義關聯時使用 `as` 方法來完成：
 
 ```php
 return $this->belongsToMany(Podcast::class)
@@ -902,7 +904,7 @@ return $this->belongsToMany(Podcast::class)
     ->withTimestamps();
 ```
 
-指定了自訂的中介資料表屬性後，就可以使用自訂的名稱來存取中介資料表的資料：
+一旦指定了自定義的中間表屬性，您就可以使用自定義名稱來存取中間表資料：
 
 ```php
 $users = User::with('podcasts')->get();
@@ -913,9 +915,9 @@ foreach ($users->flatMap->podcasts as $podcast) {
 ```
 
 <a name="filtering-queries-via-intermediate-table-columns"></a>
-### 透過中介資料表欄位篩選查詢
+### 透過中間表欄位過濾查詢
 
-在定義關聯時，也可以使用 `wherePivot`、`wherePivotIn`、`wherePivotNotIn`、`wherePivotBetween`、`wherePivotNotBetween`、`wherePivotNull`、`wherePivotNotNull` 等方法來篩選 `belongsToMany` 關聯查詢所回傳的結果：
+您也可以在定義關聯時，使用 `wherePivot`、`wherePivotIn`、`wherePivotNotIn`、`wherePivotBetween`、`wherePivotNotBetween`、`wherePivotNull` 以及 `wherePivotNotNull` 方法來過濾 `belongsToMany` 關聯查詢所回傳的結果：
 
 ```php
 return $this->belongsToMany(Role::class)
@@ -944,17 +946,18 @@ return $this->belongsToMany(Podcast::class)
     ->wherePivotNotNull('expired_at');
 ```
 
-`wherePivot` 會為查詢加上一個 where 子句限制，但在透過已定義的關聯來建立新 Model 時，並不會加上指定的值。若需要查詢並建立帶有特定中介值的關聯，可使用 `withPivotValue` 方法：
+`wherePivot` 會在查詢中加入 where 子句限制，但在透過定義的關聯建立新模型時，並不會加入指定的數值。如果您需要同時查詢並在建立關聯時帶入特定的 pivot 數值，您可以使用 `withPivotValue` 方法：
 
 ```php
 return $this->belongsToMany(Role::class)
     ->withPivotValue('approved', 1);
 ```
 
-<a name="ordering-queries-via-intermediate-table-columns"></a>
-### 透過中介資料表欄位排序查詢
 
-可以使用 `orderByPivot` 方法來為 `belongsToMany` 關聯查詢回傳的結果排序。在下列範例中，我們會擷取該使用者所有最新的徽章：
+<a name="ordering-queries-via-intermediate-table-columns"></a>
+### 透過中間表欄位排序查詢
+
+您可以使用 `orderByPivot` 方法對 `belongsToMany` 關聯查詢所回傳的結果進行排序。在下方的範例中，我們將取得該使用者所有最新的徽章：
 
 ```php
 return $this->belongsToMany(Badge::class)
@@ -962,12 +965,13 @@ return $this->belongsToMany(Badge::class)
     ->orderByPivot('created_at', 'desc');
 ```
 
+
 <a name="defining-custom-intermediate-table-models"></a>
-### 定義自訂中介資料表 Model
+### 定義自定義中間表模型
 
-若想定義一個自訂的 Model 來代表多對多關聯的中介資料表，可以在定義關聯時呼叫 `using` 方法。自訂的中介(Pivot) Model 讓你有機會在中介 Model 上定義額外的行為，如方法 (Method) 與類型轉換 (Cast)。
+如果您想定義一個自定義模型來代表多對多關聯的中間表，您可以在定義關聯時呼叫 `using` 方法。自定義 pivot 模型讓您有機會在 pivot 模型上定義額外的行為，例如方法與轉換 (Casts)。
 
-自訂的多對多中介 Model 應繼承 `Illuminate\Database\Eloquent\Relations\Pivot` Class，而自訂的多態多對多中介 Model 則應繼承 `Illuminate\Database\Eloquent\Relations\MorphPivot` Class。舉例來說，我們可以定義一個使用自訂 `RoleUser` 中介 Model 的 `Role` Model：
+自定義的多對多 pivot 模型應該繼承 `Illuminate\Database\Eloquent\Relations\Pivot` 類別，而自定義的多型多對多 pivot 模型則應該繼承 `Illuminate\Database\Eloquent\Relations\MorphPivot` 類別。例如，我們可以定義一個使用自定義 `RoleUser` pivot 模型的 `Role` 模型：
 
 ```php
 <?php
@@ -989,7 +993,7 @@ class Role extends Model
 }
 ```
 
-在定義 `RoleUser` Model 時，應繼承 `Illuminate\Database\Eloquent\Relations\Pivot` Class：
+定義 `RoleUser` 模型時，您應該繼承 `Illuminate\Database\Eloquent\Relations\Pivot` 類別：
 
 ```php
 <?php
@@ -1005,12 +1009,13 @@ class RoleUser extends Pivot
 ```
 
 > [!WARNING]
-> 中介 Model (Pivot Model) 不能使用 `SoftDeletes` Trait。若需要對中介資料表記錄進行軟刪除，請考慮將中介 Model 轉換為一個真正的 Eloquent Model。
+> Pivot 模型不可使用 `SoftDeletes` trait。如果您需要軟刪除 pivot 紀錄，請考慮將您的 pivot 模型轉換為實際的 Eloquent 模型。
+
 
 <a name="custom-pivot-models-and-incrementing-ids"></a>
-#### 自訂中介 Model 與遞增 ID
+#### 自定義 Pivot 模型與遞增 ID
 
-若已定義了使用自訂中介 Model 的多對多關聯，且該中介 Model 有一個自動遞增的主鍵，則應確保自訂中介 Model 的 Class 中有定義一個設為 `true` 的 `incrementing` 屬性。
+如果您定義了一個使用自定義 pivot 模型的多對多關聯，且該 pivot 模型具有自動遞增的主鍵，則應確保您的自定義 pivot 模型類別中定義了一個設為 `true` 的 `incrementing` 屬性。
 
 ```php
 /**
@@ -1022,17 +1027,19 @@ public $incrementing = true;
 ```
 
 <a name="polymorphic-relationships"></a>
-## 多態關聯
+## 多型關聯 (Polymorphic Relationships)
 
-多態關聯允許子 Model 使用單一關聯來屬於多種類型的 Model。舉例來說，假設你正在開發一個能讓使用者分享部落格文章與影片的應用程式。在這樣的應用程式中，一個 `Comment` Model 可能會同時屬於 `Post` 與 `Video` Model。
+多型關聯 (Polymorphic Relationship) 允許子模型透過單一關聯隸屬於多種類型的模型。例如，想像您正在建立一個允許使用者分享部落格文章與影片的應用程式。在這樣的應用程式中，一個 `Comment` 模型可能同時隸屬於 `Post` 與 `Video` 模型。
+
 
 <a name="one-to-one-polymorphic-relations"></a>
 ### 一對一
 
+
 <a name="one-to-one-polymorphic-table-structure"></a>
 #### 資料表結構
 
-一對一多態關聯與一般的一對一關聯類似；不過，子 Model 可使用單一關聯來屬於多種類型的 Model。舉例來說，一篇部落格的 `Post` 與一個 `User` Model 可以共享一個與 `Image` Model 的多態關聯。使用一對一多態關聯可以讓我們用單一資料表來儲存可關聯至文章與使用者的獨立圖片。首先，我們先來看看資料表結構：
+一對一多型關聯類似於典型的一對一關聯；然而，子模型可以透過單一關聯隸屬於多種不同類型的模型。例如，部落格 `Post` 與 `User` 可能會共用一個指向 `Image` 模型的多型關聯。使用一對一多型關聯讓您可以擁有一個單一的唯一圖片資料表，並能與文章或使用者關聯。首先，讓我們來看看資料表結構：
 
 ```text
 posts
@@ -1050,12 +1057,13 @@ images
     imageable_type - string
 ```
 
-請注意 `images` 資料表上的 `imageable_id` 與 `imageable_type` 欄位。`imageable_id` 欄位會包含文章或使用者的 ID 值，而 `imageable_type` 欄位則會包含父 Model 的類別名稱。Eloquent 會使用 `imageable_type` 欄位來判斷在存取 `imageable` 關聯時要回傳哪個「類型」的父 Model。在這個例子中，該欄位會包含 `App\Models\Post` 或 `App\Models\User`。
+請注意 `images` 資料表中的 `imageable_id` 與 `imageable_type` 欄位。`imageable_id` 欄位將包含文章或使用者的 ID 值，而 `imageable_type` 欄位則包含父模型的類別名稱。Eloquent 使用 `imageable_type` 欄位來決定在存取 `imageable` 關聯時該回傳哪種「類型」的父模型。在這個例子中，該欄位將包含 `App\Models\Post` 或 `App\Models\User`。
+
 
 <a name="one-to-one-polymorphic-model-structure"></a>
-<h4>Model 結構</h4>
+#### 模型結構
 
-接著，我們來看看要建立此關聯所需的 Model 定義：
+接下來，讓我們來看看建立此關聯所需的模型定義：
 
 ```php
 <?php
@@ -1105,10 +1113,11 @@ class User extends Model
 }
 ```
 
+
 <a name="one-to-one-polymorphic-retrieving-the-relationship"></a>
 #### 取得關聯
 
-在定義好資料表與 Model 後，就可以透過 Model 來存取關聯。舉例來說，若要取得一篇文章的圖片，我們可以存取 `image` 動態關聯屬性：
+一旦定義好資料表與模型，您就可以透過模型來存取關聯。例如，要取得文章的圖片，我們可以存取 `image` 動態關聯屬性：
 
 ```php
 use App\Models\Post;
@@ -1118,7 +1127,7 @@ $post = Post::find(1);
 $image = $post->image;
 ```
 
-我們可以藉由存取呼叫 `morphTo` 的方法名稱來從多態 Model 中取得父項。在這個例子中，也就是 `Image` Model 上的 `imageable` 方法。因此，我們可以將該方法作為動態關聯屬性來存取：
+您可以透過存取呼叫 `morphTo` 的方法名稱來取得多型模型的父級。在此例中，即為 `Image` 模型上的 `imageable` 方法。因此，我們將該方法視為動態關聯屬性來存取：
 
 ```php
 use App\Models\Image;
@@ -1128,12 +1137,13 @@ $image = Image::find(1);
 $imageable = $image->imageable;
 ```
 
-`Image` Model 上的 `imageable` 關聯會回傳 `Post` 或 `User` 的實體，取決於是哪種類型的 Model 擁有該圖片。
+`Image` 模型上的 `imageable` 關聯將回傳 `Post` 或 `User` 的執行個體，這取決於哪種類型的模型擁有該圖片。
+
 
 <a name="morph-one-to-one-key-conventions"></a>
-#### 主鍵慣例
+#### 鍵名慣例
 
-若有需要，可以為多態子 Model 指定要使用的「id」與「type」欄位。若這麼做，請確保總是在 `morphTo` 方法的第一個引數中傳入關聯的名稱。一般來說，這個值應符合方法名稱，因此可以使用 PHP 的 `__FUNCTION__` 常數：
+如有必要，您可以指定多型子模型所使用的「id」與「type」欄位名稱。如果您這麼做，請確保務必將關聯名稱作為第一個參數傳遞給 `morphTo` 方法。通常，此值應與方法名稱相符，因此您可以使用 PHP 的 `__FUNCTION__` 常數：
 
 ```php
 /**
@@ -1152,7 +1162,7 @@ public function imageable(): MorphTo
 <a name="one-to-many-polymorphic-table-structure"></a>
 #### 資料表結構
 
-「一對多」的多態關聯與一般的「一對多」關聯很像；不過，子 Model 可使用單一關聯屬於多種不同型別的 Model。舉例來說，假設某個應用程式中的使用者可以「留言 (Comment)」給文章 (Post) 與影片 (Video)。使用多態關聯時，我們就可以用單一個 `comments` 資料表來儲存給文章與影片的留言。首先，我們先來看看要建立這個關聯所需的資料表結構：
+一對多多型關聯與典型的一對多關聯類似；然而，子模型可以透過單一關聯屬於多種類型的模型。例如，想像一下您應用程式的使用者可以對文章與影片進行「評論」。使用多型關聯，您可以使用單一 `comments` 資料表來包含文章與影片的評論。首先，讓我們看看建立此關聯所需的資料表結構：
 
 ```text
 posts
@@ -1174,9 +1184,9 @@ comments
 
 
 <a name="one-to-many-polymorphic-model-structure"></a>
-#### Model 結構
+#### 模型結構
 
-接著，我們來看看要建立這個關聯所需的 Model 定義：
+接著，讓我們看看建立此關聯所需的模型定義：
 
 ```php
 <?php
@@ -1230,7 +1240,7 @@ class Video extends Model
 <a name="one-to-many-polymorphic-retrieving-the-relationship"></a>
 #### 取得關聯
 
-定義好資料表與 Model 後，就可以透過 Model 上的動態關聯屬性來存取關聯。舉例來說，若要存取某篇文章的所有留言，可使用 `comments` 動態屬性：
+一旦定義了資料庫表與模型，您就可以透過模型的動態關聯屬性存取這些關聯。例如，要存取文章的所有評論，我們可以使用 `comments` 動態屬性：
 
 ```php
 use App\Models\Post;
@@ -1242,7 +1252,7 @@ foreach ($post->comments as $comment) {
 }
 ```
 
-我們也可以透過存取呼叫 `morphTo` 的那個方法名稱來從多態子 Model 上取得父 Model。在這個例子中，就是 `Comment` Model 上的 `commentable` 方法。因此，我們會將該方法作為動態關聯屬性來存取，以取得留言的父 Model：
+您也可以透過存取呼叫 `morphTo` 的方法名稱來取得多型子模型的父級。在這種情況下，即為 `Comment` 模型上的 `commentable` 方法。因此，我們將該方法作為動態關聯屬性進行存取，以取得評論的父級模型：
 
 ```php
 use App\Models\Comment;
@@ -1252,13 +1262,13 @@ $comment = Comment::find(1);
 $commentable = $comment->commentable;
 ```
 
-`Comment` Model 上的 `commentable` 關聯會回傳 `Post` 或 `Video` 的實體，取決於是哪種型別的 Model 擁有該留言。
+`Comment` 模型上的 `commentable` 關聯將回傳 `Post` 或 `Video` 實例，具體取決於哪種類型的模型是該評論的父級。
 
 
 <a name="polymorphic-automatically-hydrating-parent-models-on-children"></a>
-#### 自動在子 Model 上 Hydrate 父 Model
+#### 自動在子模型中載入父模型
 
-就算使用 Eloquent 的預先載入，若在遍歷子 Model 的迴圈中嘗試存取父 Model，還是可能會出現「N + 1」查詢問題：
+即使使用 Eloquent 的積極載入 (Eager Loading)，如果您在巡覽子模型時嘗試從子模型存取父模型，仍可能會出現「N + 1」查詢問題：
 
 ```php
 $posts = Post::with('comments')->get();
@@ -1270,9 +1280,9 @@ foreach ($posts as $post) {
 }
 ```
 
-在上面的範例中，會出現「N + 1」查詢問題。這是因為，就算我們為每個 `Post` Model 預先載入了其留言，Eloquent 也不會在每個子 `Comment` Model 上自動 Hydrate (填充) 其父 `Post`。
+在上面的範例中，引入了「N + 1」查詢問題，因為即使為每個 `Post` 模型積極載入了評論，Eloquent 也不會自動在每個子 `Comment` 模型上載入 (Hydrate) 父級 `Post`。
 
-若想讓 Eloquent 自動將父 Model Hydrate 到其子 Model 上，可以在定義 `morphMany` 關聯時叫用 `chaperone` 方法：
+如果您希望 Eloquent 自動將父模型載入到其子模型中，可以在定義 `morphMany` 關聯時呼叫 `chaperone` 方法：
 
 ```php
 class Post extends Model
@@ -1287,7 +1297,7 @@ class Post extends Model
 }
 ```
 
-或者，若想在執行時才選擇性地啟用自動父項 Hydration，可以在預先載入關聯時叫用 `chaperone` Model：
+或者，如果您想在執行時選擇啟用自動父級載入，可以在積極載入關聯時呼叫 `chaperone` 模型：
 
 ```php
 use App\Models\Post;
@@ -1299,9 +1309,9 @@ $posts = Post::with([
 
 
 <a name="one-of-many-polymorphic-relations"></a>
-### 一對多中的其一
+### 多個中的一個
 
-有時候一個 Model 可能會有多個關聯 Model，但我們只想要輕鬆地取得關聯中「最新」或「最舊」的關聯 Model。舉例來說，一個 `User` Model 可能會關聯到多個 `Image` Model，但我們想定義一個方便的方法來操作該使用者最近上傳的圖片。我們可以使用 `morphOne` 關聯型別並搭配 `ofMany` 系列方法來達成此目標：
+有時一個模型可能有許多相關模型，但您希望輕鬆取得該關聯中「最新」或「最舊」的相關模型。例如，一個 `User` 模型可能與多個 `Image` 模型相關聯，但您想定義一種方便的方式與使用者上傳的最新圖片進行互動。您可以使用 `morphOne` 關聯類型結合 `ofMany` 方法來達成此目的：
 
 ```php
 /**
@@ -1313,7 +1323,7 @@ public function latestImage(): MorphOne
 }
 ```
 
-同樣地，我們也可以定義一個方法來取得關聯中「最舊」(也就是第一個) 的關聯 Model：
+同樣地，您可以定義一個方法來取得關聯中「最舊」或第一個相關模型：
 
 ```php
 /**
@@ -1325,9 +1335,9 @@ public function oldestImage(): MorphOne
 }
 ```
 
-預設情況下，`latestOfMany` 與 `oldestOfMany` 方法會根據 Model 中可排序的主鍵來取得最新或最舊的關聯 Model。不過，有時候我們可能會想用不同的排序條件來從一個較大的關聯中取得單一 Model。
+預設情況下，`latestOfMany` 與 `oldestOfMany` 方法將根據模型的遞增主鍵 (Primary Key) 取得最新或最舊的相關模型。然而，有時您可能希望使用不同的排序標準從較大的關聯中取得單一模型。
 
-舉例來說，使用 `ofMany` 方法，我們可以取得使用者「最受歡迎 (liked)」的圖片。`ofMany` 方法的第一個引數為可排序的欄位，第二個引數則為查詢關聯 Model 時要套用的聚合函式 (`min` 或 `max`)：
+例如，使用 `ofMany` 方法，您可以取得使用者最受「喜愛」的圖片。`ofMany` 方法接受可排序的欄位作為其第一個參數，以及在查詢相關模型時要套用的聚合函式 (`min` 或 `max`) 作為第二個參數：
 
 ```php
 /**
@@ -1340,16 +1350,16 @@ public function bestImage(): MorphOne
 ```
 
 > [!NOTE]
-> 可以建立更進階的「一對多中的其一」關聯。更多資訊請參考 [has one of many 文件的說明](#advanced-has-one-of-many-relationships)。
+> 可以建構更進階的「多個中的一個」關聯。更多資訊請參閱 [遠處多個中的一個說明文件](#advanced-has-one-of-many-relationships)。
 
 <a name="many-to-many-polymorphic-relations"></a>
-### 多對多 (Polymorphic)
+### 多對多
 
 
 <a name="many-to-many-polymorphic-table-structure"></a>
 #### 資料表結構
 
-多態多對多關聯比「Morph One」與「Morph Many」關聯要稍微複雜一些。舉例來說，一個 `Post` Model 與一個 `Video` Model 可以共享與 `Tag` Model 的多態關聯。在這種情況下使用多態多對多關聯，可以讓你的應用程式使用單一的唯一標籤資料表，並將這些標籤關聯到文章或影片上。首先，我們先來看看建立這個關聯所需的資料表結構：
+多型多對多關聯比「一對一」和「一對多」的多型關聯稍微複雜一點。例如，`Post` 模型和 `Video` 模型可以共享對 `Tag` 模型的多型關聯。在這種情況下使用多型多對多關聯，可以讓您的應用程式擁有一張不重複標籤的單一資料表，並與文章或影片關聯。首先，讓我們看看建立此關聯所需的資料表結構：
 
 ```text
 posts
@@ -1371,15 +1381,15 @@ taggables
 ```
 
 > [!NOTE]
-> 在深入瞭解多態多對多關聯前，建議先閱讀有關一般 [多對多關聯](#many-to-many) 的說明文件。
+> 在深入探討多型多對多關聯之前，建議您先閱讀一般[多對多關聯](#many-to-many)的說明文件。
 
 
 <a name="many-to-many-polymorphic-model-structure"></a>
-#### Model 結構
+#### 模型結構
 
-接著，我們就可以來在 Model 上定義關聯了。`Post` 與 `Video` Model 都會包含一個 `tags` 方法，該方法會呼叫基礎 Eloquent Model Class 所提供的 `morphToMany` 方法。
+接著，我們準備好在模型上定義關聯。`Post` 和 `Video` 模型都將包含一個 `tags` 方法，該方法會呼叫基礎 Eloquent 模型類別提供的 `morphToMany` 方法。
 
-`morphToMany` 方法的第一個引數為關聯 Model 的名稱，第二個引數則為「關聯名稱」。根據我們為中介資料表指定的名稱以及其中包含的索引鍵，我們將這個關聯稱為「taggable」：
+`morphToMany` 方法接受相關模型類別的名稱以及「關聯名稱」。根據我們為中間表指定的名稱及其包含的鍵，我們將此關聯稱為 "taggable"：
 
 ```php
 <?php
@@ -1405,9 +1415,9 @@ class Post extends Model
 <a name="many-to-many-polymorphic-defining-the-inverse-of-the-relationship"></a>
 #### 定義反向關聯
 
-接著，在 `Tag` Model 上，我們應為每個可能的父項 Model 都定義一個方法。因此，在這個範例中，我們會定義一個 `posts` 方法與一個 `videos` 方法。這兩個方法都應回傳 `morphedByMany` 方法的結果。
+接著，在 `Tag` 模型中，您應該為其每個可能的父模型定義一個方法。因此，在這個範例中，我們將定義 `posts` 方法和 `videos` 方法。這兩個方法都應該回傳 `morphedByMany` 方法的結果。
 
-`morphedByMany` 方法的第一個引數為關聯 Model 的名稱，第二個引數則為「關聯名稱」。根據我們為中介資料表指定的名稱以及其中包含的索引鍵，我們將這個關聯稱為「taggable」：
+`morphedByMany` 方法接受相關模型類別的名稱以及「關聯名稱」。根據我們為中間表指定的名稱及其包含的鍵，我們將此關聯稱為 "taggable"：
 
 ```php
 <?php
@@ -1439,9 +1449,9 @@ class Tag extends Model
 
 
 <a name="many-to-many-polymorphic-retrieving-the-relationship"></a>
-#### 取得關聯
+#### 取出關聯
 
-定義好資料表與 Model 後，就可以透過 Model 來存取關聯了。舉例來說，若要存取某篇文章的所有標籤，可以使用 `tags` 動態關聯屬性：
+一旦您的資料庫資料表和模型定義完成，您就可以透過模型存取這些關聯。例如，要存取文章的所有標籤，您可以使用 `tags` 動態關聯屬性：
 
 ```php
 use App\Models\Post;
@@ -1453,7 +1463,7 @@ foreach ($post->tags as $tag) {
 }
 ```
 
-我們也可以透過存取呼叫 `morphedByMany` 的方法名稱，來從多態子項 Model 中取得多態關聯的父項。在這個例子中，這個方法就是 `Tag` Model 上的 `posts` 或 `videos` 方法：
+您可以從多型子模型中，透過存取呼叫 `morphedByMany` 的方法名稱來取出多型關聯的父級模型。在這個範例中，即是 `Tag` 模型上的 `posts` 或 `videos` 方法：
 
 ```php
 use App\Models\Tag;
@@ -1471,11 +1481,11 @@ foreach ($tag->videos as $video) {
 
 
 <a name="custom-polymorphic-types"></a>
-### 自訂多態型別
+### 自定義多型類型
 
-預設情況下，Laravel 會使用完整的 Class 名稱來儲存關聯 Model 的「型別」。舉例來說，在上面的一對多關聯範例中，`Comment` Model 可能屬於 `Post` 或 `Video` Model，因此預設的 `commentable_type` 會分別是 `App\Models\Post` 或 `App\Models\Video`。不過，有時候我們可能會想讓這些值與應用程式的內部結構脫鉤。
+預設情況下，Laravel 會使用完整格式的類別名稱（Fully Qualified Class Name）來儲存相關模型的「類型」。例如，在上述的一對多關聯範例中，當 `Comment` 模型可能屬於 `Post` 或 `Video` 模型時，預設的 `commentable_type` 將分別為 `App\Models\Post` 或 `App\Models\Video`。然而，您可能希望將這些值與應用程式的內部結構解耦。
 
-舉例來說，我們可以使用 `post` 或 `video` 這種簡單的字串來取代 Model 名稱作為「型別」。這麼一來，就算 Model 被重新命名了，資料庫中的多態「型別」欄位值也仍然有效：
+例如，我們可以使用簡單的字串如 `post` 和 `video` 來代替模型名稱作為「類型」。藉由這樣做，即使模型被重新命名，資料庫中多型「類型」欄位的值仍將保持有效：
 
 ```php
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -1486,9 +1496,9 @@ Relation::enforceMorphMap([
 ]);
 ```
 
-我們可以在 `App\Providers\AppServiceProvider` Class 的 `boot` 方法中呼叫 `enforceMorphMap` 方法，或也可以在需要時建立一個獨立的 Service Provider。
+您可以在 `App\Providers\AppServiceProvider` 類別的 `boot` 方法中呼叫 `enforceMorphMap` 方法，或者如果您願意，也可以建立一個獨立的服務提供者。
 
-在執行階段時，可以使用 Model 的 `getMorphClass` 方法來判斷給定 Model 的 Morph 別名。反過來說，也可以使用 `Relation::getMorphedModel` 方法來判斷與某個 Morph 別名相關的完整 Class 名稱：
+您可以在執行期間使用模型的 `getMorphClass` 方法來取得給定模型的多型別名。相反地，您可以使用 `Relation::getMorphedModel` 方法來取得與多型別名關聯的完整類別名稱：
 
 ```php
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -1499,15 +1509,15 @@ $class = Relation::getMorphedModel($alias);
 ```
 
 > [!WARNING]
-> 在現有專案中新增「Morph Map」時，資料庫中所有仍包含完整 Class 名稱的可多態 `*_type` 欄位值都必須被轉換為其「Map」名稱。
+> 當為現有的應用程式新增「morph map」時，資料庫中每個仍包含完整類別名稱的多型 `*_type` 欄位值都需要轉換為其「對應地圖（Map）」名稱。
 
 
 <a name="dynamic-relationships"></a>
 ### 動態關聯
 
-我們可以使用 `resolveRelationUsing` 方法在執行階段定義 Eloquent Model 之間的關聯。雖然在一般的應用程式開發中不建議這麼做，但在開發 Laravel 套件時偶爾會很有用。
+您可以使用 `resolveRelationUsing` 方法在執行期間定義 Eloquent 模型之間的關聯。雖然通常不建議在一般應用程式開發中使用，但在開發 Laravel 套件時，這有時會很有用。
 
-`resolveRelationUsing` 方法的第一個引數為想要的關聯名稱。傳給該方法的第二個引數則應為一個閉包，該閉包會接收 Model 實體並回傳一個有效的 Eloquent 關聯定義。一般來說，我們應在 [Service Provider](/docs/{{version}}/providers) 的 boot 方法中設定動態關聯：
+`resolveRelationUsing` 方法接受所需的關聯名稱作為其第一個參數。傳遞給該方法的第二個參數應該是一個閉包，該閉包接受模型實例並回傳一個有效的 Eloquent 關聯定義。通常，您應該在[服務提供者](/docs/{{version}}/providers)的 boot 方法中設定動態關聯：
 
 ```php
 use App\Models\Order;
@@ -1519,14 +1529,14 @@ Order::resolveRelationUsing('customer', function (Order $orderModel) {
 ```
 
 > [!WARNING]
-> 定義動態關聯時，請務必為 Eloquent 關聯方法提供明確的索引鍵名稱引數。
+> 當定義動態關聯時，請務必為 Eloquent 關聯方法提供明確的鍵名參數。
 
 <a name="querying-relations"></a>
 ## 查詢關聯
 
-由於所有的 Eloquent 關聯都是透過方法定義的，因此我們可以呼叫這些方法來取得關聯的實體，而不需要實際執行查詢來載入關聯的 Model。此外，所有 Eloquent 關聯的類型也都可作為[查詢產生器](/docs/{{version}}/queries)使用，讓我們可以在最終對資料庫執行 SQL 查詢前，繼續在關聯查詢上鏈式呼叫並加上條件約束。
+由於所有的 Eloquent 關聯都是透過方法定義的，因此你可以呼叫這些方法來取得關聯的實例，而無需實際執行查詢來載入相關模型。此外，所有類型的 Eloquent 關聯也同時作為 [查詢產生器 (Query Builders)](/docs/{{version}}/queries) 使用，讓你能在最終對資料庫執行 SQL 查詢之前，繼續在關聯查詢上串接限制條件。
 
-舉例來說，假設有個部落格應用程式，其中 `User` Model 有許多關聯的 `Post` Model：
+例如，假設有一個部落格應用程式，其中 `User` 模型有許多關聯的 `Post` 模型：
 
 ```php
 <?php
@@ -1548,7 +1558,7 @@ class User extends Model
 }
 ```
 
-我們可以像這樣查詢 `posts` 關聯並為其加上額外的條件約束：
+你可以查詢 `posts` 關聯並為該關聯添加額外的限制，如下所示：
 
 ```php
 use App\Models\User;
@@ -1558,12 +1568,13 @@ $user = User::find(1);
 $user->posts()->where('active', 1)->get();
 ```
 
-你可以在關聯上使用任何 Laravel [查詢產生器](/docs/{{version}}/queries)的方法，所以請務必詳閱查詢產生器的說明文件來瞭解所有可用的方法。
+你可以在關聯上使用任何 Laravel [查詢產生器](/docs/{{version}}/queries) 的方法，因此請務必閱讀查詢產生器的文件，以了解所有可用的方法。
+
 
 <a name="chaining-orwhere-clauses-after-relationships"></a>
-#### 在關聯後鏈式呼叫 `orWhere` 子句
+#### 在關聯後串接 `orWhere` 子句
 
-如上例所示，在查詢關聯時，我們可以自由地為關聯加上額外的條件約束。不過，在關聯上鏈式呼叫 `orWhere` 子句時要小心，因為 `orWhere` 子句在邏輯上會與關聯的條件約束在同一層級上分組：
+如上方範例所示，你在查詢關聯時可以自由地添加額外的限制。然而，在關聯後串接 `orWhere` 子句時請務必小心，因為 `orWhere` 子句在邏輯上會與關聯限制處於同一層級：
 
 ```php
 $user->posts()
@@ -1572,7 +1583,7 @@ $user->posts()
     ->get();
 ```
 
-上例會產生下列的 SQL。如你所見，`or` 子句會讓查詢回傳 _任何_ 票數大於 100 的文章。這個查詢已不再被限制於特定使用者：
+上方的範例將產生以下 SQL。如你所見，`or` 子句指示查詢回傳 _任何_ 票數大於等於 100 的文章。該查詢不再受限於特定使用者：
 
 ```sql
 select *
@@ -1580,7 +1591,7 @@ from posts
 where user_id = ? and active = 1 or votes >= 100
 ```
 
-在大多數情況下，應使用[邏輯分組](/docs/{{version}}/queries#logical-grouping)來將條件檢查放在括號中：
+在大多數情況下，你應該使用 [邏輯分組](/docs/{{version}}/queries#logical-grouping) 將條件檢查放在括號內：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1593,7 +1604,7 @@ $user->posts()
     ->get();
 ```
 
-上例會產生下列的 SQL。請注意，邏輯分組已將條件約束正確地分組，且查詢仍被限制於特定使用者：
+上方的範例將產生以下 SQL。請注意，邏輯分組已正確地將限制條件歸類在一起，且查詢依然受限於特定使用者：
 
 ```sql
 select *
@@ -1601,10 +1612,11 @@ from posts
 where user_id = ? and (active = 1 or votes >= 100)
 ```
 
-<a name="relationship-methods-vs-dynamic-properties"></a>
-### 關聯方法 vs. 動態屬性
 
-若不需要為 Eloquent 關聯查詢加上額外的條件約束，我們可以像存取屬性一樣存取關聯。舉例來說，繼續使用我們的 `User` 與 `Post` 範例 Model，我們可以像這樣存取某個使用者的所有文章：
+<a name="relationship-methods-vs-dynamic-properties"></a>
+### 關聯方法與動態屬性
+
+如果你不需要為 Eloquent 關聯查詢添加額外的限制，你可以像存取屬性一樣存取該關聯。例如，延續我們的 `User` 和 `Post` 範例模型，我們可以像這樣存取使用者的所有文章：
 
 ```php
 use App\Models\User;
@@ -1616,12 +1628,13 @@ foreach ($user->posts as $post) {
 }
 ```
 
-動態關聯屬性會執行「延遲載入 (Lazy Loading)」，代表只有在實際存取到關聯資料時才會載入。因此，開發人員通常會使用[預先載入 (Eager Loading)](#eager-loading) 來預先載入他們知道在載入 Model 後會存取到的關聯。預先載入能大幅減少載入 Model 關聯時必須執行的 SQL 查詢。
+動態關聯屬性執行的是「延遲載入 (Lazy Loading)」，這意味著只有在你實際存取這些屬性時，它們才會載入關聯資料。正因如此，開發者通常會使用 [積極載入 (Eager Loading)](#eager-loading) 來預先載入他們已知在載入模型後會被存取的關聯。積極載入能顯著減少載入模型關聯時必須執行的 SQL 查詢次數。
+
 
 <a name="querying-relationship-existence"></a>
-### 查詢關聯的存在
+### 查詢關聯是否存在
 
-在擷取 Model 紀錄時，我們可能希望根據關聯的存在與否來限制結果。舉例來說，假設我們想擷取所有至少有一則留言的部落格文章。為此，我們可以將關聯的名稱傳給 `has` 與 `orHas` 方法：
+在取得模型紀錄時，你可能希望根據關聯的存在與否來限制結果。例如，假設你想取得所有至少有一則留言的部落格文章。為此，你可以將關聯名稱傳遞給 `has` 和 `orHas` 方法：
 
 ```php
 use App\Models\Post;
@@ -1630,21 +1643,21 @@ use App\Models\Post;
 $posts = Post::has('comments')->get();
 ```
 
-我們也可以指定運算子與計數值來進一步自訂查詢：
+你也可以指定運算子和計數值來進一步自定義查詢：
 
 ```php
 // Retrieve all posts that have three or more comments...
 $posts = Post::has('comments', '>=', 3)->get();
 ```
 
-巢狀的 `has` 陳述式可使用「點 (.)」標記法來建構。舉例來說，我們可以擷取所有至少有一則留言，且該留言至少有一張圖片的文章：
+巢狀的 `has` 語句可以使用「點」號表示法來建構。例如，你可以取得所有至少有一則留言，且該留言至少有一張圖片的文章：
 
 ```php
 // Retrieve posts that have at least one comment with images...
 $posts = Post::has('comments.images')->get();
 ```
 
-若需要更強大的功能，我們可以使用 `whereHas` 與 `orWhereHas` 方法來為 `has` 查詢定義額外的查詢條件約束，例如檢查留言的內容：
+如果你需要更強大的功能，可以使用 `whereHas` 和 `orWhereHas` 方法在你的 `has` 查詢中定義額外的查詢限制，例如檢查留言的內容：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1661,18 +1674,19 @@ $posts = Post::whereHas('comments', function (Builder $query) {
 ```
 
 > [!WARNING]
-> Eloquent 目前不支援跨資料庫查詢關聯的存在。關聯必須存在於同一個資料庫內。
+> Eloquent 目前不支援跨資料庫的關聯存在性查詢。關聯必須存在於同一個資料庫中。
+
 
 <a name="many-to-many-relationship-existence-queries"></a>
-#### 多對多關聯存在查詢
+#### 多對多關聯存在性查詢
 
-`whereAttachedTo` 方法可用於查詢與某個 Model 或 Model 集合有多對多附件的 Model：
+`whereAttachedTo` 方法可用於查詢那些與特定模型或模型集合具有多對多關聯的模型：
 
 ```php
 $users = User::whereAttachedTo($role)->get();
 ```
 
-你也可以提供一個 [collection](/docs/{{version}}/eloquent-collections) 實體給 `whereAttachedTo` 方法。這麼做時，Laravel 將會擷取與集合中任何一個 Model 有關聯的 Model：
+你也可以將 [集合 (Collection)](/docs/{{version}}/eloquent-collections) 實例傳遞給 `whereAttachedTo` 方法。這樣做時，Laravel 將取得與集合內任何父模型相關聯的模型：
 
 ```php
 $tags = Tag::whereLike('name', '%laravel%')->get();
@@ -1680,10 +1694,11 @@ $tags = Tag::whereLike('name', '%laravel%')->get();
 $posts = Post::whereAttachedTo($tags)->get();
 ```
 
-<a name="inline-relationship-existence-queries"></a>
-#### 行內關聯存在查詢
 
-如果你想用單一、簡單的 where 條件來查詢關聯的存在，你可能會覺得使用 `whereRelation`、`orWhereRelation`、`whereMorphRelation` 與 `orWhereMorphRelation` 方法更為方便。舉例來說，我們可以查詢所有有未經審核留言的文章：
+<a name="inline-relationship-existence-queries"></a>
+#### 行內關聯存在性查詢
+
+如果你想在關聯查詢中使用單一、簡單的 where 條件來查詢關聯的存在性，使用 `whereRelation`、`orWhereRelation`、`whereMorphRelation` 以及 `orWhereMorphRelation` 方法可能會更方便。例如，我們可以查詢所有具有未核准留言的文章：
 
 ```php
 use App\Models\Post;
@@ -1691,18 +1706,19 @@ use App\Models\Post;
 $posts = Post::whereRelation('comments', 'is_approved', false)->get();
 ```
 
-當然，就像查詢產生器的 `where` 方法一樣，你也可以指定一個運算子：
+當然，就像呼叫查詢產生器的 `where` 方法一樣，你也可以指定一個運算子：
 
 ```php
 $posts = Post::whereRelation(
-    'comments', 'created_at', '>=', now()->subHour()
+    'comments', 'created_at', '>=', now()->minus(hours: 1)
 )->get();
 ```
 
-<a name="querying-relationship-absence"></a>
-### 查詢關聯的不存在
 
-在擷取 Model 紀錄時，我們可能希望根據關聯的不存在來限制結果。舉例來說，假設我們想擷取所有**沒有**任何留言的部落格文章。為此，我們可以將關聯的名稱傳給 `doesntHave` 與 `orDoesntHave` 方法：
+<a name="querying-relationship-absence"></a>
+### 查詢關聯是否不存在
+
+在取得模型紀錄時，你可能希望根據關聯的缺失與否來限制結果。例如，假設你想取得所有**沒有**任何留言的部落格文章。為此，你可以將關聯名稱傳遞給 `doesntHave` 和 `orDoesntHave` 方法：
 
 ```php
 use App\Models\Post;
@@ -1710,7 +1726,7 @@ use App\Models\Post;
 $posts = Post::doesntHave('comments')->get();
 ```
 
-若需要更強大的功能，我們可以使用 `whereDoesntHave` 與 `orWhereDoesntHave` 方法來為 `doesntHave` 查詢加上額外的查詢條件約束，例如檢查留言的內容：
+如果你需要更強大的功能，可以使用 `whereDoesntHave` 和 `orWhereDoesntHave` 方法為你的 `doesntHave` 查詢添加額外的查詢限制，例如檢查留言的內容：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1720,7 +1736,7 @@ $posts = Post::whereDoesntHave('comments', function (Builder $query) {
 })->get();
 ```
 
-我們可以使用「點 (.)」標記法來對巢狀關聯執行查詢。舉例來說，下列查詢會擷取所有沒有留言的文章，以及有留言但留言者都不是被封鎖使用者的文章：
+你可以使用「點」號表示法對巢狀關聯執行查詢。例如，以下查詢將取得所有沒有留言的文章，以及雖然有留言但留言者皆非被封鎖使用者的文章：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1733,7 +1749,7 @@ $posts = Post::whereDoesntHave('comments.author', function (Builder $query) {
 <a name="querying-morph-to-relationships"></a>
 ### 查詢 Morph To 關聯
 
-若要查詢「morph to」關聯是否存在，可使用 `whereHasMorph` 與 `whereDoesntHaveMorph` 方法。這些方法的第一個引數為關聯的名稱。接著，這些方法的第二個引數則為要包含在查詢內的關聯 Model 名稱。最後，還可以提供一個閉包來自訂關聯查詢：
+若要查詢「morph to」關聯是否存在，您可以使用 `whereHasMorph` 與 `whereDoesntHaveMorph` 方法。這些方法接受關聯名稱作為其第一個參數。接著，這些方法接受您希望包含在查詢中的相關模型名稱。最後，您可以提供一個閉包來定義自定義的關聯查詢：
 
 ```php
 use App\Models\Comment;
@@ -1760,7 +1776,7 @@ $comments = Comment::whereDoesntHaveMorph(
 )->get();
 ```
 
-有時候，我們可能會需要根據多態關聯 Model 的「型別」來新增查詢限制。傳給 `whereHasMorph` 方法的閉包可接收 `$type` 值作為其第二個引數。此引數可讓我們檢查正在建構的查詢的「型別」：
+有時您可能需要根據相關多型模型的「類型 (Type)」來增加查詢限制。傳遞給 `whereHasMorph` 方法的閉包可以接收 `$type` 值作為其第二個參數。此參數允許您檢查正在建立的查詢「類型」：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1776,7 +1792,7 @@ $comments = Comment::whereHasMorph(
 )->get();
 ```
 
-有時候，我們可能會想查詢某個「morph to」關聯的父項的子項。我們可以使用 `whereMorphedTo` 與 `whereNotMorphedTo` 方法來達成。這兩個方法會自動為給定的 Model 判斷正確的多態型別對應。這些方法會接收 `morphTo` 關聯的名稱作為其第一個引數，並接收關聯的父 Model 作為其第二個引數：
+有時您可能想要查詢「morph to」關聯之父級的子模型。您可以使用 `whereMorphedTo` 與 `whereNotMorphedTo` 方法來達成此目的，這些方法會自動為給定的模型決定正確的多型類型對應。這些方法接受 `morphTo` 關聯的名稱作為其第一個參數，並接受相關的父級模型作為其第二個參數：
 
 ```php
 $comments = Comment::whereMorphedTo('commentable', $post)
@@ -1786,9 +1802,9 @@ $comments = Comment::whereMorphedTo('commentable', $post)
 
 
 <a name="querying-all-morph-to-related-models"></a>
-#### 查詢所有關聯 Model
+#### 查詢所有相關模型
 
-除了傳遞一個包含可能的多態 Model 的陣列外，我們也可以提供 `*` 作為萬用字元值。這會讓 Laravel 從資料庫中取得所有可能的多態型別。Laravel 會執行一個額外的查詢來執行此操作：
+您可以提供 `*` 作為通配字元值，而不是傳遞一個可能的多型模型陣列。這會指示 Laravel 從資料庫中取出所有可能的多型類型。Laravel 將執行一個額外的查詢以執行此操作：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1799,13 +1815,13 @@ $comments = Comment::whereHasMorph('commentable', '*', function (Builder $query)
 ```
 
 <a name="aggregating-related-models"></a>
-## 聚合關聯 Model
+## 聚合相關模型
 
 
 <a name="counting-related-models"></a>
-### 計數關聯 Model
+### 計算相關模型數量
 
-有時候，我們可能會想在不實際載入 Model 的情況下，計算某個關聯的關聯 Model 數量。為此，可使用 `withCount` 方法。`withCount` 方法會在產生的 Model 上加上一個 `{relation}_count` 屬性：
+有時你可能想在不實際載入模型的情況下，計算給定關聯的相關模型數量。若要達成此目的，你可以使用 `withCount` 方法。`withCount` 方法會在結果模型上放置一個 `{relation}_count` 屬性：
 
 ```php
 use App\Models\Post;
@@ -1817,7 +1833,7 @@ foreach ($posts as $post) {
 }
 ```
 
-`withCount` 方法也接受傳入一個陣列，藉此可為多個關聯加上「計數」，並為查詢加上額外的限制：
+透過向 `withCount` 方法傳遞一個陣列，你可以增加多個關聯的「計數」，也可以為查詢增加額外的約束：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1830,7 +1846,7 @@ echo $posts[0]->votes_count;
 echo $posts[0]->comments_count;
 ```
 
-我們也可以為關聯計數結果設定別名 (Alias)，以在同一個關聯上進行多次計數：
+你也可以為關聯計數結果設定別名，從而允許對同一個關聯進行多次計數：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1850,7 +1866,7 @@ echo $posts[0]->pending_comments_count;
 <a name="deferred-count-loading"></a>
 #### 延遲計數載入
 
-使用 `loadCount` 方法，就可以在父項 Model 已被擷取後，才載入關聯計數：
+使用 `loadCount` 方法，你可以在父模型已經被取出後再載入關聯計數：
 
 ```php
 $book = Book::first();
@@ -1858,7 +1874,7 @@ $book = Book::first();
 $book->loadCount('genres');
 ```
 
-若需要為計數查詢設定額外的查詢限制，可以傳入一個以要計數的關聯為索引鍵的陣列。該陣列的值應為一個會收到查詢產生器實體的閉包：
+如果你需要為計數查詢設置額外的查詢約束，可以傳遞一個以你希望計數的關聯為鍵的陣列。陣列的值應為接收查詢產生器執行個體的閉包：
 
 ```php
 $book->loadCount(['reviews' => function (Builder $query) {
@@ -1868,9 +1884,9 @@ $book->loadCount(['reviews' => function (Builder $query) {
 
 
 <a name="relationship-counting-and-custom-select-statements"></a>
-#### 關聯計數與自訂 Select 陳述式
+#### 關聯計數與自定義 Select 語句
 
-若要將 `withCount` 與 `select` 陳述式合併使用，請確保在 `select` 方法後才呼叫 `withCount`：
+如果你將 `withCount` 與 `select` 語句結合使用，請確保你在 `select` 方法之後才呼叫 `withCount`：
 
 ```php
 $posts = Post::select(['title', 'body'])
@@ -1882,7 +1898,7 @@ $posts = Post::select(['title', 'body'])
 <a name="other-aggregate-functions"></a>
 ### 其他聚合函式
 
-除了 `withCount` 方法外，Eloquent 還提供了 `withMin`、`withMax`、`withAvg`、`withSum`、與 `withExists` 等方法。這些方法會在產生的 Model 上加上一個 `{relation}_{function}_{column}` 屬性：
+除了 `withCount` 方法，Eloquent 還提供了 `withMin`、`withMax`、`withAvg`、`withSum` 以及 `withExists` 方法。這些方法會在你的結果模型上放置一個 `{relation}_{function}_{column}` 屬性：
 
 ```php
 use App\Models\Post;
@@ -1894,7 +1910,7 @@ foreach ($posts as $post) {
 }
 ```
 
-若想用另一個名稱來存取聚合函式的結果，可以指定自己的別名：
+如果你希望使用其他名稱來存取聚合函式的結果，可以指定你自己的別名：
 
 ```php
 $posts = Post::withSum('comments as total_comments', 'votes')->get();
@@ -1904,7 +1920,7 @@ foreach ($posts as $post) {
 }
 ```
 
-與 `loadCount` 方法類似，這些方法也提供延遲的版本。這些額外的聚合操作可在已擷取的 Eloquent Model 上執行：
+與 `loadCount` 方法類似，這些方法也提供延遲版本。這些額外的聚合操作可以在已經取出的 Eloquent 模型上執行：
 
 ```php
 $post = Post::first();
@@ -1912,7 +1928,7 @@ $post = Post::first();
 $post->loadSum('comments', 'votes');
 ```
 
-若要將這些聚合方法與 `select` 陳述式合併使用，請確保在 `select` 方法後才呼叫這些聚合方法：
+如果你將這些聚合方法與 `select` 語句結合使用，請確保你在 `select` 方法之後才呼叫這些聚合方法：
 
 ```php
 $posts = Post::select(['title', 'body'])
@@ -1922,13 +1938,13 @@ $posts = Post::select(['title', 'body'])
 
 
 <a name="counting-related-models-on-morph-to-relationships"></a>
-### 在 Morph To 關聯上計數關聯 Model
+### 計算 Morph To 關聯的模型數量
 
-若想預先載入 (Eager Load)「Morph To」關聯，並為該關聯可能回傳的各個實體取得關聯 Model 計數，可使用 `with` 方法並搭配 `morphTo` 關聯的 `morphWithCount` 方法。
+如果你想積極載入一個「morph to」關聯，以及該關聯可能回傳的各種實體的相關模型計數，你可以結合使用 `with` 方法與 `morphTo` 關聯的 `morphWithCount` 方法。
 
-在此範例中，我們假設 `Photo` 與 `Post` Model 可用來建立 `ActivityFeed` Model。我們會假設 `ActivityFeed` Model 定義了一個名為 `parentable` 的「Morph To」關聯，讓我們能為給定的 `ActivityFeed` 實體擷取其父項 `Photo` 或 `Post` Model。此外，我們也假設 `Photo` Model「擁有多個 (Have Many)」`Tag` Model，而 `Post` Model 則「擁有多個」`Comment` Model。
+在此範例中，讓我們假設 `Photo` 和 `Post` 模型都可以建立 `ActivityFeed` 模型。我們假設 `ActivityFeed` 模型定義了一個名為 `parentable` 的「morph to」關聯，讓我們能取出給定 `ActivityFeed` 執行個體的父級 `Photo` 或 `Post` 模型。此外，假設 `Photo` 模型「擁有多個」`Tag` 模型，而 `Post` 模型「擁有多個」`Comment` 模型。
 
-現在，假設我們要擷取 `ActivityFeed` 實體，並為每個 `ActivityFeed` 實體預先載入其 `parentable` 父項 Model。此外，我們還想擷取與每個父項照片關聯的標籤數量，以及與每個父項文章關聯的留言數量：
+現在，想像我們想要取出 `ActivityFeed` 執行個體，並為每個 `ActivityFeed` 執行個體積極載入 `parentable` 父模型。此外，我們想要取出與每個父級相片關聯的標籤數量，以及與每個父級文章關聯的留言數量：
 
 ```php
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -1946,7 +1962,7 @@ $activities = ActivityFeed::with([
 <a name="morph-to-deferred-count-loading"></a>
 #### 延遲計數載入
 
-假設我們已經擷取了一組 `ActivityFeed` Model，而現在想為與這些活動饋給 (Activity Feed) 關聯的各個 `parentable` Model 載入其巢狀的關聯計數。可使用 `loadMorphCount` 方法來達成：
+假設我們已經取出了一組 `ActivityFeed` 模型，現在我們想要載入與這些動態摘要關聯的各種 `parentable` 模型的巢狀關聯計數。你可以使用 `loadMorphCount` 方法來達成：
 
 ```php
 $activities = ActivityFeed::with('parentable')->get();
@@ -1958,9 +1974,9 @@ $activities->loadMorphCount('parentable', [
 ```
 
 <a name="eager-loading"></a>
-## 預先載入 (Eager Loading)
+## 積極載入 (Eager Loading)
 
-當將 Eloquent 關聯當作屬性來存取時，關聯 Model 會被「延遲載入 (lazy loaded)」。這代表關聯資料並不會在存取該屬性前就載入。不過，Eloquent 可以在查詢父項 Model 時「預先載入 (eager load)」關聯。預先載入可以緩解「N + 1」查詢問題。為了說明 N + 1 查詢問題，我們假設有個 `Book` Model「屬於 (belongs to)」一個 `Author` Model：
+當將 Eloquent 關聯作為屬性存取時，相關模型是「延遲載入 (Lazy Loaded)」的。這意味著在您第一次存取該屬性之前，關聯資料實際上並未被載入。然而，Eloquent 可以在查詢父模型時「積極載入 (Eager Load)」關聯。積極載入緩解了「N + 1」查詢問題。為了說明 N + 1 查詢問題，請考慮一個「屬於 (belongsTo)」`Author` 模型的 `Book` 模型：
 
 ```php
 <?php
@@ -1982,7 +1998,7 @@ class Book extends Model
 }
 ```
 
-現在，來取得所有的書與其作者：
+現在，讓我們取得所有書籍及其作者：
 
 ```php
 use App\Models\Book;
@@ -1994,9 +2010,9 @@ foreach ($books as $book) {
 }
 ```
 
-這個迴圈會先執行一個查詢來從資料庫資料表中取得所有的書，接著，每一本書都會再執行一個查詢來取得該書的作者。所以，若我們有 25 本書，上面的程式碼就會執行 26 個查詢：一個查詢用來取得原本的書，而另外 25 個查詢則用來取得每一本書的作者。
+此迴圈將執行一次查詢以取得資料表中的所有書籍，然後為每本書執行另一次查詢以取得該書的作者。因此，如果我們有 25 本書，上述程式碼將執行 26 次查詢：一次查詢原始書籍，以及 25 次額外查詢以取得每本書的作者。
 
-幸好，我們可以使用預先載入來將這個操作降到只有兩個查詢。在建立查詢時，可以使用 `with` 方法來指定應預先載入哪些關聯：
+幸運的是，我們可以使用積極載入將此操作減少到僅兩次查詢。在建立查詢時，您可以使用 `with` 方法指定哪些關聯應該被積極載入：
 
 ```php
 $books = Book::with('author')->get();
@@ -2006,7 +2022,7 @@ foreach ($books as $book) {
 }
 ```
 
-對於這個操作，只會執行兩個查詢 —— 一個查詢用來取得所有的書，另一個查詢則用來取得所有這些書的作者：
+對於此操作，僅會執行兩次查詢——一次查詢以取得所有書籍，一次查詢以取得所有書籍的所有作者：
 
 ```sql
 select * from books
@@ -2014,25 +2030,27 @@ select * from books
 select * from authors where id in (1, 2, 3, 4, 5, ...)
 ```
 
-<a name="eager-loading-multiple-relationships"></a>
-#### 預先載入多個關聯
 
-有時候，可能需要預先載入數個不同的關聯。若要這麼做，只需要傳遞一個包含關聯的陣列給 `with` 方法：
+<a name="eager-loading-multiple-relationships"></a>
+#### 積極載入多個關聯
+
+有時您可能需要積極載入多個不同的關聯。為此，只需將關聯陣列傳遞給 `with` 方法即可：
 
 ```php
 $books = Book::with(['author', 'publisher'])->get();
 ```
 
-<a name="nested-eager-loading"></a>
-#### 巢狀預先載入
 
-若要預先載入某個關聯的關聯，可以使用「點 (.)」語法。舉例來說，我們來預先載入所有書的作者，以及所有作者的個人聯絡人：
+<a name="nested-eager-loading"></a>
+#### 巢狀積極載入
+
+若要積極載入關聯中的關聯，您可以使用「點號 (dot)」語法。例如，讓我們積極載入書籍的所有作者以及作者的所有個人聯絡人：
 
 ```php
 $books = Book::with('author.contacts')->get();
 ```
 
-或者，我們也可以提供一個巢狀陣列給 `with` 方法來指定巢狀預先載入的關聯，在預先載入多個巢狀關聯時會很方便：
+或者，您可以透過向 `with` 方法提供巢狀陣列來指定巢狀積極載入關聯，這在積極載入多個巢狀關聯時非常方便：
 
 ```php
 $books = Book::with([
@@ -2043,10 +2061,11 @@ $books = Book::with([
 ])->get();
 ```
 
-<a name="nested-eager-loading-morphto-relationships"></a>
-#### 巢狀預先載入 `morphTo` 關聯
 
-若想預先載入一個 `morphTo` 關聯、以及該關聯可能回傳的不同實體上的巢狀關聯，可以使用 `with` 方法搭配 `morphTo` 關聯的 `morphWith` 方法。為了說明這個方法，我們先來看看下列這個 Model：
+<a name="nested-eager-loading-morphto-relationships"></a>
+#### 巢狀積極載入 `morphTo` 關聯
+
+如果您想積極載入 `morphTo` 關聯，以及該關聯可能回傳的各種實體上的巢狀關聯，您可以將 `with` 方法與 `morphTo` 關聯的 `morphWith` 方法結合使用。為了幫助說明此方法，讓我們考慮以下模型：
 
 ```php
 <?php
@@ -2066,9 +2085,9 @@ class ActivityFeed extends Model
 }
 ```
 
-在這個範例中，我們假設 `Event`、`Photo`、與 `Post` Model 可以建立 `ActivityFeed` Model。此外，我們也假設 `Event` Model 屬於 `Calendar` Model、`Photo` Model 則與 `Tag` Model 相關聯、而 `Post` Model 則屬於 `Author` Model。
+在此範例中，讓我們假設 `Event`、`Photo` 和 `Post` 模型可能會建立 `ActivityFeed` 模型。此外，假設 `Event` 模型屬於 `Calendar` 模型，`Photo` 模型與 `Tag` 模型相關聯，而 `Post` 模型屬於 `Author` 模型。
 
-有了這些 Model 定義與關聯，我們就可以取得 `ActivityFeed` Model 的實體，並預先載入所有的 `parentable` Model 與其各自的巢狀關聯：
+使用這些模型定義和關聯，我們可以取得 `ActivityFeed` 模型實例，並積極載入所有 `parentable` 模型及其各自的巢狀關聯：
 
 ```php
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -2083,22 +2102,24 @@ $activities = ActivityFeed::query()
     }])->get();
 ```
 
-<a name="eager-loading-specific-columns"></a>
-#### 預先載入特定欄位
 
-有時候，我們不一定需要從關聯中取得所有欄位。為此，Eloquent 允許我們指定想從關聯中取得哪些欄位：
+<a name="eager-loading-specific-columns"></a>
+#### 積極載入指定欄位
+
+您可能並不總是需要從正在取得的關聯中取得每個欄位。因此，Eloquent 允許您指定想要取出的關聯欄位：
 
 ```php
 $books = Book::with('author:id,name,book_id')->get();
 ```
 
 > [!WARNING]
-> 使用此功能時，應總是在想取得的欄位列表中包含 `id` 欄位與任何相關的外鍵欄位。
+> 使用此功能時，您應始終在要取出的欄位清單中包含 `id` 欄位和任何相關的外鍵欄位。
+
 
 <a name="eager-loading-by-default"></a>
-#### 預設預先載入
+#### 預設積極載入
 
-有時候，我們可能會想在取得 Model 時總是載入某些關聯。若要這麼做，可以在 Model 上定義一個 `$with` 屬性：
+有時您可能希望在取得模型時始終載入某些關聯。為此，您可以在模型上定義 `$with` 屬性：
 
 ```php
 <?php
@@ -2135,45 +2156,44 @@ class Book extends Model
 }
 ```
 
-若想在單一查詢中從 `$with` 屬性移除某個項目，可以使用 `without` 方法：
+如果您想在單個查詢中從 `$with` 屬性中移除某個項目，可以使用 `without` 方法：
 
 ```php
 $books = Book::without('author')->get();
 ```
 
-若想在單一查詢中覆寫 `$with` 屬性內的所有項目，可以使用 `withOnly` 方法：
+如果您想在單個查詢中覆蓋 `$with` 屬性中的所有項目，可以使用 `withOnly` 方法：
 
 ```php
 $books = Book::withOnly('genre')->get();
 ```
 
 <a name="constraining-eager-loads"></a>
-### 限制預先載入
+### 限制積極載入
 
-有時候，你可能會想預先載入某個關聯，但同時也為該預先載入查詢指定額外的查詢條件。要達成這個目的，可以傳遞一個關聯陣列到 `with` 方法中。其中，陣列的鍵為關聯名稱，而陣列的值則為一個閉包 (Closure)，用來為預先載入查詢增加額外限制：
+有時您可能希望在積極載入關聯的同時，也為該積極載入查詢指定額外的查詢條件。您可以透過向 `with` 方法傳遞一個陣列來實現，其中陣列的鍵是關聯名稱，值則是為積極載入查詢添加額外限制條件的閉包：
 
 ```php
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 
-$users = User::with(['posts' => function (Builder $query) {
+$users = User::with(['posts' => function ($query) {
     $query->where('title', 'like', '%code%');
 }])->get();
 ```
 
-在此範例中，Eloquent 只會預先載入文章 `title` 欄位中包含 `code` 這個字的貼文。你也可以呼叫其他 [查詢產生器](/docs/{{version}}/queries) 的方法來進一步自訂預先載入的操作：
+在此範例中，Eloquent 只會積極載入貼文的 `title` 欄位包含單字 `code` 的貼文。您可以呼叫其他 [查詢產生器 (query builder)](/docs/{{version}}/queries) 的方法來進一步自定義積極載入操作：
 
 ```php
-$users = User::with(['posts' => function (Builder $query) {
+$users = User::with(['posts' => function ($query) {
     $query->orderBy('created_at', 'desc');
 }])->get();
 ```
 
 
 <a name="constraining-eager-loading-of-morph-to-relationships"></a>
-#### 限制 `morphTo` 關聯的預先載入
+#### 限制 `morphTo` 關聯的積極載入
 
-若要預先載入 `morphTo` 關聯，Eloquent 會執行多個查詢來擷取各種類型的關聯 Model。可使用 `MorphTo` 關聯的 `constrain` 方法來為這些查詢加上額外的限制：
+如果您正在積極載入一個 `morphTo` 關聯，Eloquent 會執行多個查詢來獲取每種類型的相關模型。您可以使用 `MorphTo` 關聯的 `constrain` 方法為這些查詢中的每一個添加額外的限制條件：
 
 ```php
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -2190,13 +2210,13 @@ $comments = Comment::with(['commentable' => function (MorphTo $morphTo) {
 }])->get();
 ```
 
-在此範例中，Eloquent 只會預先載入尚未被隱藏的貼文，以及 `type` 值為「educational」的影片。
+在此範例中，Eloquent 將只會積極載入未被隱藏的貼文以及 `type` 值為 "educational" 的影片。
 
 
 <a name="constraining-eager-loads-with-relationship-existence"></a>
-#### 透過關聯存在限制預先載入
+#### 透過關聯是否存在來限制積極載入
 
-有時候，你可能會需要在檢查某個關聯是否存在的同時，又根據相同的條件來載入該關聯。舉例來說，你可能只想擷取帶有符合特定查詢條件的子 `Post` Model 的 `User` Model，並同時預先載入這些符合條件的貼文。要達成這個目的，可使用 `withWhereHas` 方法：
+有時您可能會發現自己需要檢查關聯是否存在，同時根據相同的條件載入該關聯。例如，您可能只想取得具有符合特定查詢條件的子 `Post` 模型的 `User` 模型，同時積極載入這些符合條件的貼文。您可以使用 `withWhereHas` 方法來達成此目的：
 
 ```php
 use App\Models\User;
@@ -2208,9 +2228,9 @@ $users = User::withWhereHas('posts', function ($query) {
 
 
 <a name="lazy-eager-loading"></a>
-### 延遲預先載入 (Lazy Eager Loading)
+### 延遲積極載入 (Lazy Eager Loading)
 
-有時候，你可能會需要在已擷取到父 Model 後才需要預先載入關聯。舉例來說，當你需要動態決定是否載入關聯 Model 時，這個功能就很有用：
+有時您可能需要在取得父模型後才積極載入關聯。例如，如果您需要動態決定是否載入相關模型，這會非常有用：
 
 ```php
 use App\Models\Book;
@@ -2222,15 +2242,15 @@ if ($condition) {
 }
 ```
 
-若想為預先載入查詢設定額外的查詢限制，可以傳遞一個以你想載入的關聯為鍵的陣列。陣列的值應為一個會收到查詢實體的閉包實體：
+如果您需要在積極載入查詢上設定額外的查詢限制條件，您可以傳遞一個以您希望載入的關聯為鍵的陣列。陣列的值應該是接收查詢實例的閉包實例：
 
 ```php
-$author->load(['books' => function (Builder $query) {
+$author->load(['books' => function ($query) {
     $query->orderBy('published_date', 'asc');
 }]);
 ```
 
-若只要在關聯尚未載入時才載入關聯，請使用 `loadMissing` 方法：
+若要僅在關聯尚未載入時才載入它，請使用 `loadMissing` 方法：
 
 ```php
 $book->loadMissing('author');
@@ -2238,11 +2258,11 @@ $book->loadMissing('author');
 
 
 <a name="nested-lazy-eager-loading-morphto"></a>
-#### 巢狀延遲預先載入與 `morphTo`
+#### 巢狀延遲積極載入與 `morphTo`
 
-若想預先載入 `morphTo` 關聯，以及該關聯可能回傳的各種實體上的巢狀關聯，可使用 `loadMorph` 方法。
+如果您想積極載入 `morphTo` 關聯，以及該關聯可能回傳的各種實體上的巢狀關聯，您可以使用 `loadMorph` 方法。
 
-此方法的第一個引數為 `morphTo` 關聯的名稱，第二個引數則為一個包含 Model / 關聯配對的陣列。為了說明這個方法，讓我們先來看看下列 Model：
+此方法的第一個參數接受 `morphTo` 關聯的名稱，第二個參數接受模型 / 關聯對的陣列。為了幫助說明此方法，讓我們考慮以下模型：
 
 ```php
 <?php
@@ -2262,9 +2282,9 @@ class ActivityFeed extends Model
 }
 ```
 
-在此範例中，我們假設 `Event`、`Photo`、`Post` 這幾個 Model 都可以建立 `ActivityFeed` Model。此外，我們也假設 `Event` Model 屬於 `Calendar` Model、`Photo` Model 與 `Tag` Model 關聯、而 `Post` Model 則屬於 `Author` Model。
+在此範例中，讓我們假設 `Event`、`Photo` 和 `Post` 模型可能會建立 `ActivityFeed` 模型。此外，假設 `Event` 模型屬於 `Calendar` 模型，`Photo` 模型與 `Tag` 模型相關聯，而 `Post` 模型屬於 `Author` 模型。
 
-透過這些 Model 定義與關聯，我們就可以擷取 `ActivityFeed` Model 的實體，並預先載入所有的 `parentable` Model 與其各自的巢狀關聯：
+使用這些模型定義和關聯，我們可以取得 `ActivityFeed` 模型實例，並積極載入所有 `parentable` 模型及其各自的巢狀關聯：
 
 ```php
 $activities = ActivityFeed::with('parentable')
@@ -2278,12 +2298,12 @@ $activities = ActivityFeed::with('parentable')
 
 
 <a name="automatic-eager-loading"></a>
-### 自動預先載入
+### 自動積極載入
 
 > [!WARNING]
-> This feature is currently in beta in order to gather community feedback. The behavior and functionality of this feature may change even on patch releases.
+> 此功能目前處於測試階段，以收集社群回饋。此功能的行為和功能甚至可能在修補版本 (patch releases) 中發生變化。
 
-在許多情況下，Laravel 可以自動預先載入你存取的關聯。若要啟用自動預先載入，應在應用程式的 `AppServiceProvider` 的 `boot` 方法中叫用 `Model::automaticallyEagerLoadRelationships` 方法：
+在許多情況下，Laravel 可以自動積極載入您存取的關聯。若要啟用自動積極載入，您應該在應用程式 `AppServiceProvider` 的 `boot` 方法中呼叫 `Model::automaticallyEagerLoadRelationships` 方法：
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -2297,7 +2317,7 @@ public function boot(): void
 }
 ```
 
-啟用此功能後，Laravel 會在你存取任何先前未載入的關聯時，嘗試自動載入這些關聯。舉例來說，請參考下列情境：
+啟用此功能後，Laravel 將嘗試自動載入您存取的任何先前尚未載入的關聯。例如，考慮以下情境：
 
 ```php
 use App\Models\User;
@@ -2313,9 +2333,9 @@ foreach ($users as $user) {
 }
 ```
 
-一般來說，上述程式碼會為每個使用者執行一次查詢來擷取其貼文，並為每個貼文執行一次查詢來擷取其留言。不過，當 `automaticallyEagerLoadRelationships` 功能啟用後，在你嘗試存取任何一個已擷取使用者的貼文時，Laravel 就會自動為使用者集合中的所有使用者 [延遲預先載入](#lazy-eager-loading) 貼文。同樣地，當你嘗試存取任何已擷取貼文的留言時，所有原先擷取的貼文的留言也會被延遲預先載入。
+通常，上述程式碼會為每個使用者執行一個查詢以取得其貼文，並為每篇貼文執行一個查詢以取得其留言。然而，當 `automaticallyEagerLoadRelationships` 功能啟用時，當您嘗試存取任何已取得使用者的貼文時，Laravel 將自動為使用者集合中的所有使用者 [延遲積極載入 (lazy eager load)](#lazy-eager-loading) 其貼文。同樣地，當您嘗試存取任何已取得貼文的留言時，所有留言都將為最初取得的所有貼文進行延遲積極載入。
 
-若不想全域啟用自動預先載入，還是可以透過在 Eloquent 集合實體上叫用 `withRelationshipAutoloading` 方法，來為單一集合啟用此功能：
+如果您不想全域啟用自動積極載入，您仍然可以透過在集合上呼叫 `withRelationshipAutoloading` 方法，為單個 Eloquent 集合實例啟用此功能：
 
 ```php
 $users = User::where('vip', true)->get();
@@ -2324,11 +2344,11 @@ return $users->withRelationshipAutoloading();
 ```
 
 <a name="preventing-lazy-loading"></a>
-### 避免延遲載入 (Lazy Loading)
+### 防止延遲載入
 
-如先前所述，預先載入關聯通常能為應用程式帶來顯著的效能提升。因此，若有需要，可以讓 Laravel 總是避免延遲載入關聯。為此，可以叫用基礎 Eloquent Model 類別提供的 `preventLazyLoading` 方法。一般來說，應在應用程式的 `AppServiceProvider` 類別中的 `boot` 方法內叫用此方法。
+如前所述，積極載入 (Eager Loading) 關聯通常能為您的應用程式帶來顯著的效能提升。因此，如果您願意，您可以指示 Laravel 始終防止延遲載入 (Lazy Loading) 關聯。要達成此目的，您可以呼叫基礎 Eloquent 模型類別提供的 `preventLazyLoading` 方法。通常，您應該在應用程式 `AppServiceProvider` 類別的 `boot` 方法中呼叫此方法。
 
-`preventLazyLoading` 方法可接受一個選用的布林值引數，用以表示是否應避免延遲載入。舉例來說，我們可能會想只在非正式版 (non-production) 環境中停用延遲載入，這樣一來，就算正式版程式碼中不小心出現了延遲載入的關聯，正式版環境還是能正常運作：
+`preventLazyLoading` 方法接受一個選填的布林值參數，用來指示是否應防止延遲載入。例如，您可能只想在非正式環境中停用延遲載入，這樣即使在正式環境程式碼中意外出現了延遲載入關聯，您的正式環境仍能正常運作：
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -2342,9 +2362,9 @@ public function boot(): void
 }
 ```
 
-避免了延遲載入後，當應用程式嘗試延遲載入任何 Eloquent 關聯時，Eloquent 就會擲回一個 `Illuminate\Database\LazyLoadingViolationException` 例外。
+防止延遲載入後，當您的應用程式嘗試延遲載入任何 Eloquent 關聯時，Eloquent 將會拋出一個 `Illuminate\Database\LazyLoadingViolationException` 例外。
 
-我們可以使用 `handleLazyLoadingViolationsUsing` 方法來自訂延遲載入違規時的行為。舉例來說，使用此方法，我們可以讓延遲載入違規只被記錄下來，而不是用例外中斷應用程式的執行：
+您可以使用 `handleLazyLoadingViolationsUsing` 方法來自定義延遲載入違規的行為。例如，透過此方法，您可以指示僅記錄延遲載入違規，而不是以例外中斷應用程式的執行：
 
 ```php
 Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation) {
@@ -2355,13 +2375,13 @@ Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation)
 ```
 
 <a name="inserting-and-updating-related-models"></a>
-## 新增與更新關聯 Model
+## 新增與更新相關模型
 
 
 <a name="the-save-method"></a>
 ### `save` 方法
 
-Eloquent 提供了方便的方法來將新的 Model 新增到關聯中。舉例來說，假設我們需要為一篇文章新增一則留言。與其手動在 `Comment` Model 上設定 `post_id` 屬性，我們可以直接用關聯的 `save` 方法來新增留言：
+Eloquent 提供了為關聯新增模型的多種簡便方法。例如，你也許需要為一個 Post 新增一則 Comment。與其手動設定 `Comment` 模型上的 `post_id` 屬性，你可以直接從關聯使用 `save` 方法來新增 Comment：
 
 ```php
 use App\Models\Comment;
@@ -2374,9 +2394,9 @@ $post = Post::find(1);
 $post->comments()->save($comment);
 ```
 
-請注意，我們不是以動態屬性來存取 `comments` 關聯。而是呼叫 `comments` 方法來取得關聯的實體。`save` 方法會自動將合適的 `post_id` 值加到新的 `Comment` Model 中。
+注意，我們沒有像存取動態屬性那樣存取 `comments` 關聯。相反地，我們呼叫了 `comments` 方法來取得該關聯的實例。`save` 方法會自動將適當的 `post_id` 值加入到新的 `Comment` 模型中。
 
-若需要儲存多個關聯 Model，可使用 `saveMany` 方法：
+如果您需要儲存多個相關模型，您可以使用 `saveMany` 方法：
 
 ```php
 $post = Post::find(1);
@@ -2387,7 +2407,7 @@ $post->comments()->saveMany([
 ]);
 ```
 
-`save` 與 `saveMany` 方法會將給定的 Model 實體 Persist (儲存) 起來，但不會將新建的 Model 加到父項 Model 上已載入的記憶體內關聯中。若打算在 `save` 或 `saveMany` 方法後存取關聯，則可以使用 `refresh` 方法來重新載入 Model 與其關聯：
+`save` 和 `saveMany` 方法會持久化給定的模型實例，但不會將新持久化的模型加入到已經載入至父模型記憶體中的關聯中。如果您打算在執行 `save` 或 `saveMany` 方法後存取該關聯，您可能希望使用 `refresh` 方法來重新載入該模型及其關聯：
 
 ```php
 $post->comments()->save($comment);
@@ -2400,9 +2420,9 @@ $post->comments;
 
 
 <a name="the-push-method"></a>
-#### 遞迴式儲存 Model 與關聯
+#### 遞迴地儲存模型與關聯
 
-若想 `save` (儲存) Model 及其所有關聯，可使用 `push` 方法。在本範例中，`Post` Model 及其留言、留言的作者都會被儲存：
+如果您想要 `save` 您的模型及其所有相關的關聯，您可以使用 `push` 方法。在此範例中，`Post` 模型及其評論，以及評論的作者都會被儲存：
 
 ```php
 $post = Post::find(1);
@@ -2413,7 +2433,7 @@ $post->comments[0]->author->name = 'Author Name';
 $post->push();
 ```
 
-`pushQuietly` 方法可用於儲存 Model 及其關聯，且不觸發任何事件：
+`pushQuietly` 方法可用於儲存模型及其關聯，且不引發任何事件：
 
 ```php
 $post->pushQuietly();
@@ -2423,7 +2443,7 @@ $post->pushQuietly();
 <a name="the-create-method"></a>
 ### `create` 方法
 
-除了 `save` 與 `saveMany` 方法外，你還可以使用 `create` 方法，該方法接受一個屬性陣列、建立一個 Model、並將其插入資料庫。`save` 與 `create` 的不同之處在於，`save` 接受一個完整的 Eloquent Model 實體，而 `create` 則接受一個普通的 PHP `array`。`create` 方法會回傳新建的 Model：
+除了 `save` 和 `saveMany` 方法之外，您也可以使用 `create` 方法。它接受屬性的陣列，建立模型並將其插入資料庫中。`save` 和 `create` 之間的區別在於 `save` 接受一個完整的 Eloquent 模型實例，而 `create` 則接受一個純 PHP 的 `array`。`create` 方法會回傳新建立的模型：
 
 ```php
 use App\Models\Post;
@@ -2435,7 +2455,7 @@ $comment = $post->comments()->create([
 ]);
 ```
 
-可使用 `createMany` 方法來建立多個關聯 Model：
+您可以使用 `createMany` 方法來建立多個相關模型：
 
 ```php
 $post = Post::find(1);
@@ -2446,7 +2466,7 @@ $post->comments()->createMany([
 ]);
 ```
 
-`createQuietly` 與 `createManyQuietly` 方法可用於建立一或多個 Model 且不分派任何事件：
+`createQuietly` 與 `createManyQuietly` 方法可用於在不分發任何事件的情況下建立一個或多個模型：
 
 ```php
 $user = User::find(1);
@@ -2461,16 +2481,16 @@ $user->posts()->createManyQuietly([
 ]);
 ```
 
-你也可以使用 `findOrNew`、`firstOrNew`、`firstOrCreate` 與 `updateOrCreate` 方法來[在關聯上建立與更新 Model](/docs/{{version}}/eloquent#upserts)。
+您也可以使用 `findOrNew`、`firstOrNew`、`firstOrCreate` 和 `updateOrCreate` 方法來[建立與更新關聯上的模型](/docs/{{version}}/eloquent#upserts)。
 
 > [!NOTE]
-> 在使用 `create` 方法前，請務必先閱讀[批量指派](/docs/{{version}}/eloquent#mass-assignment)的說明文件。
+> 在使用 `create` 方法之前，請務必查看 [批量賦值 (Mass Assignment)](/docs/{{version}}/eloquent#mass-assignment) 說明文件。
 
 
 <a name="updating-belongs-to-relationships"></a>
 ### Belongs To 關聯
 
-若想將子 Model 指派給新的父項 Model，可使用 `associate` 方法。在本範例中，`User` Model 定義了一個與 `Account` Model 的 `belongsTo` 關聯。`associate` 方法會在子 Model 上設定外鍵：
+如果您想將子模型分配給新的父模型，您可以使用 `associate` 方法。在此範例中，`User` 模型定義了一個與 `Account` 模型的 `belongsTo` 關聯。`associate` 方法會設定子模型上的外鍵：
 
 ```php
 use App\Models\Account;
@@ -2482,7 +2502,7 @@ $user->account()->associate($account);
 $user->save();
 ```
 
-若要從子 Model 上移除父項 Model，可使用 `dissociate` 方法。該方法會將關聯的外鍵設為 `null`：
+要將父模型從子模型中移除，您可以使用 `dissociate` 方法。此方法會將該關聯的外鍵設定為 `null`：
 
 ```php
 $user->account()->dissociate();
@@ -2496,9 +2516,9 @@ $user->save();
 
 
 <a name="attaching-detaching"></a>
-#### 附加 (Attaching) / 分離 (Detaching)
+#### 附加 / 卸載
 
-Eloquent 也提供了一些方法，讓操作多對多關聯更為方便。舉例來說，假設一個使用者可以有多個角色，而一個角色可以屬於多個使用者。我們可以使用 `attach` 方法來將一個角色附加給使用者，這麼做會在關聯的中介資料表內新增一筆紀錄：
+Eloquent 也提供了方法讓處理多對多關聯更加方便。舉例來說，想像一個使用者可以擁有多個角色，而一個角色可以由多個使用者共享。您可以使用 `attach` 方法透過在關聯的中間表插入一筆記錄，將角色附加給使用者：
 
 ```php
 use App\Models\User;
@@ -2508,13 +2528,13 @@ $user = User::find(1);
 $user->roles()->attach($roleId);
 ```
 
-將關聯附加到 Model 上時，也可以傳入一組要插入到中介資料表中的額外資料陣列：
+將關聯附加到模型時，您也可以傳遞額外資料的陣列，以便插入到中間表中：
 
 ```php
 $user->roles()->attach($roleId, ['expires' => $expires]);
 ```
 
-有時候，我們也需要從使用者身上移除某個角色。若要移除一筆多對多關聯的紀錄，可使用 `detach` 方法。`detach` 方法會從中介資料表中刪除對應的紀錄；不過，兩個 Model 都會保留在資料庫中：
+有時候可能有必要從使用者身上移除某個角色。要移除多對多關聯的記錄，請使用 `detach` 方法。`detach` 方法會從中間表中刪除對應的記錄；然而，兩個模型都將保留在資料庫中：
 
 ```php
 // Detach a single role from the user...
@@ -2524,7 +2544,7 @@ $user->roles()->detach($roleId);
 $user->roles()->detach();
 ```
 
-為了方便起見，`attach` 與 `detach` 也都接受 ID 陣列作為輸入：
+為了方便起見，`attach` 和 `detach` 也接受 ID 陣列作為輸入：
 
 ```php
 $user = User::find(1);
@@ -2541,25 +2561,25 @@ $user->roles()->attach([
 <a name="syncing-associations"></a>
 #### 同步關聯
 
-我們還可以使用 `sync` 方法來建立多對多關聯。`sync` 方法接受一組要放到中介資料表中的 ID 陣列。任何不在給定陣列中的 ID 都會從中介資料表中移除。因此，此操作結束後，中介資料表中只會存在給定陣列中的 ID：
+您也可以使用 `sync` 方法來建構多對多關聯。`sync` 方法接受一個 ID 陣列放置在中間表。不在給定陣列中的任何 ID 都將從中間表中移除。因此，此操作完成後，只有給定陣列中的 ID 會存在於中間表中：
 
 ```php
 $user->roles()->sync([1, 2, 3]);
 ```
 
-你也可以與 ID 一起傳入額外的中介資料表值：
+您也可以連同 ID 一併傳遞額外的中間表欄位值：
 
 ```php
 $user->roles()->sync([1 => ['expires' => true], 2, 3]);
 ```
 
-若想為每個同步的 Model ID 都插入相同的中介資料表值，可使用 `syncWithPivotValues` 方法：
+如果您想為每個同步的模型 ID 插入相同的中間表欄位值，您可以使用 `syncWithPivotValues` 方法：
 
 ```php
 $user->roles()->syncWithPivotValues([1, 2, 3], ['active' => true]);
 ```
 
-若不想分離掉不存在於給定陣列中的既有 ID，可使用 `syncWithoutDetaching` 方法：
+如果您不想卸載在給定陣列中遺漏的現有 ID，您可以使用 `syncWithoutDetaching` 方法：
 
 ```php
 $user->roles()->syncWithoutDetaching([1, 2, 3]);
@@ -2569,13 +2589,13 @@ $user->roles()->syncWithoutDetaching([1, 2, 3]);
 <a name="toggling-associations"></a>
 #### 切換關聯
 
-多對多關聯也提供了一個 `toggle` 方法，可用於「切換 (Toggle)」給定關聯 Model ID 的附加狀態。若給定的 ID 目前是已附加，則會被分離。同樣地，若目前為已分離，則會被附加：
+多對多關聯也提供了一個 `toggle` 方法，它可以「切換」給定相關模型 ID 的附加狀態。如果給定的 ID 目前已附加，它將被卸載。同樣地，如果它目前是卸載狀態，它將會被附加：
 
 ```php
 $user->roles()->toggle([1, 2, 3]);
 ```
 
-你也可以與 ID 一起傳入額外的中介資料表值：
+您也可以連同 ID 一併傳遞額外的中間表欄位值：
 
 ```php
 $user->roles()->toggle([
@@ -2586,9 +2606,9 @@ $user->roles()->toggle([
 
 
 <a name="updating-a-record-on-the-intermediate-table"></a>
-#### 更新中介資料表上的紀錄
+#### 更新中間表上的記錄
 
-若需要更新關聯中介資料表上的既有資料列，可使用 `updateExistingPivot` 方法。此方法接受中介紀錄的外鍵與一組要更新的屬性陣列：
+如果您需要更新關聯中間表中的現有資料列，您可以使用 `updateExistingPivot` 方法。此方法接受中間表記錄的外鍵以及要更新的屬性陣列：
 
 ```php
 $user = User::find(1);
@@ -2599,11 +2619,11 @@ $user->roles()->updateExistingPivot($roleId, [
 ```
 
 <a name="touching-parent-timestamps"></a>
-## 接觸 (Touch) 父項時間戳記
+## 更新父級時間戳記 (Touching Parent Timestamps)
 
-當一個 Model 為另一個 Model 定義了 `belongsTo` 或 `belongsToMany` 關聯時 (例如，屬於 `Post` 的 `Comment`)，有時候在更新子 Model 時，能夠一併更新父項的時間戳記會很有幫助。
+當一個模型定義了 `belongsTo` 或 `belongsToMany` 關聯到另一個模型時，例如一個屬於 `Post` 的 `Comment`，當子模型更新時，有時更新父模型的時間戳記會很有幫助。
 
-舉例來說，當 `Comment` Model 更新時，我們可能想自動「接觸 (touch)」其所屬 `Post` 的 `updated_at` 時間戳記，來將其設為目前的日期與時間。為達成此目的，我們可以在子 Model 中加入一個 `touches` 屬性，其中包含在子 Model 更新時，應一同更新其 `updated_at` 時間戳記的關聯名稱：
+例如，當 `Comment` 模型更新時，您可能希望自動「更新 (touch)」所屬 `Post` 的 `updated_at` 時間戳記，使其設為目前的日期與時間。要達成此目的，您可以在子模型中加入一個 `touches` 屬性，其中包含在子模型更新時應一併更新其 `updated_at` 時間戳記的關聯名稱：
 
 ```php
 <?php
@@ -2633,4 +2653,4 @@ class Comment extends Model
 ```
 
 > [!WARNING]
-> 只有在使用 Eloquent 的 `save` 方法更新子 Model 時，才會更新父項 Model 的時間戳記。
+> 只有在使用 Eloquent 的 `save` 方法更新子模型時，才會更新父模型的時間戳記。
