@@ -1,4 +1,4 @@
-# Collections
+# 集合
 
 - [簡介](#introduction)
     - [建立集合](#creating-collections)
