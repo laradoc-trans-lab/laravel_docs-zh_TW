@@ -1,4 +1,4 @@
-# 資料庫：查詢產生器 (Query Builder)
+# 資料庫：查詢產生器
 
 - [簡介](#introduction)
 - [執行資料庫查詢](#running-database-queries)
@@ -6,45 +6,46 @@
     - [延遲串流結果](#streaming-results-lazily)
     - [聚合](#aggregates)
 - [Select 語句](#select-statements)
-- [原生表達式 (Raw Expressions)](#raw-expressions)
+- [原始運算式](#raw-expressions)
 - [連接 (Joins)](#joins)
 - [聯合 (Unions)](#unions)
-- [基本 Where 子句](#basic-where-clauses)
-    - [Where 子句](#where-clauses)
-    - [Or Where 子句](#or-where-clauses)
-    - [Where Not 子句](#where-not-clauses)
-    - [Where Any / All / None 子句](#where-any-all-none-clauses)
-    - [JSON Where 子句](#json-where-clauses)
-    - [額外的 Where 子句](#additional-where-clauses)
+- [基礎 Where 語句](#basic-where-clauses)
+    - [Where 語句](#where-clauses)
+    - [Or Where 語句](#or-where-clauses)
+    - [Where Not 語句](#where-not-clauses)
+    - [Where Any / All / None 語句](#where-any-all-none-clauses)
+    - [JSON Where 語句](#json-where-clauses)
+    - [額外的 Where 語句](#additional-where-clauses)
     - [邏輯分組](#logical-grouping)
-- [進階 Where 子句](#advanced-where-clauses)
-    - [Where Exists 子句](#where-exists-clauses)
-    - [子查詢 Where 子句](#subquery-where-clauses)
-    - [全文檢索 Where 子句](#full-text-where-clauses)
+- [進階 Where 語句](#advanced-where-clauses)
+    - [Where Exists 語句](#where-exists-clauses)
+    - [子查詢 Where 語句](#subquery-where-clauses)
+    - [全文檢索 Where 語句](#full-text-where-clauses)
+    - [向量相似度語句](#vector-similarity-clauses)
 - [排序、分組、限制與偏移](#ordering-grouping-limit-and-offset)
     - [排序](#ordering)
     - [分組](#grouping)
     - [限制與偏移](#limit-and-offset)
-- [條件子句](#conditional-clauses)
+- [條件語句](#conditional-clauses)
 - [Insert 語句](#insert-statements)
-    - [Upserts](#upserts)
+    - [更新或新增 (Upserts)](#upserts)
 - [Update 語句](#update-statements)
     - [更新 JSON 欄位](#updating-json-columns)
     - [遞增與遞減](#increment-and-decrement)
 - [Delete 語句](#delete-statements)
 - [悲觀鎖定](#pessimistic-locking)
-- [可重用的查詢組件](#reusable-query-components)
+- [可重複使用的查詢組件](#reusable-query-components)
 - [除錯](#debugging)
 
 <a name="introduction"></a>
 ## 簡介
 
-Laravel 的資料庫查詢產生器為建立及執行資料庫查詢提供了一個方便、流暢的介面。它可以用於執行應用程式中大部分的資料庫操作，並且能完美搭配所有 Laravel 支援的資料庫系統。
+Laravel 的資料庫查詢產生器提供了一個方便、流暢的介面，用於建立與執行資料庫查詢。它可以用於在您的應用程式中執行大多數資料庫操作，並且可以與所有 Laravel 支援的資料庫系統完美搭配。
 
-Laravel 查詢產生器使用 PDO 參數綁定來保護您的應用程式免受 SQL 注入 (SQL injection) 攻擊。您不需要針對傳遞給查詢產生器作為查詢綁定的字串進行清理或消毒。
+Laravel 查詢產生器使用 PDO 參數綁定，以保護您的應用程式免於 SQL 插入 (SQL injection) 攻擊。無需清理或過濾作為查詢綁定傳遞給查詢產生器的字串。
 
 > [!WARNING]
-> PDO 不支援綁定欄位名稱。因此，您絕不應該允許使用者輸入來決定查詢所參照的欄位名稱，包括 "order by" 欄位。
+> PDO 不支援綁定欄位名稱。因此，您絕不應該允許使用者輸入來決定查詢所引用的欄位名稱，包括 "order by" 欄位。
 
 <a name="running-database-queries"></a>
 ## 執行資料庫查詢
@@ -53,7 +54,7 @@ Laravel 查詢產生器使用 PDO 參數綁定來保護您的應用程式免受 
 <a name="retrieving-all-rows-from-a-table"></a>
 #### 從資料表中取得所有資料列
 
-您可以使用 `DB` Facade 提供的 `table` 方法來開始查詢。`table` 方法會為給定的資料表回傳一個流暢的查詢產生器實例，讓您可以在查詢上鏈結更多約束，最後使用 `get` 方法取得查詢結果：
+您可以使用 `DB` facade 提供的 `table` 方法來開始查詢。`table` 方法會為給定的資料表回傳一個流暢的查詢產生器實例，讓您可以在查詢上鏈結更多約束，最後再使用 `get` 方法取得查詢結果：
 
 ```php
 <?php
@@ -77,7 +78,7 @@ class UserController extends Controller
 }
 ```
 
-`get` 方法會回傳一個包含查詢結果的 `Illuminate\Support\Collection` 實例，其中每個結果都是 PHP `stdClass` 物件的實例。您可以透過存取物件的屬性來取得每個欄位的值：
+`get` 方法會回傳一個包含查詢結果的 `Illuminate\Support\Collection` 實例，其中每個結果都是 PHP `stdClass` 物件的實例。您可以透過存取物件的屬性來存取每個欄位的值：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -90,13 +91,13 @@ foreach ($users as $user) {
 ```
 
 > [!NOTE]
-> Laravel 集合 (Collections) 提供了多種功能強大的方法來對資料進行映射 (Mapping) 與化簡 (Reducing)。有關 Laravel 集合的更多資訊，請參閱 [集合文件](/docs/{{version}}/collections)。
+> Laravel collection 提供了多種極其強大的方法來對資料進行對映 (Mapping) 與化簡 (Reducing)。有關 Laravel collection 的更多資訊，請參閱 [Collection 文件](/docs/{{version}}/collections)。
 
 
 <a name="retrieving-a-single-row-column-from-a-table"></a>
-#### 從資料表中取得單一資料列或欄位
+#### 從資料表中取得單一資料列 / 欄位
 
-如果您只需要從資料表中取得單一資料列，可以使用 `DB` Facade 的 `first` 方法。此方法將回傳單個 `stdClass` 物件：
+如果您只需要從資料庫資料表中取得單一資料列，可以使用 `DB` facade 的 `first` 方法。此方法將回傳單一 `stdClass` 物件：
 
 ```php
 $user = DB::table('users')->where('name', 'John')->first();
@@ -104,13 +105,13 @@ $user = DB::table('users')->where('name', 'John')->first();
 return $user->email;
 ```
 
-如果您想從資料表中取得單一資料列，但在找不到匹配的資料列時拋出 `Illuminate\Database\RecordNotFoundException`，可以使用 `firstOrFail` 方法。如果未擷取到 `RecordNotFoundException`，系統會自動向客戶端發送 404 HTTP 回應：
+如果您想要從資料庫資料表中取得單一資料列，但如果找不到相符的資料列時拋出 `Illuminate\Database\RecordNotFoundException`，則可以使用 `firstOrFail` 方法。如果 `RecordNotFoundException` 未被捕捉，系統會自動向用戶端回傳 404 HTTP 回應：
 
 ```php
 $user = DB::table('users')->where('name', 'John')->firstOrFail();
 ```
 
-如果您不需要整行資料，可以使用 `value` 方法從紀錄中提取單個值。此方法將直接回傳該欄位的值：
+如果您不需要整個資料列，可以使用 `value` 方法從紀錄中提取單一值。此方法將直接回傳該欄位的值：
 
 ```php
 $email = DB::table('users')->where('name', 'John')->value('email');
@@ -124,9 +125,9 @@ $user = DB::table('users')->find(3);
 
 
 <a name="retrieving-a-list-of-column-values"></a>
-#### 取得欄位值清單
+#### 取得欄位值列表
 
-如果您想取得包含單一欄位值的 `Illuminate\Support\Collection` 實例，可以使用 `pluck` 方法。在下面這個例子中，我們將取得使用者職稱的集合：
+如果您想要取得包含單一欄位值的 `Illuminate\Support\Collection` 實例，可以使用 `pluck` 方法。在此範例中，我們將取得使用者職稱的集合：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -138,7 +139,7 @@ foreach ($titles as $title) {
 }
 ```
 
-您可以透過向 `pluck` 方法提供第二個參數，來指定結果集合應使用的鍵名 (Key)：
+您可以透過為 `pluck` 方法提供第二個參數，來指定結果集合應作為鍵 (Key) 的欄位：
 
 ```php
 $titles = DB::table('users')->pluck('title', 'name');
@@ -152,7 +153,7 @@ foreach ($titles as $name => $title) {
 <a name="chunking-results"></a>
 ### 分塊結果
 
-如果您需要處理數千條資料庫紀錄，請考慮使用 `DB` Facade 提供的 `chunk` 方法。此方法一次檢索一小塊結果，並將每個分塊傳入閉包 (Closure) 進行處理。例如，讓我們以一次 100 條紀錄為單位，分塊檢索整個 `users` 資料表：
+如果您需要處理數千條資料庫紀錄，請考慮使用 `DB` facade 提供的 `chunk` 方法。此方法一次取得一小塊結果，並將每個區塊傳入閉包 (Closure) 進行處理。例如，讓我們一次以 100 條紀錄為單位來取得整個 `users` 資料表：
 
 ```php
 use Illuminate\Support\Collection;
@@ -165,7 +166,7 @@ DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
 });
 ```
 
-您可以從閉包中回傳 `false` 來停止處理後續的分塊：
+您可以透過在閉包中回傳 `false` 來停止處理後續的區塊：
 
 ```php
 DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
@@ -175,7 +176,7 @@ DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
 });
 ```
 
-如果您在分塊處理結果時更新資料庫紀錄，則分塊結果可能會以意想不到的方式改變。如果您打算在分塊時更新檢索到的紀錄，最好改用 `chunkById` 方法。此方法會自動根據紀錄的主鍵 (Primary Key) 對結果進行分頁：
+如果您在分塊結果時更新資料庫紀錄，您的分塊結果可能會以非預期的方式改變。如果您打算在分塊時更新取得的紀錄，最好始終改用 `chunkById` 方法。此方法會根據紀錄的主鍵自動對結果進行分頁：
 
 ```php
 DB::table('users')->where('active', false)
@@ -188,7 +189,7 @@ DB::table('users')->where('active', false)
     });
 ```
 
-由於 `chunkById` 和 `lazyById` 方法會為正在執行的查詢添加自己的 "where" 條件，因此您通常應該在閉包內將自己的條件進行[邏輯分組](#logical-grouping)：
+由於 `chunkById` 與 `lazyById` 方法會為正在執行的查詢添加自己的 "where" 條件，因此您通常應該在閉包內[邏輯分組](#logical-grouping)您自己的條件：
 
 ```php
 DB::table('users')->where(function ($query) {
@@ -203,13 +204,13 @@ DB::table('users')->where(function ($query) {
 ```
 
 > [!WARNING]
-> 在分塊回呼 (Callback) 內更新或刪除紀錄時，對主鍵或外鍵的任何更改都可能影響分塊查詢。這可能會導致某些紀錄未包含在分塊結果中。
+> 在分塊回呼 (Callback) 中更新或刪除紀錄時，對主鍵或外鍵的任何更改都可能影響分塊查詢。這可能導致某些紀錄未包含在分塊結果中。
 
 
 <a name="streaming-results-lazily"></a>
 ### 延遲串流結果
 
-`lazy` 方法與[分塊方法](#chunking-results)類似，它也是分塊執行查詢。然而，`lazy()` 方法並非將每個分塊傳入回呼，而是回傳一個 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，讓您可以像處理單一串流一樣與結果進行互動：
+`lazy` 方法運作方式類似於[分塊方法](#chunking-results)，同樣是以分塊的方式執行查詢。然而，`lazy()` 方法並非將每個區塊傳遞給回呼，而是回傳一個 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，讓您可以將結果作為單一串流進行互動：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -219,7 +220,7 @@ DB::table('users')->orderBy('id')->lazy()->each(function (object $user) {
 });
 ```
 
-同樣地，如果您打算在迭代時更新檢索到的紀錄，最好改用 `lazyById` 或 `lazyByIdDesc` 方法。這些方法會自動根據紀錄的主鍵對結果進行分頁：
+同樣地，如果您打算在疊代紀錄時進行更新，最好改用 `lazyById` 或 `lazyByIdDesc` 方法。這些方法會根據紀錄的主鍵自動對結果進行分頁：
 
 ```php
 DB::table('users')->where('active', false)
@@ -231,13 +232,13 @@ DB::table('users')->where('active', false)
 ```
 
 > [!WARNING]
-> 在迭代時更新或刪除紀錄時，對主鍵或外鍵的任何更改都可能影響分塊查詢。這可能會導致某些紀錄未包含在結果中。
+> 在疊代紀錄時更新或刪除紀錄，對主鍵或外鍵的任何更改都可能影響分塊查詢。這可能導致某些紀錄未包含在結果中。
 
 
 <a name="aggregates"></a>
 ### 聚合
 
-查詢產生器還提供了多種獲取聚合值的方法，例如 `count`、`max`、`min`、`avg` 和 `sum`。您可以在構建查詢後呼叫這些方法：
+查詢產生器還提供了多種用於取得聚合值的方法，例如 `count`、`max`、`min`、`avg` 和 `sum`。您可以在構建查詢後呼叫其中的任何方法：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -247,7 +248,7 @@ $users = DB::table('users')->count();
 $price = DB::table('orders')->max('price');
 ```
 
-當然，您可以將這些方法與其他子句結合使用，以精確調整聚合值的計算方式：
+當然，您可以將這些方法與其他語句結合使用，以精細調整聚合值的計算方式：
 
 ```php
 $price = DB::table('orders')
@@ -259,7 +260,7 @@ $price = DB::table('orders')
 <a name="determining-if-records-exist"></a>
 #### 判斷紀錄是否存在
 
-除了使用 `count` 方法來判斷是否存在符合查詢約束的紀錄外，您還可以使用 `exists` 和 `doesntExist` 方法：
+除了使用 `count` 方法來判斷是否存在符合查詢約束的紀錄外，您還可以使用 `exists` 與 `doesntExist` 方法：
 
 ```php
 if (DB::table('orders')->where('finalized', 1)->exists()) {
@@ -276,9 +277,9 @@ if (DB::table('orders')->where('finalized', 1)->doesntExist()) {
 
 
 <a name="specifying-a-select-clause"></a>
-#### 指定 Select 子句
+#### 指定 Select 語句
 
-您不一定總是想從資料庫資料表中選取所有欄位。使用 `select` 方法，您可以為查詢指定自定義的「select」子句：
+您不一定總是想從資料庫資料表中選取所有欄位。使用 `select` 方法，您可以為查詢指定自定義的「select」語句：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -294,7 +295,7 @@ $users = DB::table('users')
 $users = DB::table('users')->distinct()->get();
 ```
 
-如果您已經有一個查詢產生器實例，且希望在其現有的 select 子句中增加一個欄位，您可以使用 `addSelect` 方法：
+如果您已經有一個查詢產生器實例，並且希望在其現有的 select 語句中增加一個欄位，您可以使用 `addSelect` 方法：
 
 ```php
 $query = DB::table('users')->select('name');
@@ -304,9 +305,9 @@ $users = $query->addSelect('age')->get();
 
 
 <a name="raw-expressions"></a>
-## 原生表達式 (Raw Expressions)
+## 原始運算式
 
-有時您可能需要在查詢中插入一段任意字串。要建立原生字串表達式，您可以使用 `DB` Facade 提供的 `raw` 方法：
+有時您可能需要在查詢中插入任意字串。要建立一個原始字串運算式，您可以使用 `DB` Facade 提供的 `raw` 方法：
 
 ```php
 $users = DB::table('users')
@@ -317,19 +318,19 @@ $users = DB::table('users')
 ```
 
 > [!WARNING]
-> 原生語句將以字串形式注入查詢中，因此您應該非常小心，以避免產生 SQL 插入攻擊 (SQL injection) 漏洞。
+> 原始語句將以字串形式注入到查詢中，因此您應該非常小心，避免造成 SQL 注入漏洞。
 
 
 <a name="raw-methods"></a>
-### 原生方法
+### 原始方法
 
-除了使用 `DB::raw` 方法外，您還可以使用以下方法將原生表達式插入查詢的各個部分。**請記住，Laravel 無法保證任何使用原生表達式的查詢都能防止 SQL 插入攻擊漏洞。**
+除了使用 `DB::raw` 方法外，您也可以使用以下方法將原始運算式插入查詢的各個部分。**請記住，Laravel 無法保證任何使用原始運算式的查詢都能免於 SQL 注入漏洞的攻擊。**
 
 
 <a name="selectraw"></a>
 #### `selectRaw`
 
-`selectRaw` 方法可以用來取代 `addSelect(DB::raw(/* ... */))`。此方法接受一個選用的綁定陣列作為其第二個參數：
+`selectRaw` 方法可以用來代替 `addSelect(DB::raw(/* ... */))`。此方法接受一個選用的綁定陣列作為其第二個參數：
 
 ```php
 $orders = DB::table('orders')
@@ -341,7 +342,7 @@ $orders = DB::table('orders')
 <a name="whereraw-orwhereraw"></a>
 #### `whereRaw / orWhereRaw`
 
-`whereRaw` 與 `orWhereRaw` 方法可用於將原生的「where」子句注入您的查詢。這些方法接受一個選用的綁定陣列作為其第二個參數：
+`whereRaw` 和 `orWhereRaw` 方法可用於將原始的「where」語句注入到您的查詢中。這些方法接受一個選用的綁定陣列作為其第二個參數：
 
 ```php
 $orders = DB::table('orders')
@@ -353,7 +354,7 @@ $orders = DB::table('orders')
 <a name="havingraw-orhavingraw"></a>
 #### `havingRaw / orHavingRaw`
 
-`havingRaw` 與 `orHavingRaw` 方法可用於提供原生字串作為「having」子句的值。這些方法接受一個選用的綁定陣列作為其第二個參數：
+`havingRaw` 和 `orHavingRaw` 方法可用於提供原始字串作為「having」語句的值。這些方法接受一個選用的綁定陣列作為其第二個參數：
 
 ```php
 $orders = DB::table('orders')
@@ -367,7 +368,7 @@ $orders = DB::table('orders')
 <a name="orderbyraw"></a>
 #### `orderByRaw`
 
-`orderByRaw` 方法可用於提供原生字串作為「order by」子句的值：
+`orderByRaw` 方法可用於提供原始字串作為「order by」語句的值：
 
 ```php
 $orders = DB::table('orders')
@@ -379,7 +380,7 @@ $orders = DB::table('orders')
 <a name="groupbyraw"></a>
 ### `groupByRaw`
 
-`groupByRaw` 方法可用於提供原生字串作為 `group by` 子句的值：
+`groupByRaw` 方法可用於提供原始字串作為 `group by` 語句的值：
 
 ```php
 $orders = DB::table('orders')
@@ -394,9 +395,9 @@ $orders = DB::table('orders')
 
 
 <a name="inner-join-clause"></a>
-#### 內部連接子句
+#### 內連接 (Inner Join) 語句
 
-查詢產生器也可以用來在查詢中加入連接子句。要執行基本的「內部連接 (inner join)」，您可以在查詢產生器實例上使用 `join` 方法。傳遞給 `join` 方法的第一個參數是您需要連接的資料表名稱，而其餘參數則指定連接的欄位限制。您甚至可以在單個查詢中連接多個資料表：
+查詢產生器也可用於在您的查詢中增加連接 (join) 語句。要執行基本的「內連接 (inner join)」，您可以在查詢產生器實例上使用 `join` 方法。傳遞給 `join` 方法的第一個參數是您需要連接的資料表名稱，而其餘參數則指定連接的欄位限制條件。您甚至可以在單個查詢中連接多個資料表：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -410,9 +411,9 @@ $users = DB::table('users')
 
 
 <a name="left-join-right-join-clause"></a>
-#### 左連接 / 右連接子句
+#### 左連接 (Left Join) / 右連接 (Right Join) 語句
 
-如果您想執行「左連接 (left join)」或「右連接 (right join)」而非「內部連接」，請使用 `leftJoin` 或 `rightJoin` 方法。這些方法與 `join` 方法具有相同的定義：
+如果您想執行「左連接 (left join)」或「右連接 (right join)」而不是「內連接 (inner join)」，請使用 `leftJoin` 或 `rightJoin` 方法。這些方法與 `join` 方法具有相同的定義：
 
 ```php
 $users = DB::table('users')
@@ -426,9 +427,9 @@ $users = DB::table('users')
 
 
 <a name="cross-join-clause"></a>
-#### 交叉連接子句
+#### 交叉連接 (Cross Join) 語句
 
-您可以使用 `crossJoin` 方法來執行「交叉連接 (cross join)」。交叉連接會在第一個資料表與連接的資料表之間產生笛卡兒積 (cartesian product)：
+您可以使用 `crossJoin` 方法來執行「交叉連接 (cross join)」。交叉連接會在第一個資料表和連接的資料表之間產生笛卡兒積 (cartesian product)：
 
 ```php
 $sizes = DB::table('sizes')
@@ -438,9 +439,9 @@ $sizes = DB::table('sizes')
 
 
 <a name="advanced-join-clauses"></a>
-#### 進階連接子句
+#### 進階連接語句
 
-您也可以指定更進階的連接子句。首先，將一個閉包作為第二個參數傳遞給 `join` 方法。該閉包將接收一個 `Illuminate\Database\Query\JoinClause` 實例，這允許您在「join」子句上指定限制條件：
+您也可以指定更進階的連接語句。首先，將一個閉包作為 `join` 方法的第二個參數傳遞。該閉包將接收一個 `Illuminate\Database\Query\JoinClause` 實例，該實例允許您指定「join」語句的限制條件：
 
 ```php
 DB::table('users')
@@ -450,7 +451,7 @@ DB::table('users')
     ->get();
 ```
 
-如果您想在連接上使用「where」子句，您可以使用 `JoinClause` 實例提供的 `where` 與 `orWhere` 方法。這些方法會將欄位與值進行比較，而非比較兩個欄位：
+如果您想在連接上使用「where」語句，您可以使用 `JoinClause` 實例提供的 `where` 和 `orWhere` 方法。這些方法將欄位與值進行比較，而不是比較兩個欄位：
 
 ```php
 DB::table('users')
@@ -465,7 +466,7 @@ DB::table('users')
 <a name="subquery-joins"></a>
 #### 子查詢連接
 
-您可以使用 `joinSub`、`leftJoinSub` 與 `rightJoinSub` 方法將查詢連接到子查詢。這些方法中的每一個都接受三個參數：子查詢、其資料表別名，以及定義相關欄位的閉包。在此範例中，我們將檢索使用者集合，其中每個使用者記錄還包含該使用者最近發布的部落格文章之 `created_at` 時間戳記：
+您可以使用 `joinSub`、`leftJoinSub` 和 `rightJoinSub` 方法將查詢連接到子查詢。這些方法中的每一個都接收三個參數：子查詢、其資料表別名，以及一個定義相關欄位的閉包。在此範例中，我們將取得一個使用者集合，其中每個使用者紀錄還包含該使用者最近發布的部落格文章的 `created_at` 時間戳記：
 
 ```php
 $latestPosts = DB::table('posts')
@@ -481,14 +482,14 @@ $users = DB::table('users')
 
 
 <a name="lateral-joins"></a>
-#### 側向連接 (Lateral Joins)
+#### Lateral 連接
 
 > [!WARNING]
-> 側向連接目前由 PostgreSQL、MySQL >= 8.0.14 以及 SQL Server 支援。
+> Lateral 連接目前支援 PostgreSQL、MySQL >= 8.0.14 和 SQL Server。
 
-您可以使用 `joinLateral` 與 `leftJoinLateral` 方法來對子查詢執行「側向連接 (lateral join)」。這些方法中的每一個都接受兩個參數：子查詢及其資料表別名。連接條件應在指定子查詢的 `where` 子句中指定。側向連接會針對每一列進行評估，並且可以引用子查詢之外的欄位。
+您可以使用 `joinLateral` 和 `leftJoinLateral` 方法與子查詢執行「lateral 連接」。這些方法中的每一個都接收兩個參數：子查詢及其資料表別名。連接條件應在給定子查詢的 `where` 語句中指定。Lateral 連接會針對每一列進行求值，並且可以引用子查詢外部的欄位。
 
-在此範例中，我們將檢索使用者集合以及該使用者最近的三篇部落格文章。每個使用者在結果集中最多可以產生三列：分別對應於他們最近的三篇部落格文章。連接條件是在子查詢中使用 `whereColumn` 子句指定的，引用當前的使用者列：
+在此範例中，我們將取得使用者集合以及該使用者的三篇最新部落格文章。每個使用者在結果集中最多可以產生三列：每列對應其最新的一篇部落格文章。連接條件是在子查詢中使用 `whereColumn` 語句指定的，引用當前的使用者列：
 
 ```php
 $latestPosts = DB::table('posts')
@@ -505,32 +506,32 @@ $users = DB::table('users')
 <a name="unions"></a>
 ## 聯合 (Unions)
 
-查詢產生器還提供了一個方便的方法，可以將兩個或多個查詢「聯合 (Union)」在一起。例如，您可以建立一個初始查詢，並使用 `union` 方法將其與更多查詢進行聯合：
+查詢產生器還提供了一個方便的方法，可以將兩個或多個查詢「聯合 (union)」在一起。例如，您可以建立一個初始查詢，並使用 `union` 方法將其與更多查詢進行聯合：
 
 ```php
 use Illuminate\Support\Facades\DB;
 
-$first = DB::table('users')
+$usersWithoutFirstName = DB::table('users')
     ->whereNull('first_name');
 
 $users = DB::table('users')
     ->whereNull('last_name')
-    ->union($first)
+    ->union($usersWithoutFirstName)
     ->get();
 ```
 
-除了 `union` 方法外，查詢產生器還提供了一個 `unionAll` 方法。使用 `unionAll` 方法結合的查詢將不會移除重複的結果。`unionAll` 方法具有與 `union` 方法相同的方法簽章。
+除了 `union` 方法之外，查詢產生器還提供了一個 `unionAll` 方法。使用 `unionAll` 方法結合的查詢將不會移除重複的結果。`unionAll` 方法的方法簽章與 `union` 方法相同。
 
 <a name="basic-where-clauses"></a>
-## 基本 Where 子句
+## 基礎 Where 語句
 
 
 <a name="where-clauses"></a>
-### Where 子句
+### Where 語句
 
-您可以使用查詢產生器的 `where` 方法在查詢中加入「where」子句。最基本的 `where` 方法呼叫需要三個參數。第一個參數是欄位的名稱。第二個參數是運算子，可以是資料庫支援的任何運算子。第三個參數是要與該欄位值比較的值。
+您可以使用查詢產生器的 `where` 方法在查詢中加入「where」語句。對 `where` 方法最基本的呼叫需要三個參數。第一個參數是欄位的名稱。第二個參數是運算子，可以是資料庫支援的任何運算子。第三個參數是要與欄位值進行比較的值。
 
-例如，以下查詢會檢索 `votes` 欄位的值等於 `100` 且 `age` 欄位的值大於 `35` 的使用者：
+例如，以下查詢會取得 `votes` 欄位的值等於 `100` 且 `age` 欄位的值大於 `35` 的使用者：
 
 ```php
 $users = DB::table('users')
@@ -539,13 +540,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-為了方便起見，如果您想驗證某個欄位是否「等於」(`=`) 給定值，您可以將該值作為 `where` 方法的第二個參數傳遞。Laravel 會假設您想使用 `=` 運算子：
+為了方便起見，如果您想驗證某個欄位是否「等於 (`=`)」給定的值，可以將該值作為第二個參數傳遞給 `where` 方法。Laravel 會假設您想要使用 `=` 運算子：
 
 ```php
 $users = DB::table('users')->where('votes', 100)->get();
 ```
 
-您也可以向 `where` 方法提供一個結合陣列，以便快速針對多個欄位進行查詢：
+您也可以向 `where` 方法提供一個關聯陣列，以便快速地對多個欄位進行查詢：
 
 ```php
 $users = DB::table('users')->where([
@@ -570,7 +571,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-您也可以將條件陣列傳遞給 `where` 函式。陣列的每個元素應該是一個包含通常傳遞給 `where` 方法的三個參數的陣列：
+您也可以向 `where` 函式傳遞一個包含多個條件的陣列。該陣列的每個元素都應該是一個陣列，其中包含通常傳遞給 `where` 方法的三個參數：
 
 ```php
 $users = DB::table('users')->where([
@@ -583,13 +584,13 @@ $users = DB::table('users')->where([
 > PDO 不支援綁定欄位名稱。因此，您絕不應該允許使用者輸入來決定查詢所引用的欄位名稱，包括「order by」欄位。
 
 > [!WARNING]
-> MySQL 和 MariaDB 在字串與數字比較時會自動將字串轉換為整數。在此過程中，非數字字串會被轉換為 `0`，這可能會導致意料之外的結果。例如，如果您的資料表中有一名為 `secret` 且值為 `aaa` 的欄位，而您執行 `User::where('secret', 0)`，則該資料列將會被回傳。為了避免這種情況，請確保在查詢中使用所有值之前，已將其轉換為適當的類型。
+> MySQL 和 MariaDB 在字串與數字的比較中會自動將字串轉換為整數。在這個過程中，非數字字串會被轉換為 `0`，這可能會導致意料之外的結果。例如，如果您的資料表中有一個 `secret` 欄位的值為 `aaa`，而您執行了 `User::where('secret', 0)`，該行將會被回傳。為了避免這種情況，請確保在查詢中使用所有值之前，都已將其轉換為適當的類型。
 
 
 <a name="or-where-clauses"></a>
-### Or Where 子句
+### Or Where 語句
 
-當串接查詢產生器的 `where` 方法呼叫時，「where」子句將使用 `and` 運算子連接。但是，您可以使用 `orWhere` 方法，使用 `or` 運算子將子句加入到查詢中。`orWhere` 方法接受與 `where` 方法相同的參數：
+當連續呼叫查詢產生器的 `where` 方法時，「where」語句將使用 `and` 運算子串聯在一起。但是，您可以使用 `orWhere` 方法，使用 `or` 運算子將語句加入查詢中。`orWhere` 方法接受與 `where` 方法相同的參數：
 
 ```php
 $users = DB::table('users')
@@ -612,20 +613,20 @@ $users = DB::table('users')
     ->get();
 ```
 
-上面的範例將產生以下 SQL：
+上述範例將產生以下 SQL：
 
 ```sql
 select * from users where votes > 100 or (name = 'Abigail' and votes > 50)
 ```
 
 > [!WARNING]
-> 您應該始終對 `orWhere` 呼叫進行分組，以避免在應用全域範圍 (Global Scopes) 時發生非預期的行為。
+> 您應該始終對 `orWhere` 呼叫進行分組，以避免在套用全域範圍 (Global Scopes) 時出現非預期的行為。
 
 
 <a name="where-not-clauses"></a>
-### Where Not 子句
+### Where Not 語句
 
-`whereNot` 和 `orWhereNot` 方法可用於否定給定的一組查詢約束。例如，以下查詢排除了正在出清或價格小於 10 的產品：
+`whereNot` 和 `orWhereNot` 方法可用於否定（反向選擇）給定的一組查詢約束。例如，以下查詢排除了正在清倉或價格小於 10 的產品：
 
 ```php
 $products = DB::table('products')
@@ -638,9 +639,9 @@ $products = DB::table('products')
 
 
 <a name="where-any-all-none-clauses"></a>
-### Where Any / All / None 子句
+### Where Any / All / None 語句
 
-有時您可能需要將相同的查詢約束應用於多個欄位。例如，您可能想要檢索給定清單中任何欄位都 `LIKE` 給定值的所有紀錄。您可以使用 `whereAny` 方法來達成此目的：
+有時您可能需要將相同的查詢約束套用到多個欄位。例如，您可能想要取得給定列表中任何欄位都 `LIKE` 給定值的所有紀錄。您可以使用 `whereAny` 方法來達成此目的：
 
 ```php
 $users = DB::table('users')
@@ -653,7 +654,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-上面的查詢將產生以下 SQL：
+上述查詢將產生以下 SQL：
 
 ```sql
 SELECT *
@@ -665,7 +666,7 @@ WHERE active = true AND (
 )
 ```
 
-同樣地，`whereAll` 方法可用於檢索所有給定欄位都符合給定約束的紀錄：
+同樣地，`whereAll` 方法可用於取得所有給定欄位都符合給定約束的紀錄：
 
 ```php
 $posts = DB::table('posts')
@@ -677,7 +678,7 @@ $posts = DB::table('posts')
     ->get();
 ```
 
-上面的查詢將產生以下 SQL：
+上述查詢將產生以下 SQL：
 
 ```sql
 SELECT *
@@ -688,10 +689,10 @@ WHERE published = true AND (
 )
 ```
 
-`whereNone` 方法可用於檢索沒有任何給定欄位符合給定約束的紀錄：
+`whereNone` 方法可用於取得給定欄位皆不符合給定約束的紀錄：
 
 ```php
-$posts = DB::table('albums')
+$albums = DB::table('albums')
     ->where('published', true)
     ->whereNone([
         'title',
@@ -701,7 +702,7 @@ $posts = DB::table('albums')
     ->get();
 ```
 
-上面的查詢將產生以下 SQL：
+上述查詢將產生以下 SQL：
 
 ```sql
 SELECT *
@@ -715,9 +716,9 @@ WHERE published = true AND NOT (
 
 
 <a name="json-where-clauses"></a>
-### JSON Where 子句
+### JSON Where 語句
 
-Laravel 也支援在提供 JSON 欄位類型支援的資料庫上查詢 JSON 欄位類型。目前這包括 MariaDB 10.3+、MySQL 8.0+、PostgreSQL 12.0+、SQL Server 2017+ 以及 SQLite 3.39.0+。要查詢 JSON 欄位，請使用 `->` 運算子：
+Laravel 也支援在提供 JSON 欄位類型的資料庫上查詢 JSON 欄位類型。目前，這包括 MariaDB 10.3+、MySQL 8.0+、PostgreSQL 12.0+、SQL Server 2017+ 以及 SQLite 3.39.0+。要查詢 JSON 欄位，請使用 `->` 運算子：
 
 ```php
 $users = DB::table('users')
@@ -741,7 +742,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-如果您的應用程式使用 MariaDB、MySQL 或 PostgreSQL 資料庫，您可以將值陣列傳遞給 `whereJsonContains` 和 `whereJsonDoesntContain` 方法：
+如果您的應用程式使用 MariaDB、MySQL 或 PostgreSQL 資料庫，您可以向 `whereJsonContains` 和 `whereJsonDoesntContain` 方法傳遞一個值陣列：
 
 ```php
 $users = DB::table('users')
@@ -753,7 +754,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-此外，您可以使用 `whereJsonContainsKey` 或 `whereJsonDoesntContainKey` 方法來檢索包含或不包含某個 JSON 鍵的結果：
+此外，您可以使用 `whereJsonContainsKey` 或 `whereJsonDoesntContainKey` 方法來取得包含或不包含特定 JSON 鍵的結果：
 
 ```php
 $users = DB::table('users')
@@ -765,7 +766,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-最後，您可以使用 `whereJsonLength` 方法來依據 JSON 陣列的長度進行查詢：
+最後，您可以使用 `whereJsonLength` 方法根據 JSON 陣列的長度進行查詢：
 
 ```php
 $users = DB::table('users')
@@ -778,11 +779,11 @@ $users = DB::table('users')
 ```
 
 <a name="additional-where-clauses"></a>
-### 額外的 Where 子句
+### 額外的 Where 語句
 
 **whereLike / orWhereLike / whereNotLike / orWhereNotLike**
 
-`whereLike` 方法允許你在查詢中加入 "LIKE" 子句以進行模式比對。這些方法提供了一種與資料庫無關的方式來執行字串比對查詢，並能夠切換是否區分大小寫。預設情況下，字串比對是不區分大小寫的：
+`whereLike` 方法允許您在查詢中加入 「LIKE」 子句以進行模式比對。這些方法提供了一種與資料庫無關的方式來執行字串比對查詢，並具備切換是否區分大小寫的功能。預設情況下，字串比對是不區分大小寫的：
 
 ```php
 $users = DB::table('users')
@@ -790,7 +791,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你可以透過 `caseSensitive` 引數來啟用區分大小寫的搜尋：
+您可以透過 `caseSensitive` 參數來啟用區分大小寫的搜尋：
 
 ```php
 $users = DB::table('users')
@@ -798,7 +799,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`orWhereLike` 方法允許你加入一個帶有 LIKE 條件的 "or" 子句：
+`orWhereLike` 方法允許您加入一個帶有 LIKE 條件的 「or」 子句：
 
 ```php
 $users = DB::table('users')
@@ -807,7 +808,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotLike` 方法允許你在查詢中加入 "NOT LIKE" 子句：
+`whereNotLike` 方法允許您在查詢中加入 「NOT LIKE」 子句：
 
 ```php
 $users = DB::table('users')
@@ -815,7 +816,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-同樣地，你可以使用 `orWhereNotLike` 來加入一個帶有 NOT LIKE 條件的 "or" 子句：
+同樣地，您可以使用 `orWhereNotLike` 來加入一個帶有 NOT LIKE 條件的 「or」 子句：
 
 ```php
 $users = DB::table('users')
@@ -829,7 +830,7 @@ $users = DB::table('users')
 
 **whereIn / whereNotIn / orWhereIn / orWhereNotIn**
 
-`whereIn` 方法驗證給定欄位的值是否包含在給定的陣列中：
+`whereIn` 方法會驗證給定欄位的值是否包含在給定的陣列中：
 
 ```php
 $users = DB::table('users')
@@ -837,7 +838,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotIn` 方法驗證給定欄位的值是否**不**包含在給定的陣列中：
+`whereNotIn` 方法會驗證給定欄位的值是否「不」包含在給定的陣列中：
 
 ```php
 $users = DB::table('users')
@@ -845,17 +846,17 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以提供一個查詢物件作為 `whereIn` 方法的第二個引數：
+您也可以提供一個查詢物件作為 `whereIn` 方法的第二個參數：
 
 ```php
 $activeUsers = DB::table('users')->select('id')->where('is_active', 1);
 
-$users = DB::table('comments')
+$comments = DB::table('comments')
     ->whereIn('user_id', $activeUsers)
     ->get();
 ```
 
-上述範例將產生以下 SQL：
+上面的範例會產生以下 SQL：
 
 ```sql
 select * from comments where user_id in (
@@ -866,11 +867,11 @@ select * from comments where user_id in (
 ```
 
 > [!WARNING]
-> 如果你在查詢中加入大量的整數綁定陣列，可以使用 `whereIntegerInRaw` 或 `whereIntegerNotInRaw` 方法來大幅減少記憶體使用量。
+> 如果您要在查詢中加入大量的整數綁定陣列，可以使用 `whereIntegerInRaw` 或 `whereIntegerNotInRaw` 方法來大幅減少記憶體使用量。
 
 **whereBetween / orWhereBetween**
 
-`whereBetween` 方法驗證欄位的值是否介於兩個值之間：
+`whereBetween` 方法會驗證欄位的值是否在兩個值之間：
 
 ```php
 $users = DB::table('users')
@@ -880,7 +881,7 @@ $users = DB::table('users')
 
 **whereNotBetween / orWhereNotBetween**
 
-`whereNotBetween` 方法驗證欄位的值是否落在兩個值之外：
+`whereNotBetween` 方法會驗證欄位的值是否落在兩個值之外：
 
 ```php
 $users = DB::table('users')
@@ -890,7 +891,7 @@ $users = DB::table('users')
 
 **whereBetweenColumns / whereNotBetweenColumns / orWhereBetweenColumns / orWhereNotBetweenColumns**
 
-`whereBetweenColumns` 方法驗證欄位的值是否介於同一個資料表資料列中兩個欄位的值之間：
+`whereBetweenColumns` 方法會驗證欄位的值是否在同一個資料列中另外兩個欄位的值之間：
 
 ```php
 $patients = DB::table('patients')
@@ -898,7 +899,7 @@ $patients = DB::table('patients')
     ->get();
 ```
 
-`whereNotBetweenColumns` 方法驗證欄位的值是否落在同一個資料表資料列中兩個欄位的值之外：
+`whereNotBetweenColumns` 方法會驗證欄位的值是否落在同一個資料列中另外兩個欄位的值之外：
 
 ```php
 $patients = DB::table('patients')
@@ -908,7 +909,7 @@ $patients = DB::table('patients')
 
 **whereValueBetween / whereValueNotBetween / orWhereValueBetween / orWhereValueNotBetween**
 
-`whereValueBetween` 方法驗證給定的值是否介於同一個資料表資料列中兩個相同型別欄位的值之間：
+`whereValueBetween` 方法會驗證給定的值是否在同一個資料列中兩個相同類型欄位的值之間：
 
 ```php
 $patients = DB::table('products')
@@ -916,7 +917,7 @@ $patients = DB::table('products')
     ->get();
 ```
 
-`whereValueNotBetween` 方法驗證一個值是否落在同一個資料表資料列中兩個欄位的值之外：
+`whereValueNotBetween` 方法會驗證一個值是否落在同一個資料列中兩個欄位的值之外：
 
 ```php
 $patients = DB::table('products')
@@ -926,7 +927,7 @@ $patients = DB::table('products')
 
 **whereNull / whereNotNull / orWhereNull / orWhereNotNull**
 
-`whereNull` 方法驗證給定欄位的值是否為 `NULL`：
+`whereNull` 方法會驗證給定欄位的值是否為 `NULL`：
 
 ```php
 $users = DB::table('users')
@@ -934,7 +935,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotNull` 方法驗證欄位的值是否**不**為 `NULL`：
+`whereNotNull` 方法會驗證欄位的值是否不為 `NULL`：
 
 ```php
 $users = DB::table('users')
@@ -944,7 +945,7 @@ $users = DB::table('users')
 
 **whereDate / whereMonth / whereDay / whereYear / whereTime**
 
-`whereDate` 方法可用於將欄位的值與日期進行比較：
+`whereDate` 方法可以用來將欄位的值與日期進行比較：
 
 ```php
 $users = DB::table('users')
@@ -952,7 +953,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereMonth` 方法可用於將欄位的值與特定月份進行比較：
+`whereMonth` 方法可以用來將欄位的值與特定的月份進行比較：
 
 ```php
 $users = DB::table('users')
@@ -960,7 +961,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereDay` 方法可用於將欄位的值與月份中的特定日期進行比較：
+`whereDay` 方法可以用來將欄位的值與該月的特定日期進行比較：
 
 ```php
 $users = DB::table('users')
@@ -968,7 +969,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereYear` 方法可用於將欄位的值與特定年份進行比較：
+`whereYear` 方法可以用來將欄位的值與特定的年份進行比較：
 
 ```php
 $users = DB::table('users')
@@ -976,7 +977,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereTime` 方法可用於將欄位的值與特定時間進行比較：
+`whereTime` 方法可以用來將欄位的值與特定的時間進行比較：
 
 ```php
 $users = DB::table('users')
@@ -986,7 +987,7 @@ $users = DB::table('users')
 
 **wherePast / whereFuture / whereToday / whereBeforeToday / whereAfterToday**
 
-`wherePast` 與 `whereFuture` 方法可用於判斷欄位的值是在過去還是未來：
+`wherePast` 與 `whereFuture` 方法可以用來判斷欄位的值是在過去還是未來：
 
 ```php
 $invoices = DB::table('invoices')
@@ -998,7 +999,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereNowOrPast` 與 `whereNowOrFuture` 方法可用於判斷欄位的值是在過去或未來，包含目前的日期與時間：
+`whereNowOrPast` 與 `whereNowOrFuture` 方法可以用來判斷欄位的值是在過去還是未來，包含目前的日期與時間：
 
 ```php
 $invoices = DB::table('invoices')
@@ -1010,7 +1011,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereToday`、`whereBeforeToday` 以及 `whereAfterToday` 方法分別可用於判斷欄位的值是否為今天、今天之前或今天之後：
+`whereToday`、`whereBeforeToday` 以及 `whereAfterToday` 方法分別可以用來判斷欄位的值是否為今天、在今天之前或在今天之後：
 
 ```php
 $invoices = DB::table('invoices')
@@ -1026,7 +1027,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-同樣地，`whereTodayOrBefore` 與 `whereTodayOrAfter` 方法可用於判斷欄位的值是在今天之前或今天之後，包含今天的日期：
+同樣地，`whereTodayOrBefore` 與 `whereTodayOrAfter` 方法可以用來判斷欄位的值是否在今天之前或今天之後，包含今天的日期：
 
 ```php
 $invoices = DB::table('invoices')
@@ -1040,7 +1041,7 @@ $invoices = DB::table('invoices')
 
 **whereColumn / orWhereColumn**
 
-`whereColumn` 方法可用於驗證兩個欄位是否相等：
+`whereColumn` 方法可以用來驗證兩個欄位是否相等：
 
 ```php
 $users = DB::table('users')
@@ -1048,7 +1049,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以傳遞一個比較運算子給 `whereColumn` 方法：
+您也可以傳遞一個比較運算子給 `whereColumn` 方法：
 
 ```php
 $users = DB::table('users')
@@ -1056,7 +1057,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你還可以傳遞一個欄位比較陣列給 `whereColumn` 方法。這些條件將使用 `and` 運算子串接：
+您也可以傳遞一個欄位比較的陣列給 `whereColumn` 方法。這些條件將使用 `and` 運算子串接：
 
 ```php
 $users = DB::table('users')
@@ -1069,7 +1070,7 @@ $users = DB::table('users')
 <a name="logical-grouping"></a>
 ### 邏輯分組
 
-有時候，您可能需要將多個「where」子句放在括號內分組，以實現查詢所需的邏輯分組。事實上，通常您應該始終將 `orWhere` 方法的呼叫放在括號中分組，以避免非預期的查詢行為。要實現這一點，您可以將一個閉包 (Closure) 傳遞給 `where` 方法：
+有時您可能需要將多個 "where" 子句在括號內進行分組，以達成查詢所需的邏輯分組。事實上，為了避免非預期的查詢行為，通常您應該始終將 `orWhere` 方法的呼叫放在括號中。為了達成此目的，您可以將一個閉包傳遞給 `where` 方法：
 
 ```php
 $users = DB::table('users')
@@ -1081,23 +1082,23 @@ $users = DB::table('users')
     ->get();
 ```
 
-如您所見，將閉包傳遞給 `where` 方法會指示查詢產生器開始一個約束分組。該閉包將接收一個查詢產生器實例，您可以使用它來設定應包含在括號群組中的約束。上述範例將產生以下 SQL：
+正如您所見，將閉包傳遞到 `where` 方法中會指示查詢產生器開始一個限制條件群組。該閉包將接收一個查詢產生器實例，您可以使用它來設定應包含在括號群組內的限制條件。上述範例將產生以下 SQL：
 
 ```sql
 select * from users where name = 'John' and (votes > 100 or title = 'Admin')
 ```
 
 > [!WARNING]
-> 您應該始終對 `orWhere` 呼叫進行分組，以避免在套用全域範圍 (Global Scopes) 時發生非預期的行為。
+> 您應該始終對 `orWhere` 呼叫進行分組，以避免在套用全域範圍 (global scopes) 時發生非預期的行為。
 
 <a name="advanced-where-clauses"></a>
-## 進階 Where 子句
+## 進階 Where 語句
 
 
 <a name="where-exists-clauses"></a>
-### Where Exists 子句
+### Where Exists 語句
 
-`whereExists` 方法允許您撰寫 "where exists" SQL 子句。`whereExists` 方法接受一個閉包，該閉包將接收一個查詢產生器實例，讓您定義應放置在 "exists" 子句內部的查詢：
+`whereExists` 方法允許您撰寫 "where exists" SQL 語句。`whereExists` 方法接受一個閉包 (Closure)，該閉包將接收一個查詢產生器實例，讓您定義應置於 "exists" 語句內的查詢：
 
 ```php
 $users = DB::table('users')
@@ -1109,7 +1110,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-或者，您可以向 `whereExists` 方法提供一個查詢物件，而不是閉包：
+或者，您也可以提供一個查詢物件給 `whereExists` 方法，而非使用閉包：
 
 ```php
 $orders = DB::table('orders')
@@ -1134,9 +1135,9 @@ where exists (
 
 
 <a name="subquery-where-clauses"></a>
-### 子查詢 Where 子句
+### 子查詢 Where 語句
 
-有時您可能需要構建一個 "where" 子句，將子查詢的結果與給定值進行比較。您可以透過向 `where` 方法傳遞一個閉包和一個值來實現此目的。例如，以下查詢將檢索所有擁有特定類型之近期「會員資格 (membership)」的使用者：
+有時您可能需要建構一個 "where" 語句，將子查詢的結果與給定值進行比較。您可以透過將一個閉包和一個值傳遞給 `where` 方法來達成此目的。例如，以下查詢將檢索所有擁有特定類型的近期 "membership" 的使用者：
 
 ```php
 use App\Models\User;
@@ -1151,7 +1152,7 @@ $users = User::where(function (Builder $query) {
 }, 'Pro')->get();
 ```
 
-或者，您可能需要構建一個將欄位與子查詢結果進行比較的 "where" 子句。您可以透過向 `where` 方法傳遞欄位、運算子和閉包來實現此目的。例如，以下查詢將檢索所有金額低於平均值的收入紀錄：
+或者，您可能需要建構一個 "where" 語句來將欄位與子查詢的結果進行比較。您可以透過將欄位、運算子和閉包傳遞給 `where` 方法來實現。例如，以下查詢將檢索所有金額小於平均值的收入記錄：
 
 ```php
 use App\Models\Income;
@@ -1164,12 +1165,12 @@ $incomes = Income::where('amount', '<', function (Builder $query) {
 
 
 <a name="full-text-where-clauses"></a>
-### 全文檢索 Where 子句
+### 全文檢索 Where 語句
 
 > [!WARNING]
-> 全文檢索 where 子句目前由 MariaDB, MySQL 和 PostgreSQL 支援。
+> 全文檢索 where 語句目前支援 MariaDB、MySQL 和 PostgreSQL。
 
-`whereFullText` 和 `orWhereFullText` 方法可用於為具有 [全文索引](/docs/{{version}}/migrations#available-index-types) 的欄位新增全文檢索 "where" 子句。Laravel 會將這些方法轉換為底層資料庫系統對應的 SQL。例如，在使用 MariaDB 或 MySQL 的應用程式中，將會產生 `MATCH AGAINST` 子句：
+`whereFullText` 與 `orWhereFullText` 方法可用於為具有[全文索引](/docs/{{version}}/migrations#available-index-types)的欄位新增全文檢索 "where" 語句。這些方法將由 Laravel 轉換為底層資料庫系統對應的 SQL。例如，在使用 MariaDB 或 MySQL 的應用程式中，將會產生 `MATCH AGAINST` 語句：
 
 ```php
 $users = DB::table('users')
@@ -1177,6 +1178,52 @@ $users = DB::table('users')
     ->get();
 ```
 
+
+<a name="vector-similarity-clauses"></a>
+### 向量相似度語句
+
+> [!NOTE]
+> 向量相似度語句目前僅支援使用 `pgvector` 擴充功能的 PostgreSQL 連接。有關定義向量欄位與索引的資訊，請參閱[遷移文件](/docs/{{version}}/migrations#available-column-types)。
+
+`whereVectorSimilarTo` 方法根據與給定向量的餘弦相似度 (Cosine Similarity) 過濾結果，並按相關性排序。`minSimilarity` 閾值應為 `0.0` 到 `1.0` 之間的值，其中 `1.0` 表示完全相同：
+
+```php
+$documents = DB::table('documents')
+    ->whereVectorSimilarTo('embedding', $queryEmbedding, minSimilarity: 0.4)
+    ->limit(10)
+    ->get();
+```
+
+當向量參數為純字串時，Laravel 將自動使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk#embeddings) 為其產生嵌入 (Embeddings)：
+
+```php
+$documents = DB::table('documents')
+    ->whereVectorSimilarTo('embedding', 'Best wineries in Napa Valley')
+    ->limit(10)
+    ->get();
+```
+
+預設情況下，`whereVectorSimilarTo` 也會按距離進行排序（最相似的排在前面）。您可以透過傳遞 `false` 作為 `order` 參數來停用此排序：
+
+```php
+$documents = DB::table('documents')
+    ->whereVectorSimilarTo('embedding', $queryEmbedding, minSimilarity: 0.4, order: false)
+    ->orderBy('created_at', 'desc')
+    ->limit(10)
+    ->get();
+```
+
+如果您需要更多控制，可以獨立使用 `selectVectorDistance`、`whereVectorDistanceLessThan` 和 `orderByVectorDistance` 方法：
+
+```php
+$documents = DB::table('documents')
+    ->select('*')
+    ->selectVectorDistance('embedding', $queryEmbedding, as: 'distance')
+    ->whereVectorDistanceLessThan('embedding', $queryEmbedding, maxDistance: 0.3)
+    ->orderByVectorDistance('embedding', $queryEmbedding)
+    ->limit(10)
+    ->get();
+```
 
 <a name="ordering-grouping-limit-and-offset"></a>
 ## 排序、分組、限制與偏移
@@ -1189,7 +1236,7 @@ $users = DB::table('users')
 <a name="orderby"></a>
 #### `orderBy` 方法
 
-`orderBy` 方法允許您按給定欄位對查詢結果進行排序。`orderBy` 方法接受的第一個參數應為您希望排序的欄位，而第二個參數則決定排序方向，可以為 `asc` 或 `desc`：
+`orderBy` 方法允許您根據指定的欄位對查詢結果進行排序。`orderBy` 方法接受的第一個參數是您想要排序的欄位，而第二個參數則決定排序的方向，可以是 `asc` 或 `desc`：
 
 ```php
 $users = DB::table('users')
@@ -1197,7 +1244,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-要按多個欄位排序，您只需根據需要多次呼叫 `orderBy` 即可：
+若要根據多個欄位進行排序，您只需根據需要多次呼叫 `orderBy` 即可：
 
 ```php
 $users = DB::table('users')
@@ -1206,7 +1253,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-排序方向是選填的，預設為升冪排序。如果您想按降冪排序，可以為 `orderBy` 方法指定第二個參數，或直接使用 `orderByDesc`：
+排序方向是選填的，預設為升序 (ascending)。如果您想以降序排序，可以為 `orderBy` 方法指定第二個參數，或者直接使用 `orderByDesc`：
 
 ```php
 $users = DB::table('users')
@@ -1214,7 +1261,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-最後，使用 `->` 運算子，可以根據 JSON 欄位內的值對結果進行排序：
+最後，使用 `->` 運算子，可以根據 JSON 欄位中的值對結果進行排序：
 
 ```php
 $corporations = DB::table('corporations')
@@ -1227,7 +1274,7 @@ $corporations = DB::table('corporations')
 <a name="latest-oldest"></a>
 #### `latest` 與 `oldest` 方法
 
-`latest` 和 `oldest` 方法讓您可以輕鬆地按日期對結果進行排序。預設情況下，結果將按資料表的 `created_at` 欄位進行排序。或者，您可以傳遞您希望排序的欄位名稱：
+`latest` 與 `oldest` 方法讓您可以輕鬆地按日期排序結果。預設情況下，結果將按資料表的 `created_at` 欄位排序。或者，您可以傳遞想要排序的欄位名稱：
 
 ```php
 $user = DB::table('users')
@@ -1239,7 +1286,7 @@ $user = DB::table('users')
 <a name="random-ordering"></a>
 #### 隨機排序
 
-`inRandomOrder` 方法可用於隨機排序查詢結果。例如，您可以使用此方法來獲取一位隨機使用者：
+`inRandomOrder` 方法可用於隨機排序查詢結果。例如，您可以使用此方法獲取一名隨機使用者：
 
 ```php
 $randomUser = DB::table('users')
@@ -1251,7 +1298,7 @@ $randomUser = DB::table('users')
 <a name="removing-existing-orderings"></a>
 #### 移除現有的排序
 
-`reorder` 方法會移除之前套用到查詢的所有 "order by" 子句：
+`reorder` 方法會移除之前套用於查詢的所有 「order by」 語句：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1259,7 +1306,7 @@ $query = DB::table('users')->orderBy('name');
 $unorderedUsers = $query->reorder()->get();
 ```
 
-您可以在呼叫 `reorder` 方法時傳遞欄位與方向，以便移除所有現有的 "order by" 子句並為查詢套用全新的排序：
+您可以在呼叫 `reorder` 方法時傳遞欄位和方向，以便移除所有現有的 「order by」 語句並為查詢套用全新的排序：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1267,7 +1314,7 @@ $query = DB::table('users')->orderBy('name');
 $usersOrderedByEmail = $query->reorder('email', 'desc')->get();
 ```
 
-為了方便起見，您可以使用 `reorderDesc` 方法以降冪方式重新排序查詢結果：
+為了方便起見，您可以使用 `reorderDesc` 方法以降序重新排序查詢結果：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1283,7 +1330,7 @@ $usersOrderedByEmail = $query->reorderDesc('email')->get();
 <a name="groupby-having"></a>
 #### `groupBy` 與 `having` 方法
 
-正如您所料，`groupBy` 和 `having` 方法可用於對查詢結果進行分組。`having` 方法的簽名 (Signature) 與 `where` 方法類似：
+正如您所料，`groupBy` 和 `having` 方法可用於對查詢結果進行分組。`having` 方法的簽章與 `where` 方法相似：
 
 ```php
 $users = DB::table('users')
@@ -1292,7 +1339,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-您可以使用 `havingBetween` 方法在給定範圍內過濾結果：
+您可以使用 `havingBetween` 方法來過濾給定範圍內的結果：
 
 ```php
 $report = DB::table('orders')
@@ -1302,7 +1349,7 @@ $report = DB::table('orders')
     ->get();
 ```
 
-您可以向 `groupBy` 方法傳遞多個參數以按多個欄位進行分組：
+您可以向 `groupBy` 方法傳遞多個參數，以根據多個欄位進行分組：
 
 ```php
 $users = DB::table('users')
@@ -1326,10 +1373,11 @@ $users = DB::table('users')
     ->get();
 ```
 
-<a name="conditional-clauses"></a>
-## 條件子句
 
-有時你可能希望根據另一個條件將某些查詢子句應用到查詢中。例如，你可能只想在傳入的 HTTP 請求中存在給定的輸入值時才套用 `where` 語句。你可以使用 `when` 方法來實現這一點：
+<a name="conditional-clauses"></a>
+## 條件語句
+
+有時您可能希望某些查詢語句根據另一個條件套用於查詢。例如，您可能只想在傳入的 HTTP 請求中存在給定輸入值時才套用 `where` 語句。您可以使用 `when` 方法來實現：
 
 ```php
 $role = $request->input('role');
@@ -1341,9 +1389,9 @@ $users = DB::table('users')
     ->get();
 ```
 
-`when` 方法僅在第一個參數為 `true` 時才執行給定的閉包 (Closure)。如果第一個參數為 `false`，則不會執行該閉包。因此，在上面的範例中，只有當傳入的請求中存在 `role` 欄位且其值評估為 `true` 時，才會呼叫傳給 `when` 方法的閉包。
+`when` 方法僅在第一個參數為 `true` 時執行給定的閉包。如果第一個參數為 `false`，則不會執行該閉包。因此，在上面的範例中，傳遞給 `when` 方法的閉包僅在傳入請求中存在 `role` 欄位且其評估結果為 `true` 時才會被叫用。
 
-你可以將另一個閉包作為第三個參數傳遞給 `when` 方法。只有當第一個參數評估為 `false` 時，才會執行此閉包。為了說明如何使用此功能，我們將使用它來設定查詢的預設排序：
+您可以將另一個閉包作為第三個參數傳遞給 `when` 方法。此閉包僅在第一個參數的評估結果為 `false` 時執行。為了說明如何使用此功能，我們將用它來設定查詢的預設排序：
 
 ```php
 $sortByVotes = $request->boolean('sort_by_votes');
@@ -1357,11 +1405,10 @@ $users = DB::table('users')
     ->get();
 ```
 
-
 <a name="insert-statements"></a>
 ## Insert 語句
 
-查詢產生器還提供了一個 `insert` 方法，可用於將記錄插入資料庫資料表中。`insert` 方法接受一個包含欄位名稱和值的陣列：
+查詢產生器還提供了一個 `insert` 方法，可用於將紀錄插入資料庫表中。`insert` 方法接受一個欄位名稱與值的陣列：
 
 ```php
 DB::table('users')->insert([
@@ -1370,7 +1417,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-你可以透過傳遞陣列的陣列一次插入多條記錄。每個陣列代表應該插入表中的一條記錄：
+您也可以透過傳遞陣列的陣列一次插入多條紀錄。每個陣列代表應插入資料表的一條紀錄：
 
 ```php
 DB::table('users')->insert([
@@ -1379,7 +1426,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-`insertOrIgnore` 方法在將記錄插入資料庫時會忽略錯誤。使用此方法時，你應該意識到重複記錄的錯誤將被忽略，其他類型的錯誤也可能根據資料庫引擎而被忽略。例如，`insertOrIgnore` 將[繞過 MySQL 的嚴格模式 (Strict Mode)](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)：
+`insertOrIgnore` 方法將在向資料庫插入紀錄時忽略錯誤。使用此方法時，您應該注意，重複紀錄的錯誤將被忽略，其他類型的錯誤也可能根據資料庫引擎而被忽略。例如，`insertOrIgnore` 將 [跳過 MySQL 的嚴格模式](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)：
 
 ```php
 DB::table('users')->insertOrIgnore([
@@ -1388,7 +1435,7 @@ DB::table('users')->insertOrIgnore([
 ]);
 ```
 
-`insertUsing` 方法將向資料表中插入新記錄，同時使用子查詢來確定應插入的資料：
+`insertUsing` 方法將向資料表中插入新紀錄，同時使用子查詢來決定應插入的資料：
 
 ```php
 DB::table('pruned_users')->insertUsing([
@@ -1402,7 +1449,7 @@ DB::table('pruned_users')->insertUsing([
 <a name="auto-incrementing-ids"></a>
 #### 自動遞增 ID
 
-如果資料表具有自動遞增的 ID，請使用 `insertGetId` 方法插入記錄並取得該 ID：
+如果資料表具有自動遞增的 ID，請使用 `insertGetId` 方法插入紀錄並取得該 ID：
 
 ```php
 $id = DB::table('users')->insertGetId(
@@ -1411,13 +1458,13 @@ $id = DB::table('users')->insertGetId(
 ```
 
 > [!WARNING]
-> 使用 PostgreSQL 時，`insertGetId` 方法預期自動遞增欄位的名稱為 `id`。如果你想從不同的「序列 (Sequence)」中取得 ID，可以將欄位名稱作為第二個參數傳遞給 `insertGetId` 方法。
+> 使用 PostgreSQL 時，`insertGetId` 方法預期自動遞增欄位的名稱為 `id`。如果您希望從不同的「序列」中取得 ID，可以將欄位名稱作為第二個參數傳遞給 `insertGetId` 方法。
 
 
 <a name="upserts"></a>
-### Upserts
+### 更新或新增 (Upserts)
 
-`upsert` 方法將插入不存在的記錄，並使用你指定的全新值更新已存在的記錄。該方法的第一個參數包含要插入或更新的值，而第二個參數列出了唯一識別相關資料表中記錄的欄位。該方法的第三個也是最後一個參數是一個陣列，列出了如果資料庫中已存在匹配記錄時應更新的欄位：
+`upsert` 方法將插入不存在的紀錄，並使用您指定的最新值更新已存在的紀錄。該方法的第一個參數包含要插入或更新的值，而第二個參數列出了在關聯資料表中唯一識別紀錄的欄位。該方法的第三個也是最後一個參數是一個欄位陣列，如果資料庫中已存在匹配的紀錄，則應更新這些欄位：
 
 ```php
 DB::table('flights')->upsert(
@@ -1430,16 +1477,16 @@ DB::table('flights')->upsert(
 );
 ```
 
-在上面的範例中，Laravel 將嘗試插入兩條記錄。如果已經存在具有相同 `departure` 和 `destination` 欄位值的記錄，Laravel 將更新該記錄的 `price` 欄位。
+在上面的範例中，Laravel 將嘗試插入兩條紀錄。如果已存在具有相同 `departure` 和 `destination` 欄位值的紀錄，Laravel 將更新該紀錄的 `price` 欄位。
 
 > [!WARNING]
-> 除了 SQL Server 之外，所有資料庫都要求 `upsert` 方法第二個參數中的欄位具有「主鍵 (Primary)」或「唯一 (Unique)」索引。此外，MariaDB 和 MySQL 資料庫驅動程式會忽略 `upsert` 方法的第二個參數，並始終使用資料表的「主鍵」和「唯一」索引來檢測現有記錄。
+> 除了 SQL Server 之外的所有資料庫都要求 `upsert` 方法第二個參數中的欄位具有「主鍵」或「唯一」索引。此外，MariaDB 和 MySQL 資料庫驅動程式會忽略 `upsert` 方法的第二個參數，並始終使用資料表的「主鍵」和「唯一」索引來偵測現有紀錄。
 
 
 <a name="update-statements"></a>
 ## Update 語句
 
-除了向資料庫插入記錄外，查詢產生器還可以使用 `update` 方法更新現有記錄。與 `insert` 方法一樣，`update` 方法接受一個欄位和值配對的陣列，表示要更新的欄位。`update` 方法會回傳受影響的行數。你可以使用 `where` 子句來限制 `update` 查詢：
+除了向資料庫插入紀錄外，查詢產生器還可以使用 `update` 方法更新現有紀錄。`update` 方法與 `insert` 方法一樣，接受一組欄位與值的配對陣列，表示要更新的欄位。`update` 方法會回傳受影響的行數。您可以使用 `where` 語句來約束 `update` 查詢：
 
 ```php
 $affected = DB::table('users')
@@ -1451,9 +1498,9 @@ $affected = DB::table('users')
 <a name="update-or-insert"></a>
 #### 更新或插入
 
-有時你可能想要更新資料庫中的現有記錄，或者在沒有匹配記錄時建立它。在這種情況下，可以使用 `updateOrInsert` 方法。`updateOrInsert` 方法接受兩個參數：一個用於尋找記錄的條件陣列，以及一個表示要更新的欄位和值配對的陣列。
+有時您可能希望更新資料庫中的現有紀錄，或者如果不存在匹配紀錄則建立它。在這種情況下，可以使用 `updateOrInsert` 方法。`updateOrInsert` 方法接受兩個參數：一個用於尋找紀錄的條件陣列，以及一個表示要更新欄位的欄位與值配對陣列。
 
-`updateOrInsert` 方法將嘗試使用第一個參數的欄位和值配對來定位匹配的資料庫記錄。如果記錄存在，它將使用第二個參數中的值進行更新。如果找不到記錄，則會插入一條新記錄，其中包含兩個參數合併後的屬性：
+`updateOrInsert` 方法將嘗試使用第一個參數的欄位與值配對來定位匹配的資料庫紀錄。如果紀錄存在，則會使用第二個參數中的值進行更新。如果找不到紀錄，則會插入一條新紀錄，並合併這兩個參數的屬性：
 
 ```php
 DB::table('users')
@@ -1463,7 +1510,7 @@ DB::table('users')
     );
 ```
 
-你可以向 `updateOrInsert` 方法提供一個閉包，以根據是否存在匹配記錄來客製化更新或插入到資料庫中的屬性：
+您可以向 `updateOrInsert` 方法提供一個閉包，以根據是否存在匹配紀錄來客製化更新或插入到資料庫中的屬性：
 
 ```php
 DB::table('users')->updateOrInsert(
@@ -1483,7 +1530,7 @@ DB::table('users')->updateOrInsert(
 <a name="updating-json-columns"></a>
 ### 更新 JSON 欄位
 
-更新 JSON 欄位時，應使用 `->` 語法來更新 JSON 物件中的相應鍵 (Key)。此操作在 MariaDB 10.3+、MySQL 5.7+ 和 PostgreSQL 9.5+ 上受支援：
+更新 JSON 欄位時，您應該使用 `->` 語法來更新 JSON 物件中對應的鍵。MariaDB 10.3+、MySQL 5.7+ 和 PostgreSQL 9.5+ 支援此操作：
 
 ```php
 $affected = DB::table('users')
@@ -1495,7 +1542,7 @@ $affected = DB::table('users')
 <a name="increment-and-decrement"></a>
 ### 遞增與遞減
 
-查詢產生器還提供了遞增或遞減給定欄位值的便捷方法。這兩個方法都至少接受一個參數：要修改的欄位。可以提供第二個參數來指定欄位應遞增或遞減的量：
+查詢產生器還提供了用於遞增或遞減給定欄位值的便捷方法。這兩種方法都至少接受一個參數：要修改的欄位。可以提供第二個參數來指定欄位應遞增或遞減的量：
 
 ```php
 DB::table('users')->increment('votes');
@@ -1507,13 +1554,13 @@ DB::table('users')->decrement('votes');
 DB::table('users')->decrement('votes', 5);
 ```
 
-如果需要，你還可以在遞增或遞減操作期間指定要更新的其他欄位：
+如果需要，您也可以在遞增或遞減操作期間指定要更新的其他欄位：
 
 ```php
 DB::table('users')->increment('votes', 1, ['name' => 'John']);
 ```
 
-此外，你可以使用 `incrementEach` 和 `decrementEach` 方法一次遞增或遞減多個欄位：
+此外，您可以使用 `incrementEach` 與 `decrementEach` 方法同時遞增或遞減多個欄位：
 
 ```php
 DB::table('users')->incrementEach([
@@ -1522,10 +1569,11 @@ DB::table('users')->incrementEach([
 ]);
 ```
 
+
 <a name="delete-statements"></a>
 ## Delete 語句
 
-查詢產生器的 `delete` 方法可用於從資料表中刪除紀錄。`delete` 方法會回傳受影響的資料列數。您可以在呼叫 `delete` 方法之前加入 "where" 子句來限制 `delete` 語句：
+查詢產生器的 `delete` 方法可用於從資料表中刪除紀錄。`delete` 方法會回傳受影響的行數。您可以在呼叫 `delete` 方法之前透過加入 "where" 語句來約束 `delete` 陳述式：
 
 ```php
 $deleted = DB::table('users')->delete();
@@ -1533,11 +1581,10 @@ $deleted = DB::table('users')->delete();
 $deleted = DB::table('users')->where('votes', '>', 100)->delete();
 ```
 
-
 <a name="pessimistic-locking"></a>
 ## 悲觀鎖定
 
-查詢產生器還包含了一些函式，可以幫助您在執行 `select` 語句時實現「悲觀鎖定 (Pessimistic Locking)」。若要執行帶有「共享鎖 (Shared Lock)」的語句，您可以呼叫 `sharedLock` 方法。共享鎖會防止選定的資料列在您的交易被提交之前被修改：
+查詢產生器也包含了一些功能，可以幫助您在執行 `select` 語句時實現「悲觀鎖定」。要使用「共用鎖 (shared lock)」執行語句，您可以呼叫 `sharedLock` 方法。共用鎖可防止選定的資料列在您的交易提交之前被修改：
 
 ```php
 DB::table('users')
@@ -1546,7 +1593,7 @@ DB::table('users')
     ->get();
 ```
 
-或者，您可以使用 `lockForUpdate` 方法。一個「for update」鎖會防止選定的紀錄被修改，或者被另一個共享鎖選取：
+或者，您也可以使用 `lockForUpdate` 方法。「更新鎖 (for update)」可防止選定的紀錄被修改，或被另一個共用鎖選定：
 
 ```php
 DB::table('users')
@@ -1555,7 +1602,7 @@ DB::table('users')
     ->get();
 ```
 
-雖然不是強制性的，但建議將悲觀鎖定包裝在 [交易 (Transaction)](/docs/{{version}}/database#database-transactions) 中。這可確保在整個操作完成之前，資料庫中檢索到的資料保持不變。如果發生失敗，交易將自動回滾 (Roll Back) 任何變更並釋放鎖定：
+雖然不是強制性的，但建議將悲觀鎖定包裝在 [交易](/docs/{{version}}/database#database-transactions) 中。這可以確保在資料庫中檢索到的資料在整個操作完成之前保持不變。如果發生失敗，交易將自動回滾任何更改並釋放鎖定：
 
 ```php
 DB::transaction(function () {
@@ -1587,9 +1634,9 @@ DB::transaction(function () {
 
 
 <a name="reusable-query-components"></a>
-## 可重用的查詢組件
+## 可重複使用的查詢組件
 
-如果您在整個應用程式中有重複的查詢邏輯，您可以使用查詢產生器的 `tap` 與 `pipe` 方法將邏輯提取到可重用的物件中。想像一下，您的應用程式中有這兩個不同的查詢：
+如果您在整個應用程式中重複使用查詢邏輯，可以使用查詢產生器的 `tap` 和 `pipe` 方法將邏輯提取到可重複使用的物件中。想像一下，您的應用程式中有這兩個不同的查詢：
 
 ```php
 use Illuminate\Database\Query\Builder;
@@ -1617,7 +1664,7 @@ DB::table('flights')
     ->get();
 ```
 
-您可能想將查詢之間共同的目的地過濾邏輯提取到一個可重用的物件中：
+您可能會想將查詢之間共同的目的地過濾邏輯提取到一個可重複使用的物件中：
 
 ```php
 <?php
@@ -1643,7 +1690,7 @@ class DestinationFilter
 }
 ```
 
-然後，您可以使用查詢產生器的 `tap` 方法將該物件的邏輯應用於查詢：
+接著，您可以使用查詢產生器的 `tap` 方法將該物件的邏輯應用到查詢中：
 
 ```php
 use App\Scopes\DestinationFilter;
@@ -1674,9 +1721,9 @@ DB::table('flights')
 <a name="query-pipes"></a>
 #### 查詢管道 (Query Pipes)
 
-`tap` 方法總是會回傳查詢產生器實例。如果您想要提取一個會執行查詢並回傳另一個值的物件，則可以使用 `pipe` 方法。
+`tap` 方法始終會返回查詢產生器。如果您想提取一個執行查詢並返回另一個值的物件，則可以使用 `pipe` 方法代替。
 
-考慮以下包含在整個應用程式中使用的共享 [分頁 (Pagination)](/docs/{{version}}/pagination) 邏輯的查詢物件。與將查詢條件應用於查詢的 `DestinationFilter` 不同，`Paginate` 物件會執行查詢並回傳一個分頁器實例：
+考慮以下查詢物件，它包含在整個應用程式中使用的共用 [分頁](/docs/{{version}}/pagination) 邏輯。與將查詢條件應用於查詢的 `DestinationFilter` 不同，`Paginate` 物件會執行查詢並返回一個分頁器執行個體：
 
 ```php
 <?php
@@ -1704,7 +1751,7 @@ class Paginate
 }
 ```
 
-使用查詢產生器的 `pipe` 方法，我們可以利用這個物件來應用我們的共享分頁邏輯：
+使用查詢產生器的 `pipe` 方法，我們可以利用此物件來應用我們的共用分頁邏輯：
 
 ```php
 $flights = DB::table('flights')
@@ -1716,7 +1763,7 @@ $flights = DB::table('flights')
 <a name="debugging"></a>
 ## 除錯
 
-在建構查詢時，您可以使用 `dd` 與 `dump` 方法來傾印目前的查詢綁定與 SQL。`dd` 方法將顯示除錯資訊並停止執行請求。`dump` 方法將顯示除錯資訊，但允許請求繼續執行：
+您可以在構建查詢時使用 `dd` 和 `dump` 方法來傾印目前的查詢綁定和 SQL。`dd` 方法會顯示除錯資訊並停止執行請求。`dump` 方法則會顯示除錯資訊，但允許請求繼續執行：
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dd();
@@ -1724,7 +1771,7 @@ DB::table('users')->where('votes', '>', 100)->dd();
 DB::table('users')->where('votes', '>', 100)->dump();
 ```
 
-可以在查詢上呼叫 `dumpRawSql` 與 `ddRawSql` 方法，以傾印正確替換了所有參數綁定的查詢 SQL：
+可以在查詢上呼叫 `dumpRawSql` 和 `ddRawSql` 方法，以傾印已將所有參數綁定正確替換後的查詢 SQL：
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dumpRawSql();

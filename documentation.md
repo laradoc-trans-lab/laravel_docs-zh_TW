@@ -1,19 +1,18 @@
-- ## 前言
-    - [版本說明](/docs/{{version}}/releases)
-    - [升級指南](/docs/{{version}}/upgrade)
-    - [貢獻指南](/docs/{{version}}/contributions)
-- ## 入門
+- ## 入門指南
     - [安裝](/docs/{{version}}/installation)
     - [設定](/docs/{{version}}/configuration)
+    - [代理式開發](/docs/{{version}}/ai)
     - [目錄結構](/docs/{{version}}/structure)
     - [前端](/docs/{{version}}/frontend)
     - [入門套件](/docs/{{version}}/starter-kits)
     - [部署](/docs/{{version}}/deployment)
+
 - ## 架構概念
     - [請求生命週期](/docs/{{version}}/lifecycle)
     - [服務容器](/docs/{{version}}/container)
     - [服務提供者](/docs/{{version}}/providers)
     - [Facades](/docs/{{version}}/facades)
+
 - ## 基礎功能
     - [路由](/docs/{{version}}/routing)
     - [中介層](/docs/{{version}}/middleware)
@@ -23,64 +22,76 @@
     - [回應](/docs/{{version}}/responses)
     - [視圖](/docs/{{version}}/views)
     - [Blade 模板](/docs/{{version}}/blade)
-    - [資源打包](/docs/{{version}}/vite)
+    - [資產編譯](/docs/{{version}}/vite)
     - [URL 生成](/docs/{{version}}/urls)
-    - [會話](/docs/{{version}}/session)
+    - [Session](/docs/{{version}}/session)
     - [驗證](/docs/{{version}}/validation)
     - [錯誤處理](/docs/{{version}}/errors)
-    - [日誌](/docs/{{version}}/logging)
+    - [記錄](/docs/{{version}}/logging)
+
 - ## 深入探討
-    - [Artisan 主控台](/docs/{{version}}/artisan)
+    - [Artisan 命令列](/docs/{{version}}/artisan)
     - [廣播](/docs/{{version}}/broadcasting)
     - [快取](/docs/{{version}}/cache)
     - [集合](/docs/{{version}}/collections)
-    - [併發](/docs/{{version}}/concurrency)
-    - [上下文](/docs/{{version}}/context)
-    - [契約](/docs/{{version}}/contracts)
+    - [並發](/docs/{{version}}/concurrency)
+    - [上下文 (Context)](/docs/{{version}}/context)
+    - [契合 (Contracts)](/docs/{{version}}/contracts)
     - [事件](/docs/{{version}}/events)
     - [檔案儲存](/docs/{{version}}/filesystem)
     - [輔助函式](/docs/{{version}}/helpers)
     - [HTTP 用戶端](/docs/{{version}}/http-client)
-    - [本地化](/docs/{{version}}/localization)
+    - [在地化](/docs/{{version}}/localization)
     - [郵件](/docs/{{version}}/mail)
     - [通知](/docs/{{version}}/notifications)
     - [套件開發](/docs/{{version}}/packages)
-    - [程序](/docs/{{version}}/processes)
+    - [處理程序](/docs/{{version}}/processes)
     - [佇列](/docs/{{version}}/queues)
     - [速率限制](/docs/{{version}}/rate-limiting)
+    - [搜尋](/docs/{{version}}/search)
     - [字串](/docs/{{version}}/strings)
     - [任務排程](/docs/{{version}}/scheduling)
+
 - ## 安全性
-    - [身份驗證](/docs/{{version}}/authentication)
+    - [認證](/docs/{{version}}/authentication)
     - [授權](/docs/{{version}}/authorization)
     - [電子郵件驗證](/docs/{{version}}/verification)
     - [加密](/docs/{{version}}/encryption)
     - [雜湊](/docs/{{version}}/hashing)
     - [密碼重設](/docs/{{version}}/passwords)
+
 - ## 資料庫
-    - [入門](/docs/{{version}}/database)
+    - [入門指南](/docs/{{version}}/database)
     - [查詢產生器](/docs/{{version}}/queries)
     - [分頁](/docs/{{version}}/pagination)
     - [遷移](/docs/{{version}}/migrations)
-    - [填充](/docs/{{version}}/seeding)
+    - [資料填充](/docs/{{version}}/seeding)
     - [Redis](/docs/{{version}}/redis)
     - [MongoDB](/docs/{{version}}/mongodb)
+
 - ## Eloquent ORM
-    - [入門](/docs/{{version}}/eloquent)
+    - [入門指南](/docs/{{version}}/eloquent)
     - [關聯](/docs/{{version}}/eloquent-relationships)
     - [集合](/docs/{{version}}/eloquent-collections)
     - [修改器 / 型別轉換](/docs/{{version}}/eloquent-mutators)
     - [API 資源](/docs/{{version}}/eloquent-resources)
     - [序列化](/docs/{{version}}/eloquent-serialization)
     - [工廠](/docs/{{version}}/eloquent-factories)
+
+- ## AI
+    - [AI SDK](/docs/{{version}}/ai-sdk)
+    - [MCP](/docs/{{version}}/mcp)
+    - [Boost](/docs/{{version}}/boost)
+
 - ## 測試
-    - [入門](/docs/{{version}}/testing)
+    - [入門指南](/docs/{{version}}/testing)
     - [HTTP 測試](/docs/{{version}}/http-tests)
-    - [主控台測試](/docs/{{version}}/console-tests)
+    - [命令列測試](/docs/{{version}}/console-tests)
     - [瀏覽器測試](/docs/{{version}}/dusk)
     - [資料庫](/docs/{{version}}/database-testing)
-    - [模擬](/docs/{{version}}/mocking)
-- ## 套件
+    - [模擬 (Mocking)](/docs/{{version}}/mocking)
+
+- ## 擴充套件
     - [Cashier (Stripe)](/docs/{{version}}/billing)
     - [Cashier (Paddle)](/docs/{{version}}/cashier-paddle)
     - [Dusk](/docs/{{version}}/dusk)
@@ -89,7 +100,6 @@
     - [Folio](/docs/{{version}}/folio)
     - [Homestead](/docs/{{version}}/homestead)
     - [Horizon](/docs/{{version}}/horizon)
-    - [MCP](/docs/{{version}}/mcp)
     - [Mix](/docs/{{version}}/mix)
     - [Octane](/docs/{{version}}/octane)
     - [Passport](/docs/{{version}}/passport)
