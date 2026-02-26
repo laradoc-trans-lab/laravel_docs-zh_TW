@@ -1,7 +1,7 @@
 - ## 入門指南
     - [安裝](/docs/{{version}}/installation)
     - [設定](/docs/{{version}}/configuration)
-    - [代理式開發](/docs/{{version}}/ai)
+    - [AI 輔助開發](/docs/{{version}}/ai)
     - [目錄結構](/docs/{{version}}/structure)
     - [前端](/docs/{{version}}/frontend)
     - [入門套件](/docs/{{version}}/starter-kits)
