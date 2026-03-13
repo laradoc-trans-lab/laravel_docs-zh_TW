@@ -7,8 +7,8 @@
     - [Session / 身份驗證](#session-and-authentication)
     - [除錯回應](#debugging-responses)
     - [例外處理](#exception-handling)
-- [測試 JSON APIs](#testing-json-apis)
-    - [流式 JSON 測試](#fluent-json-testing)
+- [測試 JSON API](#testing-json-apis)
+    - [流暢的 JSON 測試](#fluent-json-testing)
 - [測試檔案上傳](#testing-file-uploads)
 - [測試視圖](#testing-views)
     - [渲染 Blade 與元件](#rendering-blade-and-components)
@@ -21,7 +21,7 @@
 <a name="introduction"></a>
 ## 簡介
 
-Laravel 提供了一個非常流暢的 API，用於向您的應用程式發送 HTTP 請求並檢查其回應。例如，請參考下方定義的功能測試：
+Laravel 提供了一套非常流暢的 API，用於向您的應用程式發送 HTTP 請求並檢查其回應。例如，請參考下方定義的特徵測試 (Feature Test)：
 
 ```php tab=Pest
 <?php
@@ -54,12 +54,12 @@ class ExampleTest extends TestCase
 }
 ```
 
-`get` 方法會向應用程式發送一個 `GET` 請求，而 `assertStatus` 方法則會斷言回傳的回應應該具有指定的 HTTP 狀態碼。除了這個簡單的斷言之外，Laravel 還包含各種斷言，用於檢查回應標頭、內容、JSON 結構等。
+`get` 方法會向應用程式發送一個 `GET` 請求，而 `assertStatus` 方法則斷言回傳的回應應具有指定的 HTTP 狀態碼。除了這個簡單的斷言之外，Laravel 還包含各種斷言，用於檢查回應標頭、內容、JSON 結構等。
 
 <a name="making-requests"></a>
 ## 發送請求
 
-要向您的應用程式發送請求，您可以在測試中調用 `get`、`post`、`put`、`patch` 或 `delete` 方法。這些方法實際上並未對您的應用程式發出「真實的」HTTP 請求。相反地，整個網路請求是在內部模擬的。
+若要向您的應用程式發送請求，您可以在測試中呼叫 `get`、`post`、`put`、`patch` 或 `delete` 方法。這些方法實際上並未對您的應用程式發出「真實的」HTTP 請求。相反地，整個網路請求是在內部模擬的。
 
 測試請求方法不會回傳 `Illuminate\Http\Response` 實例，而是回傳 `Illuminate\Testing\TestResponse` 的實例，它提供了[多種實用的斷言](#available-assertions)，讓您可以檢查應用程式的回應：
 
@@ -94,7 +94,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-一般而言，您的每個測試應該只對應用程式發送一次請求。如果在單個測試方法中執行多個請求，可能會發生非預期的行為。
+一般來說，您的每個測試應該只對應用程式發送一個請求。如果在單個測試方法中執行多個請求，可能會發生非預期的行為。
 
 > [!NOTE]
 > 為了方便起見，執行測試時會自動停用 CSRF 中介層。
@@ -103,7 +103,7 @@ class ExampleTest extends TestCase
 <a name="customizing-request-headers"></a>
 ### 自定義請求標頭
 
-您可以使用 `withHeaders` 方法在請求發送到應用程式之前自定義請求標頭。此方法允許您向請求添加任何您想要的自定義標頭：
+在將請求發送到應用程式之前，您可以使用 `withHeaders` 方法自定義請求標頭。此方法允許您將任何自定義標頭添加到請求中：
 
 ```php tab=Pest
 <?php
@@ -144,7 +144,7 @@ class ExampleTest extends TestCase
 <a name="cookies"></a>
 ### Cookies
 
-在發送請求之前，您可以使用 `withCookie` 或 `withCookies` 方法來設定 Cookie 值。`withCookie` 方法接受 Cookie 名稱和值作為其兩個參數，而 `withCookies` 方法接受一個名稱 / 值對的陣列：
+您可以在發送請求之前，使用 `withCookie` 或 `withCookies` 方法設定 Cookie 值。`withCookie` 方法接受 Cookie 名稱和值作為其兩個參數，而 `withCookies` 方法則接受名稱 / 值對的陣列：
 
 ```php tab=Pest
 <?php
@@ -188,7 +188,7 @@ class ExampleTest extends TestCase
 <a name="session-and-authentication"></a>
 ### Session / 身份驗證
 
-Laravel 提供了多個輔助函式，用於在 HTTP 測試期間與 Session 進行互動。首先，您可以使用 `withSession` 方法將 Session 資料設定為指定的陣列。這在發出請求到應用程式之前預先載入 Session 資料非常有用：
+Laravel 提供了幾個輔助函式，用於在 HTTP 測試期間與 Session 互動。首先，您可以使用 `withSession` 方法將 Session 資料設定為指定的陣列。這對於在向應用程式發出請求之前，先將資料載入 Session 非常有用：
 
 ```php tab=Pest
 <?php
@@ -218,7 +218,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-Laravel 的 Session 通常用於維護目前已通過身份驗證的使用者的狀態。因此，`actingAs` 輔助方法提供了一種簡單的方法，將指定的使用者驗證為目前使用者。例如，我們可以使用 [model factory](/docs/{{version}}/eloquent-factories) 來產生並驗證一個使用者：
+Laravel 的 Session 通常用於維護目前已通過身份驗證使用者的狀態。因此，`actingAs` 輔助方法提供了一種簡單的方法來將指定使用者驗證為目前使用者。例如，我們可以使用 [模型工廠 (model factory)](/docs/{{version}}/eloquent-factories) 來產生並驗證使用者：
 
 ```php tab=Pest
 <?php
@@ -259,7 +259,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-您也可以透過將 Guard 名稱作為 `actingAs` 方法的第二個參數，來指定用於驗證該使用者的 Guard。提供給 `actingAs` 方法的 Guard 也將在測試期間成為預設 Guard：
+您也可以透過將 Guard 名稱作為第二個參數傳遞給 `actingAs` 方法，來指定應該使用哪個 Guard 來驗證指定的使用者。提供給 `actingAs` 方法的 Guard 也將在測試期間成為預設的 Guard：
 
 ```php
 $this->actingAs($user, 'web');
@@ -275,7 +275,7 @@ $this->actingAsGuest();
 <a name="debugging-responses"></a>
 ### 除錯回應
 
-在向應用程式發送測試請求後，可以使用 `dump`、`dumpHeaders` 和 `dumpSession` 方法來檢查和除錯回應內容：
+在對應用程式發出測試請求後，可以使用 `dump`、`dumpHeaders` 和 `dumpSession` 方法來檢查和除錯回應內容：
 
 ```php tab=Pest
 <?php
@@ -312,7 +312,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-此外，您可以使用 `dd`、`ddHeaders`、`ddBody`、`ddJson` 和 `ddSession` 方法來傾印 (Dump) 關於回應的資訊並停止執行：
+或者，您可以使用 `dd`、`ddHeaders`、`ddBody`、`ddJson` 和 `ddSession` 方法來印出關於回應的資訊並停止執行：
 
 ```php tab=Pest
 <?php
@@ -356,7 +356,7 @@ class ExampleTest extends TestCase
 <a name="exception-handling"></a>
 ### 例外處理
 
-有時您可能需要測試應用程式是否拋出了特定的例外。為了實現這一點，您可以透過 `Exceptions` Facade 夾帶「模擬 (fake)」例外處理程序。一旦例外處理程序被模擬，您就可以利用 `assertReported` 和 `assertNotReported` 方法對請求期間拋出的例外進行斷言：
+有時您可能需要測試應用程式是否拋出了特定的例外。為了實現這一點，您可以透過 `Exceptions` Facade 來「模擬 (fake)」例外處理器。一旦模擬了例外處理器，您就可以利用 `assertReported` 和 `assertNotReported` 方法，針對請求期間拋出的例外進行斷言：
 
 ```php tab=Pest
 <?php
@@ -410,7 +410,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-`assertNotReported` 和 `assertNothingReported` 方法可用於斷言在請求期間未拋出指定的例外，或未拋出任何例外：
+`assertNotReported` 和 `assertNothingReported` 方法可用於斷言在請求期間未拋出特定的例外，或者未拋出任何例外：
 
 ```php
 Exceptions::assertNotReported(InvalidOrderException::class);
@@ -418,19 +418,19 @@ Exceptions::assertNotReported(InvalidOrderException::class);
 Exceptions::assertNothingReported();
 ```
 
-您可以在發送請求之前調用 `withoutExceptionHandling` 方法，完全停用特定請求的例外處理：
+您可以在發送請求之前調用 `withoutExceptionHandling` 方法，完全禁用給定請求的例外處理：
 
 ```php
 $response = $this->withoutExceptionHandling()->get('/');
 ```
 
-此外，如果您想確保您的應用程式沒有使用 PHP 語言或應用程式使用的函式庫已棄用的功能，您可以在發送請求之前調用 `withoutDeprecationHandling` 方法。當停用棄用處理時，棄用警告將會轉換為例外，從而導致您的測試失敗：
+此外，如果您想確保應用程式沒有使用 PHP 語言或應用程式所使用的函式庫中已棄用 (Deprecated) 的功能，您可以在發送請求之前調用 `withoutDeprecationHandling` 方法。當禁用棄用處理時，棄用警告將會轉換為例外，從而導致您的測試失敗：
 
 ```php
 $response = $this->withoutDeprecationHandling()->get('/');
 ```
 
-`assertThrows` 方法可用於斷言指定 Closure 內的程式碼拋出了指定類型的例外：
+`assertThrows` 方法可用於斷言給定閉包 (Closure) 中的程式碼拋出了指定類型的例外：
 
 ```php
 $this->assertThrows(
@@ -439,7 +439,7 @@ $this->assertThrows(
 );
 ```
 
-如果您想檢查並針對拋出的例外進行斷言，您可以提供一個 Closure 作為 `assertThrows` 方法的第二個參數：
+如果您想檢查拋出的例外並對其進行斷言，您可以將閉包作為第二個參數傳遞給 `assertThrows` 方法：
 
 ```php
 $this->assertThrows(
@@ -448,16 +448,16 @@ $this->assertThrows(
 );
 ```
 
-`assertDoesntThrow` 方法可用於斷言指定 Closure 內的程式碼不會拋出任何例外：
+`assertDoesntThrow` 方法可用於斷言給定閉包中的程式碼不會拋出任何例外：
 
 ```php
 $this->assertDoesntThrow(fn () => (new ProcessOrder)->execute());
 ```
 
 <a name="testing-json-apis"></a>
-## 測試 JSON APIs
+## 測試 JSON API
 
-Laravel 也提供了多種輔助函式來測試 JSON APIs 及其回應。例如，可以使用 `json`、`getJson`、`postJson`、`putJson`、`patchJson`、`deleteJson` 以及 `optionsJson` 方法來發送帶有各種 HTTP 動詞的 JSON 請求。您也可以輕鬆地將資料與標頭傳遞給這些方法。首先，讓我們編寫一個測試，向 `/api/user` 發送 `POST` 請求，並斷言傳回了預期的 JSON 資料：
+Laravel 也提供多個輔助方法來測試 JSON API 及其回應。例如，`json`、`getJson`、`postJson`、`putJson`、`patchJson`、`deleteJson` 和 `optionsJson` 方法可用於發送各種 HTTP 動詞的 JSON 請求。您也可以輕鬆地將資料和標頭傳遞給這些方法。首先，讓我們編寫一個測試，向 `/api/user` 發送 `POST` 請求，並斷言傳回了預期的 JSON 資料：
 
 ```php tab=Pest
 <?php
@@ -498,7 +498,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-此外，JSON 回應資料可以像存取陣列變數一樣在回應上進行存取，這讓您能夠方便地檢查 JSON 回應中傳回的個別值：
+此外，JSON 回應資料可以像陣列變數一樣在回應上進行存取，讓您可以方便地檢查 JSON 回應中傳回的個別值：
 
 ```php tab=Pest
 expect($response['created'])->toBeTrue();
@@ -509,13 +509,13 @@ $this->assertTrue($response['created']);
 ```
 
 > [!NOTE]
-> `assertJson` 方法會將回應轉換為陣列，以驗證指定的陣列是否存在於應用程式傳回的 JSON 回應中。因此，只要指定的片段存在，即使 JSON 回應中還有其他屬性，此測試仍會通過。
+> `assertJson` 方法會將回應轉換為陣列，以驗證指定的陣列是否存在於應用程式傳回的 JSON 回應中。因此，如果 JSON 回應中還有其他屬性，只要指定的片段存在，此測試仍會通過。
 
 
 <a name="verifying-exact-match"></a>
-#### 斷言 JSON 完全匹配
+#### 斷言 JSON 完全符合
 
-如前所述，`assertJson` 方法可用於斷言 JSON 片段存在於 JSON 回應中。如果您想驗證指定的陣列是否與應用程式傳回的 JSON **完全匹配**，則應使用 `assertExactJson` 方法：
+如前所述，`assertJson` 方法可用於斷言 JSON 回應中是否存在某個 JSON 片段。如果您想驗證指定的陣列是否**完全符合**應用程式傳回的 JSON，您應該使用 `assertExactJson` 方法：
 
 ```php tab=Pest
 <?php
@@ -560,7 +560,7 @@ class ExampleTest extends TestCase
 <a name="verifying-json-paths"></a>
 #### 斷言 JSON 路徑
 
-如果您想驗證 JSON 回應在指定路徑中是否包含指定的資料，則應使用 `assertJsonPath` 方法：
+如果您想驗證 JSON 回應在指定路徑上是否包含給定的資料，您應該使用 `assertJsonPath` 方法：
 
 ```php tab=Pest
 <?php
@@ -597,16 +597,16 @@ class ExampleTest extends TestCase
 }
 ```
 
-`assertJsonPath` 方法也接受一個閉包，可用於動態判斷該斷言是否應通過：
+`assertJsonPath` 方法也接受一個閉包，可用於動態判斷斷言是否應該通過：
 
 ```php
 $response->assertJsonPath('team.owner.name', fn (string $name) => strlen($name) >= 3);
 ```
 
 <a name="fluent-json-testing"></a>
-### 流式 JSON 測試
+### 流暢的 JSON 測試
 
-Laravel 還提供了一種優雅的方式來流暢地測試應用程式的 JSON 回應。首先，傳遞一個閉包給 `assertJson` 方法。此閉包將會接收一個 `Illuminate\Testing\Fluent\AssertableJson` 實例，該實例可用於對應用程式回傳的 JSON 進行斷言。`where` 方法可用於對 JSON 的特定屬性進行斷言，而 `missing` 方法則可用於斷言 JSON 中缺少特定屬性：
+Laravel 還提供了一種優雅的方式來流暢地測試應用程式的 JSON 回應。首先，將閉包傳遞給 `assertJson` 方法。此閉包將會由 `Illuminate\Testing\Fluent\AssertableJson` 的實例叫用，該實例可用於對應用程式回傳的 JSON 進行斷言。`where` 方法可用於對 JSON 的特定屬性進行斷言，而 `missing` 方法則可用於斷言 JSON 中缺少特定屬性：
 
 ```php tab=Pest
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -648,20 +648,18 @@ public function test_fluent_json(): void
 }
 ```
 
+#### 了解 `etc` 方法
 
-#### 理解 `etc` 方法
+在上面的範例中，您可能已經注意到我們在斷言鏈的末尾叫用了 `etc` 方法。此方法通知 Laravel JSON 物件中可能還存在其他屬性。如果不使用 `etc` 方法，且 JSON 物件上存在您未進行斷言的其他屬性，則測試將會失敗。
 
-在上述範例中，您可能已經注意到我們在斷言鏈的末端調用了 `etc` 方法。此方法告知 Laravel，JSON 物件中可能還存在其他屬性。如果未使用 `etc` 方法，當 JSON 物件中存在您未進行斷言的其他屬性時，測試將會失敗。
+這種行為的意圖是為了保護您，避免在 JSON 回應中無意間洩露敏感資訊，強制您必須明確地對屬性進行斷言，或者透過 `etc` 方法明確允許額外的屬性。
 
-此行為的目的是為了防止您無意中在 JSON 回應中洩露敏感資訊，方法是強制您必須明確對屬性進行斷言，或者透過 `etc` 方法明確允許額外的屬性。
-
-然而，您應該注意，在斷言鏈中不包含 `etc` 方法並不能確保不會在 JSON 物件的嵌套陣列中加入額外屬性。`etc` 方法僅確保在調用 `etc` 方法的該嵌套層級中不存在額外屬性。
-
+然而，您應該注意，在斷言鏈中不包含 `etc` 方法並不能確保額外的屬性不會被新增到嵌套在 JSON 物件中的陣列中。`etc` 方法僅能確保在叫用 `etc` 方法的該層嵌套級別中不存在額外的屬性。
 
 <a name="asserting-json-attribute-presence-and-absence"></a>
-#### 斷言屬性存在 / 缺失
+#### 斷言屬性是否存在
 
-若要斷言屬性是否存在，可以使用 `has` 和 `missing` 方法：
+若要斷言屬性是否存在，您可以使用 `has` 和 `missing` 方法：
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -670,7 +668,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-此外，`hasAll` 和 `missingAll` 方法允許同時斷言多個屬性的存在與否：
+此外，`hasAll` 和 `missingAll` 方法允許同時斷言多個屬性的存在或缺失：
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -679,7 +677,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-您可以使用 `hasAny` 方法來判斷給定屬性列表中是否至少存在一個屬性：
+您可以使用 `hasAny` 方法來確定給定屬性列表中是否至少存在一個屬性：
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -688,11 +686,10 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-
 <a name="asserting-against-json-collections"></a>
 #### 對 JSON 集合進行斷言
 
-通常，您的路由會回傳一個包含多個項目的 JSON 回應，例如多個使用者：
+通常，您的路由會回傳包含多個項目的 JSON 回應，例如多個使用者：
 
 ```php
 Route::get('/users', function () {
@@ -700,7 +697,7 @@ Route::get('/users', function () {
 });
 ```
 
-在這些情況下，我們可以使用流式 JSON 物件的 `has` 方法來對回應中包含的使用者進行斷言。例如，讓我們斷言 JSON 回應包含三個使用者。接著，我們將使用 `first` 方法對集合中的第一個使用者進行一些斷言。`first` 方法接受一個閉包，該閉包會接收另一個可斷言的 JSON 字串，我們可以用它來對 JSON 集合中的第一個物件進行斷言：
+在這些情況下，我們可以使用流暢 JSON 物件的 `has` 方法對回應中包含的使用者進行斷言。例如，讓我們斷言 JSON 回應包含三個使用者。接下來，我們將使用 `first` 方法對集合中的第一個使用者進行一些斷言。`first` 方法接受一個閉包，該閉包接收另一個可斷言的 JSON 字串，我們可以用它來對 JSON 集合中的第一個物件進行斷言：
 
 ```php
 $response
@@ -716,11 +713,26 @@ $response
     );
 ```
 
+如果您想對 JSON 集合中的每個項目進行相同的斷言，可以使用 `each` 方法：
+
+```php
+$response
+  ->assertJson(fn (AssertableJson $json) =>
+      $json->has(3)
+          ->each(fn (AssertableJson $json) =>
+              $json->whereType('id', 'integer')
+                  ->whereType('name', 'string')
+                  ->whereType('email', 'string')
+                  ->missing('password')
+                  ->etc()
+          )
+  );
+```
 
 <a name="scoping-json-collection-assertions"></a>
-#### 限定 JSON 集合斷言範圍
+#### 限縮 JSON 集合斷言的範圍
 
-有時，您的應用程式路由會回傳被分配了命名鍵值的 JSON 集合：
+有時，您應用程式的路由會回傳被分配了命名鍵 (Named Keys) 的 JSON 集合：
 
 ```php
 Route::get('/users', function () {
@@ -731,7 +743,7 @@ Route::get('/users', function () {
 })
 ```
 
-在測試這些路由時，您可以使用 `has` 方法來斷言集合中的項目數量。此外，您可以使用 `has` 方法來限定斷言鏈的範圍：
+測試這些路由時，您可以使用 `has` 方法來斷言集合中的項目數量。此外，您可以使用 `has` 方法來限縮斷言鏈的範圍：
 
 ```php
 $response
@@ -748,7 +760,7 @@ $response
     );
 ```
 
-然而，與其兩次分別調用 `has` 方法來對 `users` 集合進行斷言，您可以只調用一次並提供一個閉包作為其第三個參數。這樣做時，該閉包將會自動被調用，並將範圍限定在集合中的第一個項目：
+然而，與其兩次分別呼叫 `has` 方法來對 `users` 集合進行斷言，您可以進行一次呼叫並提供閉包作為其第三個參數。這樣做時，該閉包將自動被叫用，並將範圍限縮到集合中的第一個項目：
 
 ```php
 $response
@@ -764,11 +776,10 @@ $response
     );
 ```
 
-
 <a name="asserting-json-types"></a>
-#### 斷言 JSON 類型
+#### 斷言 JSON 型別
 
-您可能只想斷言 JSON 回應中的屬性是否為特定類型。`Illuminate\Testing\Fluent\AssertableJson` 類別提供了 `whereType` 和 `whereAllType` 方法來實現此目的：
+您可能只想斷言 JSON 回應中的屬性屬於特定型別。`Illuminate\Testing\Fluent\AssertableJson` 類別提供了 `whereType` 和 `whereAllType` 方法來實現這一點：
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -780,7 +791,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-您可以使用 `|` 字元指定多個類型，或者將類型陣列作為第二個參數傳遞給 `whereType` 方法。如果回應的值是所列類型中的任何一種，斷言就會成功：
+您可以使用 `|` 字元指定多個型別，或者將型別陣列作為第二個參數傳遞給 `whereType` 方法。如果回應值是所列出的任何型別，則斷言將會成功：
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -789,12 +800,12 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-`whereType` 和 `whereAllType` 方法識別以下類型：`string`、`integer`、`double`、`boolean`、`array` 和 `null`。
+`whereType` 和 `whereAllType` 方法可以識別以下型別：`string`、`integer`、`double`、`boolean`、`array` 和 `null`。
 
 <a name="testing-file-uploads"></a>
 ## 測試檔案上傳
 
-`Illuminate\Http\UploadedFile` 類別提供了一個 `fake` 方法，可用於產生測試用的虛擬檔案或圖片。這與 `Storage` Facade 的 `fake` 方法結合使用，大幅簡化了檔案上傳的測試。例如，您可以結合這兩個功能來輕鬆測試頭像上傳表單：
+`Illuminate\Http\UploadedFile` 類別提供了一個 `fake` 方法，可用於產生測試用的虛擬檔案或圖片。這與 `Storage` Facade 的 `fake` 方法結合使用，極大地簡化了檔案上傳的測試。例如，您可以結合這兩個功能來輕鬆測試大頭照上傳表單：
 
 ```php tab=Pest
 <?php
@@ -851,8 +862,9 @@ Storage::fake('avatars');
 Storage::disk('avatars')->assertMissing('missing.jpg');
 ```
 
+
 <a name="fake-file-customization"></a>
-#### 偽造檔案自定義
+#### 虛擬檔案自定義
 
 使用 `UploadedFile` 類別提供的 `fake` 方法建立檔案時，您可以指定圖片的寬度、高度和大小（以 KB 為單位），以便更好地測試應用程式的驗證規則：
 
@@ -860,13 +872,13 @@ Storage::disk('avatars')->assertMissing('missing.jpg');
 UploadedFile::fake()->image('avatar.jpg', $width, $height)->size(100);
 ```
 
-除了建立圖片，您還可以使用 `create` 方法建立任何其他類型的檔案：
+除了建立圖片外，您還可以使用 `create` 方法建立任何其他類型的檔案：
 
 ```php
 UploadedFile::fake()->create('document.pdf', $sizeInKilobytes);
 ```
 
-如果需要，您可以向該方法傳遞 `$mimeType` 參數，以明確定義檔案應回傳的 MIME 類型：
+如果需要，您可以向該方法傳遞一個 `$mimeType` 參數，以明確定義檔案應返回的 MIME 類型：
 
 ```php
 UploadedFile::fake()->create(
@@ -874,10 +886,11 @@ UploadedFile::fake()->create(
 );
 ```
 
+
 <a name="testing-views"></a>
 ## 測試視圖
 
-Laravel 還允許您在不發送模擬 HTTP 請求的情況下渲染視圖。要做到這一點，您可以在測試中呼叫 `view` 方法。`view` 方法接受視圖名稱和一個選用的資料陣列。該方法回傳一個 `Illuminate\Testing\TestView` 實例，它提供了多種方法來方便地對視圖內容進行斷言：
+Laravel 也允許您在不對應用程式發送模擬 HTTP 請求的情況下渲染視圖。要實現這一點，您可以在測試中呼叫 `view` 方法。`view` 方法接受視圖名稱和一個選用的資料陣列。該方法會回傳一個 `Illuminate\Testing\TestView` 的實例，它提供了多個方法來方便地對視圖內容進行斷言：
 
 ```php tab=Pest
 <?php
@@ -907,18 +920,19 @@ class ExampleTest extends TestCase
 }
 ```
 
-`TestView` 類別提供了以下斷言方法：`assertSee`、`assertSeeInOrder`、`assertSeeText`、`assertSeeTextInOrder`、`assertDontSee` 和 `assertDontSeeText`。
+`TestView` 類別提供了以下斷言方法：`assertSee`、`assertSeeInOrder`、`assertSeeText`、`assertSeeTextInOrder`、`assertDontSee` 以及 `assertDontSeeText`。
 
-如果需要，您可以透過將 `TestView` 實例轉換為字串來獲取原始的、已渲染的視圖內容：
+如果需要，您可以將 `TestView` 實例轉換為字串來獲取原始且渲染後的視圖內容：
 
 ```php
 $contents = (string) $this->view('welcome');
 ```
 
+
 <a name="sharing-errors"></a>
 #### 共享錯誤
 
-某些視圖可能依賴於 [Laravel 提供的全域錯誤包 (Error Bag)](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 中共享的錯誤。要使用錯誤訊息填充錯誤包，您可以使用 `withViewErrors` 方法：
+某些視圖可能依賴於 [Laravel 提供的全域錯誤包 (Global Error Bag)](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 中共享的錯誤。要使用錯誤訊息填充錯誤包，您可以使用 `withViewErrors` 方法：
 
 ```php
 $view = $this->withViewErrors([
@@ -928,10 +942,11 @@ $view = $this->withViewErrors([
 $view->assertSee('Please provide a valid name.');
 ```
 
+
 <a name="rendering-blade-and-components"></a>
 ### 渲染 Blade 與元件
 
-如有必要，您可以使用 `blade` 方法來解析並渲染原始的 [Blade](/docs/{{version}}/blade) 字串。與 `view` 方法一樣，`blade` 方法回傳 `Illuminate\Testing\TestView` 實例：
+如有必要，您可以使用 `blade` 方法來評估並渲染原始的 [Blade](/docs/{{version}}/blade) 字串。與 `view` 方法一樣，`blade` 方法會回傳一個 `Illuminate\Testing\TestView` 的實例：
 
 ```php
 $view = $this->blade(
@@ -942,7 +957,7 @@ $view = $this->blade(
 $view->assertSee('Taylor');
 ```
 
-您可以使用 `component` 方法來解析並渲染 [Blade 元件](/docs/{{version}}/blade#components)。`component` 方法回傳一個 `Illuminate\Testing\TestComponent` 實例：
+您可以使用 `component` 方法來評估並渲染 [Blade 元件](/docs/{{version}}/blade#components)。`component` 方法會回傳一個 `Illuminate\Testing\TestComponent` 的實例：
 
 ```php
 $view = $this->component(Profile::class, ['name' => 'Taylor']);
@@ -950,10 +965,11 @@ $view = $this->component(Profile::class, ['name' => 'Taylor']);
 $view->assertSee('Taylor');
 ```
 
+
 <a name="caching-routes"></a>
 ## 快取路由
 
-在測試運行之前，Laravel 會啟動一個全新的應用程式實例，包括收集所有定義的路由。如果您的應用程式有許多路由檔案，您可能希望將 `Illuminate\Foundation\Testing\WithCachedRoutes` Trait 加入您的測試案例中。在使用了這個 Trait 的測試中，路由只會建立一次並儲存在記憶體中，這意味著路由收集過程在整個測試套件中僅運行一次：
+在測試執行之前，Laravel 會啟動一個全新的應用程式實例，包含收集所有定義的路由。如果您的應用程式有很多路由檔案，您可能希望將 `Illuminate\Foundation\Testing\WithCachedRoutes` Trait 加入到您的測試案例中。在使用了此 Trait 的測試中，路由只會建立一次並儲存在記憶體中，這意味著路由收集程序在整個測試套件中僅會執行一次：
 
 ```php tab=Pest
 <?php
@@ -1001,7 +1017,7 @@ class BasicTest extends TestCase
 <a name="response-assertions"></a>
 ### 回應斷言
 
-Laravel 的 `Illuminate\Testing\TestResponse` 類別提供多種自定義斷言方法，供您在測試應用程式時使用。這些斷言可以從 `json`、`get`、`post`、`put` 與 `delete` 測試方法回傳的回應中存取：
+Laravel 的 `Illuminate\Testing\TestResponse` 類別提供了多種自定義斷言方法，供您在測試應用程式時使用。您可以從 `json`、`get`、`post`、`put` 與 `delete` 測試方法回傳的回應中存取這些斷言：
 
 <style>
     .collection-method-list > p {
@@ -1100,6 +1116,7 @@ Laravel 的 `Illuminate\Testing\TestResponse` 類別提供多種自定義斷言�
 
 </div>
 
+
 <a name="assert-accepted"></a>
 #### assertAccepted
 
@@ -1108,6 +1125,7 @@ Laravel 的 `Illuminate\Testing\TestResponse` 類別提供多種自定義斷言�
 ```php
 $response->assertAccepted();
 ```
+
 
 <a name="assert-bad-request"></a>
 #### assertBadRequest
@@ -1118,6 +1136,7 @@ $response->assertAccepted();
 $response->assertBadRequest();
 ```
 
+
 <a name="assert-client-error"></a>
 #### assertClientError
 
@@ -1126,6 +1145,7 @@ $response->assertBadRequest();
 ```php
 $response->assertClientError();
 ```
+
 
 <a name="assert-conflict"></a>
 #### assertConflict
@@ -1136,41 +1156,46 @@ $response->assertClientError();
 $response->assertConflict();
 ```
 
+
 <a name="assert-cookie"></a>
 #### assertCookie
 
-斷言回應包含給定的 cookie：
+斷言回應包含指定的 Cookie：
 
 ```php
 $response->assertCookie($cookieName, $value = null);
 ```
 
+
 <a name="assert-cookie-expired"></a>
 #### assertCookieExpired
 
-斷言回應包含給定的 cookie 且該 cookie 已過期：
+斷言回應包含指定的 Cookie 且已過期：
 
 ```php
 $response->assertCookieExpired($cookieName);
 ```
 
+
 <a name="assert-cookie-not-expired"></a>
 #### assertCookieNotExpired
 
-斷言回應包含給定的 cookie 且該 cookie 尚未過期：
+斷言回應包含指定的 Cookie 且未過期：
 
 ```php
 $response->assertCookieNotExpired($cookieName);
 ```
 
+
 <a name="assert-cookie-missing"></a>
 #### assertCookieMissing
 
-斷言回應不包含給定的 cookie：
+斷言回應不包含指定的 Cookie：
 
 ```php
 $response->assertCookieMissing($cookieName);
 ```
+
 
 <a name="assert-created"></a>
 #### assertCreated
@@ -1181,58 +1206,64 @@ $response->assertCookieMissing($cookieName);
 $response->assertCreated();
 ```
 
+
 <a name="assert-dont-see"></a>
 #### assertDontSee
 
-斷言給定的字串不包含在應用程式回傳的回應中。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理：
+斷言應用程式回傳的回應中不包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義 (Escape)：
 
 ```php
 $response->assertDontSee($value, $escape = true);
 ```
 
+
 <a name="assert-dont-see-text"></a>
 #### assertDontSeeText
 
-斷言給定的字串不包含在回應文字中。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理。此方法在進行斷言之前，會先將回應內容傳入 PHP 的 `strip_tags` 函式：
+斷言回應文字中不包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義。此方法在進行斷言前，會先將回應內容傳入 PHP 的 `strip_tags` 函式：
 
 ```php
 $response->assertDontSeeText($value, $escape = true);
 ```
 
+
 <a name="assert-download"></a>
 #### assertDownload
 
-斷言回應是一個「下載」。通常，這意味著回傳回應的被呼叫路由回傳了 `Response::download` 回應、`BinaryFileResponse` 或 `Storage::download` 回應：
+斷言回應為「下載」。通常這代表被呼叫的路由回傳了 `Response::download` 回應、`BinaryFileResponse` 或 `Storage::download` 回應：
 
 ```php
 $response->assertDownload();
 ```
 
-如果需要，您可以斷言下載的檔案被指派了特定的檔名：
+如果您願意，可以斷言下載的檔案被指定了特定的檔名：
 
 ```php
 $response->assertDownload('image.jpg');
 ```
 
+
 <a name="assert-exact-json"></a>
 #### assertExactJson
 
-斷言回應與給定的 JSON 資料完全相符：
+斷言回應與指定的 JSON 資料完全符合：
 
 ```php
 $response->assertExactJson(array $data);
 ```
 
+
 <a name="assert-exact-json-structure"></a>
 #### assertExactJsonStructure
 
-斷言回應與給定的 JSON 結構完全相符：
+斷言回應與指定的 JSON 結構完全符合：
 
 ```php
 $response->assertExactJsonStructure(array $data);
 ```
 
-此方法是 [assertJsonStructure](#assert-json-structure) 的更嚴格變體。與 `assertJsonStructure` 相比，如果回應中包含任何未明確包含在預期 JSON 結構中的鍵，此方法將會失敗。
+此方法是 [assertJsonStructure](#assert-json-structure) 的更嚴格版本。與 `assertJsonStructure` 不同，如果回應中包含任何未明確包含在預期 JSON 結構中的鍵 (Key)，此方法將會失敗。
+
 
 <a name="assert-forbidden"></a>
 #### assertForbidden
@@ -1243,6 +1274,7 @@ $response->assertExactJsonStructure(array $data);
 $response->assertForbidden();
 ```
 
+
 <a name="assert-found"></a>
 #### assertFound
 
@@ -1252,41 +1284,46 @@ $response->assertForbidden();
 $response->assertFound();
 ```
 
+
 <a name="assert-gone"></a>
 #### assertGone
 
-斷言回應具有已消失 (410) 的 HTTP 狀態碼：
+斷言回應具有失效 (410) 的 HTTP 狀態碼：
 
 ```php
 $response->assertGone();
 ```
 
+
 <a name="assert-header"></a>
 #### assertHeader
 
-斷言回應中存在給定的標頭與值：
+斷言回應中存在指定的標頭與值：
 
 ```php
 $response->assertHeader($headerName, $value = null);
 ```
 
+
 <a name="assert-header-contains"></a>
 #### assertHeaderContains
 
-斷言給定的標頭包含特定的子字串值：
+斷言指定的標頭包含指定的子字串值：
 
 ```php
 $response->assertHeaderContains($headerName, $value);
 ```
 
+
 <a name="assert-header-missing"></a>
 #### assertHeaderMissing
 
-斷言回應中不存在給定的標頭：
+斷言回應中不存在指定的標頭：
 
 ```php
 $response->assertHeaderMissing($headerName);
 ```
+
 
 <a name="assert-internal-server-error"></a>
 #### assertInternalServerError
@@ -1297,30 +1334,33 @@ $response->assertHeaderMissing($headerName);
 $response->assertInternalServerError();
 ```
 
+
 <a name="assert-json"></a>
 #### assertJson
 
-斷言回應包含給定的 JSON 資料：
+斷言回應包含指定的 JSON 資料：
 
 ```php
 $response->assertJson(array $data, $strict = false);
 ```
 
-`assertJson` 方法會將回應轉換為陣列，以驗證給定的陣列是否存在於應用程式回傳的 JSON 回應中。因此，即使 JSON 回應中還有其他屬性，只要給定的片段存在，此測試仍會通過。
+`assertJson` 方法會將回應轉換為陣列，以驗證指定的陣列是否存在於應用程式回傳的 JSON 回應中。因此，即使 JSON 回應中還有其他屬性，只要指定的片段存在，此測試仍會通過。
+
 
 <a name="assert-json-count"></a>
 #### assertJsonCount
 
-斷言回應的 JSON 在給定鍵路徑下，具有包含預期項目數量的陣列：
+斷言回應 JSON 的指定鍵中，陣列包含預期的項目數量：
 
 ```php
 $response->assertJsonCount($count, $key = null);
 ```
 
+
 <a name="assert-json-fragment"></a>
 #### assertJsonFragment
 
-斷言回應中的任何位置包含給定的 JSON 資料：
+斷言回應中的任何位置包含指定的 JSON 資料：
 
 ```php
 Route::get('/users', function () {
@@ -1336,58 +1376,64 @@ Route::get('/users', function () {
 $response->assertJsonFragment(['name' => 'Taylor Otwell']);
 ```
 
+
 <a name="assert-json-is-array"></a>
 #### assertJsonIsArray
 
-斷言回應的 JSON 是一個陣列：
+斷言回應 JSON 是一個陣列：
 
 ```php
 $response->assertJsonIsArray();
 ```
 
+
 <a name="assert-json-is-object"></a>
 #### assertJsonIsObject
 
-斷言回應的 JSON 是一個物件：
+斷言回應 JSON 是一個物件：
 
 ```php
 $response->assertJsonIsObject();
 ```
 
+
 <a name="assert-json-missing"></a>
 #### assertJsonMissing
 
-斷言回應不包含給定的 JSON 資料：
+斷言回應不包含指定的 JSON 資料：
 
 ```php
 $response->assertJsonMissing(array $data);
 ```
 
+
 <a name="assert-json-missing-exact"></a>
 #### assertJsonMissingExact
 
-斷言回應不包含完全相符的 JSON 資料：
+斷言回應不包含完全符合的 JSON 資料：
 
 ```php
 $response->assertJsonMissingExact(array $data);
 ```
 
+
 <a name="assert-json-missing-validation-errors"></a>
 #### assertJsonMissingValidationErrors
 
-斷言回應對於給定的鍵沒有 JSON 驗證錯誤：
+斷言回應對於指定的鍵沒有 JSON 驗證錯誤：
 
 ```php
 $response->assertJsonMissingValidationErrors($keys);
 ```
 
 > [!NOTE]
-> 更通用的 [assertValid](#assert-valid) 方法可用於斷言回應沒有以 JSON 形式回傳的驗證錯誤，**且**沒有錯誤被閃存 (Flash) 到 Session 儲存空間。
+> 更通用的 [assertValid](#assert-valid) 方法可用於斷言回應沒有以 JSON 形式回傳的驗證錯誤，**且**沒有錯誤被閃存 (Flash) 到 Session 儲存空間中。
+
 
 <a name="assert-json-path"></a>
 #### assertJsonPath
 
-斷言回應在指定的路徑包含給定的資料：
+斷言回應在指定的路徑中包含指定的資料：
 
 ```php
 $response->assertJsonPath($path, $expectedValue);
@@ -1403,16 +1449,17 @@ $response->assertJsonPath($path, $expectedValue);
 }
 ```
 
-您可以像這樣斷言 `user` 物件的 `name` 屬性與給定的值相符：
+您可以像這樣斷言 `user` 物件的 `name` 屬性符合指定的值：
 
 ```php
 $response->assertJsonPath('user.name', 'Steve Schoger');
 ```
 
+
 <a name="assert-json-missing-path"></a>
 #### assertJsonMissingPath
 
-斷言回應不包含給定的路徑：
+斷言回應不包含指定的路徑：
 
 ```php
 $response->assertJsonMissingPath($path);
@@ -1434,10 +1481,11 @@ $response->assertJsonMissingPath($path);
 $response->assertJsonMissingPath('user.email');
 ```
 
+
 <a name="assert-json-structure"></a>
 #### assertJsonStructure
 
-斷言回應具有給定的 JSON 結構：
+斷言回應具有指定的 JSON 結構：
 
 ```php
 $response->assertJsonStructure(array $structure);
@@ -1482,7 +1530,7 @@ $response->assertJsonStructure([
 }
 ```
 
-在這種情況下，您可以使用 `*` 字元來對陣列中所有物件的結構進行斷言：
+在這種情況下，您可以使用 `*` 字元來斷言陣列中所有物件的結構：
 
 ```php
 $response->assertJsonStructure([
@@ -1496,26 +1544,29 @@ $response->assertJsonStructure([
 ]);
 ```
 
+
 <a name="assert-json-validation-errors"></a>
 #### assertJsonValidationErrors
 
-斷言回應對於給定的鍵具有給定的 JSON 驗證錯誤。當斷言驗證錯誤是以 JSON 結構回傳，而非閃存到 Session 的回應時，應使用此方法：
+斷言回應對於指定的鍵具有指定的 JSON 驗證錯誤。當斷言驗證錯誤是以 JSON 結構回傳，而非閃存到 Session 的回應時，應使用此方法：
 
 ```php
 $response->assertJsonValidationErrors(array $data, $responseKey = 'errors');
 ```
 
 > [!NOTE]
-> 更通用的 [assertInvalid](#assert-invalid) 方法可用於斷言回應具有以 JSON 形式回傳的驗證錯誤，**或**錯誤被閃存到 Session 儲存空間。
+> 更通用的 [assertInvalid](#assert-invalid) 方法可用於斷言回應具有以 JSON 形式回傳的驗證錯誤，**或**有錯誤被閃存到 Session 儲存空間中。
+
 
 <a name="assert-json-validation-error-for"></a>
 #### assertJsonValidationErrorFor
 
-斷言回應對於給定的鍵具有任何 JSON 驗證錯誤：
+斷言回應對於指定的鍵具有任何 JSON 驗證錯誤：
 
 ```php
 $response->assertJsonValidationErrorFor(string $key, $responseKey = 'errors');
 ```
+
 
 <a name="assert-method-not-allowed"></a>
 #### assertMethodNotAllowed
@@ -1526,41 +1577,46 @@ $response->assertJsonValidationErrorFor(string $key, $responseKey = 'errors');
 $response->assertMethodNotAllowed();
 ```
 
+
 <a name="assert-moved-permanently"></a>
 #### assertMovedPermanently
 
-斷言回應具有永久移動 (301) 的 HTTP 狀態碼：
+斷言回應具有永久移至新位置 (301) 的 HTTP 狀態碼：
 
 ```php
 $response->assertMovedPermanently();
 ```
 
+
 <a name="assert-location"></a>
 #### assertLocation
 
-斷言回應的 `Location` 標頭中具有給定的 URI 值：
+斷言回應的 `Location` 標頭中具有指定的 URI 值：
 
 ```php
 $response->assertLocation($uri);
 ```
 
+
 <a name="assert-content"></a>
 #### assertContent
 
-斷言給定的字串與回應內容相符：
+斷言指定的字串與回應內容符合：
 
 ```php
 $response->assertContent($value);
 ```
 
+
 <a name="assert-no-content"></a>
 #### assertNoContent
 
-斷言回應具有給定的 HTTP 狀態碼且無內容：
+斷言回應具有指定的 HTTP 狀態碼且無內容：
 
 ```php
 $response->assertNoContent($status = 204);
 ```
+
 
 <a name="assert-streamed"></a>
 #### assertStreamed
@@ -1569,14 +1625,16 @@ $response->assertNoContent($status = 204);
 
     $response->assertStreamed();
 
+
 <a name="assert-streamed-content"></a>
 #### assertStreamedContent
 
-斷言給定的字串與串流回應內容相符：
+斷言指定的字串與串流回應內容符合：
 
 ```php
 $response->assertStreamedContent($value);
 ```
+
 
 <a name="assert-not-found"></a>
 #### assertNotFound
@@ -1587,6 +1645,7 @@ $response->assertStreamedContent($value);
 $response->assertNotFound();
 ```
 
+
 <a name="assert-ok"></a>
 #### assertOk
 
@@ -1596,46 +1655,51 @@ $response->assertNotFound();
 $response->assertOk();
 ```
 
+
 <a name="assert-payment-required"></a>
 #### assertPaymentRequired
 
-斷言回應具有需要付款 (402) 的 HTTP 狀態碼：
+斷言回應具有需付費 (402) 的 HTTP 狀態碼：
 
 ```php
 $response->assertPaymentRequired();
 ```
 
+
 <a name="assert-plain-cookie"></a>
 #### assertPlainCookie
 
-斷言回應包含給定的未加密 cookie：
+斷言回應包含指定的未加密 Cookie：
 
 ```php
 $response->assertPlainCookie($cookieName, $value = null);
 ```
 
+
 <a name="assert-redirect"></a>
 #### assertRedirect
 
-斷言回應是重導向至給定的 URI：
+斷言回應是重新導向至指定的 URI：
 
 ```php
 $response->assertRedirect($uri = null);
 ```
 
+
 <a name="assert-redirect-back"></a>
 #### assertRedirectBack
 
-斷言回應是否正在重導回前一個頁面：
+斷言回應是否重新導向回上一個頁面：
 
 ```php
 $response->assertRedirectBack();
 ```
 
+
 <a name="assert-redirect-back-with-errors"></a>
 #### assertRedirectBackWithErrors
 
-斷言回應是否正在重導回前一個頁面，且 [Session 具有給定的錯誤](#assert-session-has-errors)：
+斷言回應是否重新導向回上一個頁面，且 [Session 包含指定的錯誤](#assert-session-has-errors)：
 
 ```php
 $response->assertRedirectBackWithErrors(
@@ -1643,41 +1707,46 @@ $response->assertRedirectBackWithErrors(
 );
 ```
 
+
 <a name="assert-redirect-back-without-errors"></a>
 #### assertRedirectBackWithoutErrors
 
-斷言回應是否正在重導回前一個頁面，且 Session 不包含任何錯誤訊息：
+斷言回應是否重新導向回上一個頁面，且 Session 不包含任何錯誤訊息：
 
 ```php
 $response->assertRedirectBackWithoutErrors();
 ```
 
+
 <a name="assert-redirect-contains"></a>
 #### assertRedirectContains
 
-斷言回應是否正在重導至包含給定字串的 URI：
+斷言回應是否重新導向至包含指定字串的 URI：
 
 ```php
 $response->assertRedirectContains($string);
 ```
 
+
 <a name="assert-redirect-to-route"></a>
 #### assertRedirectToRoute
 
-斷言回應是重導向至給定的 [命名路由](/docs/{{version}}/routing#named-routes)：
+斷言回應是重新導向至指定的 [具名路由](/docs/{{version}}/routing#named-routes)：
 
 ```php
 $response->assertRedirectToRoute($name, $parameters = []);
 ```
 
+
 <a name="assert-redirect-to-signed-route"></a>
 #### assertRedirectToSignedRoute
 
-斷言回應是重導向至給定的 [簽名路由](/docs/{{version}}/urls#signed-urls)：
+斷言回應是重新導向至指定的 [簽名路由](/docs/{{version}}/urls#signed-urls)：
 
 ```php
 $response->assertRedirectToSignedRoute($name = null, $parameters = []);
 ```
+
 
 <a name="assert-request-timeout"></a>
 #### assertRequestTimeout
@@ -1688,50 +1757,56 @@ $response->assertRedirectToSignedRoute($name = null, $parameters = []);
 $response->assertRequestTimeout();
 ```
 
+
 <a name="assert-see"></a>
 #### assertSee
 
-斷言回應中包含給定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理：
+斷言回應中包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義：
 
 ```php
 $response->assertSee($value, $escape = true);
 ```
 
+
 <a name="assert-see-in-order"></a>
 #### assertSeeInOrder
 
-斷言回應中按順序包含給定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理：
+斷言回應中按順序包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義：
 
 ```php
 $response->assertSeeInOrder(array $values, $escape = true);
 ```
 
+
 <a name="assert-see-text"></a>
 #### assertSeeText
 
-斷言回應文字中包含給定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理。在進行斷言之前，會先將回應內容傳入 PHP 的 `strip_tags` 函式：
+斷言回應文字中包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義。在進行斷言之前，回應內容會先傳入 PHP 的 `strip_tags` 函式：
 
 ```php
 $response->assertSeeText($value, $escape = true);
 ```
 
+
 <a name="assert-see-text-in-order"></a>
 #### assertSeeTextInOrder
 
-斷言回應文字中按順序包含給定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對給定字串進行跳脫處理。在進行斷言之前，會先將回應內容傳入 PHP 的 `strip_tags` 函式：
+斷言回應文字中按順序包含指定的字串。除非您將第二個參數傳入 `false`，否則此斷言會自動對指定的字串進行轉義。在進行斷言之前，回應內容會先傳入 PHP 的 `strip_tags` 函式：
 
 ```php
 $response->assertSeeTextInOrder(array $values, $escape = true);
 ```
 
+
 <a name="assert-server-error"></a>
 #### assertServerError
 
-斷言回應具有伺服器錯誤 (>= 500, < 600) 的 HTTP 狀態碼：
+斷言回應具有伺服器錯誤 (>= 500 , < 600) 的 HTTP 狀態碼：
 
 ```php
 $response->assertServerError();
 ```
+
 
 <a name="assert-service-unavailable"></a>
 #### assertServiceUnavailable
@@ -1742,16 +1817,17 @@ $response->assertServerError();
 $response->assertServiceUnavailable();
 ```
 
+
 <a name="assert-session-has"></a>
 #### assertSessionHas
 
-斷言 Session 包含給定的資料片段：
+斷言 Session 包含指定的資料片段：
 
 ```php
 $response->assertSessionHas($key, $value = null);
 ```
 
-如果需要，可以將閉包作為第二個參數提供給 `assertSessionHas` 方法。如果閉包回傳 `true`，則斷言將通過：
+如果需要，可以將一個閉包作為 `assertSessionHas` 方法的第二個參數。如果閉包回傳 `true`，則斷言通過：
 
 ```php
 $response->assertSessionHas($key, function (User $value) {
@@ -1759,16 +1835,17 @@ $response->assertSessionHas($key, function (User $value) {
 });
 ```
 
+
 <a name="assert-session-has-input"></a>
 #### assertSessionHasInput
 
-斷言 Session 在 [閃存輸入陣列](/docs/{{version}}/responses#redirecting-with-flashed-session-data) 中具有給定的值：
+斷言 Session 在 [閃存的輸入陣列](/docs/{{version}}/responses#redirecting-with-flashed-session-data) 中具有指定的值：
 
 ```php
 $response->assertSessionHasInput($key, $value = null);
 ```
 
-如果需要，可以將閉包作為第二個參數提供給 `assertSessionHasInput` 方法。如果閉包回傳 `true`，則斷言將通過：
+如果需要，可以將一個閉包作為 `assertSessionHasInput` 方法的第二個參數。如果閉包回傳 `true`，則斷言通過：
 
 ```php
 use Illuminate\Support\Facades\Crypt;
@@ -1778,16 +1855,17 @@ $response->assertSessionHasInput($key, function (string $value) {
 });
 ```
 
+
 <a name="assert-session-has-all"></a>
 #### assertSessionHasAll
 
-斷言 Session 包含給定的鍵值對陣列：
+斷言 Session 包含指定的鍵值對陣列：
 
 ```php
 $response->assertSessionHasAll(array $data);
 ```
 
-例如，如果您的應用程式 Session 包含 `name` 與 `status` 鍵，您可以像這樣斷言兩者皆存在且具有指定的值：
+例如，如果您的應用程式 Session 包含 `name` 和 `status` 鍵，您可以像這樣斷言兩者都存在且具有指定的值：
 
 ```php
 $response->assertSessionHasAll([
@@ -1796,10 +1874,11 @@ $response->assertSessionHasAll([
 ]);
 ```
 
+
 <a name="assert-session-has-errors"></a>
 #### assertSessionHasErrors
 
-斷言 Session 包含給定 `$keys` 的錯誤。如果 `$keys` 是一個關聯陣列，則斷言 Session 為每個欄位 (鍵) 包含特定的錯誤訊息 (值)。在測試將驗證錯誤閃存到 Session 而非以 JSON 結構回傳的路由時，應使用此方法：
+斷言 Session 包含指定 `$keys` 的錯誤。如果 `$keys` 是一個關聯陣列，則斷言 Session 為每個欄位 (鍵) 包含特定的錯誤訊息 (值)。當測試將驗證錯誤閃存到 Session 而非以 JSON 結構回傳的路由時，應使用此方法：
 
 ```php
 $response->assertSessionHasErrors(
@@ -1807,13 +1886,13 @@ $response->assertSessionHasErrors(
 );
 ```
 
-例如，要斷言 `name` 與 `email` 欄位具有閃存到 Session 的驗證錯誤訊息，您可以像這樣呼叫 `assertSessionHasErrors` 方法：
+例如，要斷言 `name` 和 `email` 欄位具有閃存到 Session 的驗證錯誤訊息，您可以像這樣呼叫 `assertSessionHasErrors` 方法：
 
 ```php
 $response->assertSessionHasErrors(['name', 'email']);
 ```
 
-或者，您可以斷言給定欄位具有特定的驗證錯誤訊息：
+或者，您可以斷言指定欄位具有特定的驗證錯誤訊息：
 
 ```php
 $response->assertSessionHasErrors([
@@ -1822,16 +1901,18 @@ $response->assertSessionHasErrors([
 ```
 
 > [!NOTE]
-> 更通用的 [assertInvalid](#assert-invalid) 方法可用於斷言回應具有以 JSON 形式回傳的驗證錯誤，**或**錯誤被閃存到 Session 儲存空間。
+> 更通用的 [assertInvalid](#assert-invalid) 方法可用於斷言回應具有以 JSON 形式回傳的驗證錯誤，**或**有錯誤被閃存到 Session 儲存空間中。
+
 
 <a name="assert-session-has-errors-in"></a>
 #### assertSessionHasErrorsIn
 
-斷言 Session 在特定的 [錯誤包 (Error Bag)](/docs/{{version}}/validation#named-error-bags) 中包含給定 `$keys` 的錯誤。如果 `$keys` 是一個關聯陣列，則斷言 Session 為該錯誤包內的每個欄位 (鍵) 包含特定的錯誤訊息 (值)：
+斷言 Session 在特定的 [錯誤包 (Error Bag)](/docs/{{version}}/validation#named-error-bags) 中包含指定 `$keys` 的錯誤。如果 `$keys` 是一個關聯陣列，則斷言 Session 在該錯誤包中，為每個欄位 (鍵) 包含特定的錯誤訊息 (值)：
 
 ```php
 $response->assertSessionHasErrorsIn($errorBag, $keys = [], $format = null);
 ```
+
 
 <a name="assert-session-has-no-errors"></a>
 #### assertSessionHasNoErrors
@@ -1842,35 +1923,39 @@ $response->assertSessionHasErrorsIn($errorBag, $keys = [], $format = null);
 $response->assertSessionHasNoErrors();
 ```
 
+
 <a name="assert-session-doesnt-have-errors"></a>
 #### assertSessionDoesntHaveErrors
 
-斷言 Session 對於給定的鍵沒有驗證錯誤：
+斷言 Session 對於指定的鍵沒有驗證錯誤：
 
 ```php
 $response->assertSessionDoesntHaveErrors($keys = [], $format = null, $errorBag = 'default');
 ```
 
 > [!NOTE]
-> 更通用的 [assertValid](#assert-valid) 方法可用於斷言回應沒有以 JSON 形式回傳的驗證錯誤，**且**沒有錯誤被閃存到 Session 儲存空間。
+> 更通用的 [assertValid](#assert-valid) 方法可用於斷言回應沒有以 JSON 形式回傳的驗證錯誤，**且**沒有錯誤被閃存到 Session 儲存空間中。
+
 
 <a name="assert-session-missing"></a>
 #### assertSessionMissing
 
-斷言 Session 不包含給定的鍵：
+斷言 Session 不包含指定的鍵：
 
 ```php
 $response->assertSessionMissing($key);
 ```
 
+
 <a name="assert-status"></a>
 #### assertStatus
 
-斷言回應具有給定的 HTTP 狀態碼：
+斷言回應具有指定的 HTTP 狀態碼：
 
 ```php
 $response->assertStatus($code);
 ```
+
 
 <a name="assert-successful"></a>
 #### assertSuccessful
@@ -1881,23 +1966,26 @@ $response->assertStatus($code);
 $response->assertSuccessful();
 ```
 
+
 <a name="assert-too-many-requests"></a>
 #### assertTooManyRequests
 
-斷言回應具有請求過多 (429) 的 HTTP 狀態碼：
+斷言回應具有過多請求 (429) 的 HTTP 狀態碼：
 
 ```php
 $response->assertTooManyRequests();
 ```
 
+
 <a name="assert-unauthorized"></a>
 #### assertUnauthorized
 
-斷言回應具有未經授權 (401) 的 HTTP 狀態碼：
+斷言回應具有未授權 (401) 的 HTTP 狀態碼：
 
 ```php
 $response->assertUnauthorized();
 ```
+
 
 <a name="assert-unprocessable"></a>
 #### assertUnprocessable
@@ -1908,6 +1996,7 @@ $response->assertUnauthorized();
 $response->assertUnprocessable();
 ```
 
+
 <a name="assert-unsupported-media-type"></a>
 #### assertUnsupportedMediaType
 
@@ -1917,10 +2006,11 @@ $response->assertUnprocessable();
 $response->assertUnsupportedMediaType();
 ```
 
+
 <a name="assert-valid"></a>
 #### assertValid
 
-斷言回應對於給定的鍵沒有驗證錯誤。此方法可用於斷言驗證錯誤是以 JSON 結構回傳，或是驗證錯誤已被閃存到 Session 的回應：
+斷言回應對於指定的鍵沒有驗證錯誤。此方法可用於斷言驗證錯誤以 JSON 結構回傳的回應，或驗證錯誤已閃存到 Session 的回應：
 
 ```php
 // Assert that no validation errors are present...
@@ -1930,16 +2020,17 @@ $response->assertValid();
 $response->assertValid(['name', 'email']);
 ```
 
+
 <a name="assert-invalid"></a>
 #### assertInvalid
 
-斷言回應對於給定的鍵具有驗證錯誤。此方法可用於斷言驗證錯誤是以 JSON 結構回傳，或是驗證錯誤已被閃存到 Session 的回應：
+斷言回應對於指定的鍵具有驗證錯誤。此方法可用於斷言驗證錯誤以 JSON 結構回傳的回應，或驗證錯誤已閃存到 Session 的回應：
 
 ```php
 $response->assertInvalid(['name', 'email']);
 ```
 
-您也可以斷言給定鍵具有特定的驗證錯誤訊息。執行此操作時，您可以提供完整訊息或僅提供訊息的一小部分：
+您也可以斷言指定鍵具有特定的驗證錯誤訊息。執行此操作時，您可以提供完整的訊息或僅提供訊息的一小部分：
 
 ```php
 $response->assertInvalid([
@@ -1948,22 +2039,23 @@ $response->assertInvalid([
 ]);
 ```
 
-如果您想斷言給定欄位是僅有的具有驗證錯誤的欄位，您可以使用 `assertOnlyInvalid` 方法：
+如果您想斷言指定的欄位是唯一具有驗證錯誤的欄位，可以使用 `assertOnlyInvalid` 方法：
 
 ```php
 $response->assertOnlyInvalid(['name', 'email']);
 ```
 
+
 <a name="assert-view-has"></a>
 #### assertViewHas
 
-斷言回應視圖包含給定的資料片段：
+斷言回應視圖包含指定的資料片段：
 
 ```php
 $response->assertViewHas($key, $value = null);
 ```
 
-將閉包作為第二個參數傳遞給 `assertViewHas` 方法，將允許您檢查特定的視圖資料並對其進行斷言：
+將閉包作為 `assertViewHas` 方法的第二個參數，可讓您檢查指定的視圖資料片段並對其進行斷言：
 
 ```php
 $response->assertViewHas('user', function (User $user) {
@@ -1981,16 +2073,17 @@ expect($response['name'])->toBe('Taylor');
 $this->assertEquals('Taylor', $response['name']);
 ```
 
+
 <a name="assert-view-has-all"></a>
 #### assertViewHasAll
 
-斷言回應視圖具有給定的資料列表：
+斷言回應視圖具有指定的資料列表：
 
 ```php
 $response->assertViewHasAll(array $data);
 ```
 
-此方法可用於斷言視圖僅包含與給定鍵相符的資料：
+此方法可用於斷言視圖僅包含與指定鍵相符的資料：
 
 ```php
 $response->assertViewHasAll([
@@ -2008,19 +2101,21 @@ $response->assertViewHasAll([
 ]);
 ```
 
+
 <a name="assert-view-is"></a>
 #### assertViewIs
 
-斷言路由回傳了給定的視圖：
+斷言路由回傳了指定的視圖：
 
 ```php
 $response->assertViewIs($value);
 ```
 
+
 <a name="assert-view-missing"></a>
 #### assertViewMissing
 
-斷言給定的資料鍵未提供給應用程式回應中回傳的視圖：
+斷言應用程式回應中回傳的視圖無法取得指定的資料鍵：
 
 ```php
 $response->assertViewMissing($key);
@@ -2029,7 +2124,7 @@ $response->assertViewMissing($key);
 <a name="authentication-assertions"></a>
 ### 身份驗證斷言
 
-Laravel 也提供了各種與身份驗證相關的斷言，供您在應用程式的功能測試中利用。請注意，這些方法是在測試類別本身呼叫的，而不是由 `get` 和 `post` 等方法回傳的 `Illuminate\Testing\TestResponse` 實例。
+Laravel 也提供了多種與身份驗證相關的斷言，您可以在應用程式的功能測試中使用。請注意，這些方法是在測試類別本身呼叫的，而不是在 `get` 與 `post` 等方法所回傳的 `Illuminate\Testing\TestResponse` 實例上呼叫。
 
 
 <a name="assert-authenticated"></a>
@@ -2066,10 +2161,11 @@ $this->assertAuthenticatedAs($user, $guard = null);
 
 Laravel 提供了兩個主要的驗證相關斷言，供您用來確保請求中提供的資料是有效或無效的。
 
+
 <a name="validation-assert-valid"></a>
 #### assertValid
 
-斷言回應中給定的鍵 (keys) 沒有驗證錯誤。此方法可用於針對驗證錯誤以 JSON 結構回傳，或驗證錯誤已被快閃 (flashed) 至 Session 的回應進行斷言：
+斷言回應對於給定的鍵值沒有驗證錯誤。此方法可用於針對以 JSON 結構回傳驗證錯誤的回應，或將驗證錯誤快閃至 Session 儲存空間的回應進行斷言：
 
 ```php
 // Assert that no validation errors are present...
@@ -2079,16 +2175,17 @@ $response->assertValid();
 $response->assertValid(['name', 'email']);
 ```
 
+
 <a name="validation-assert-invalid"></a>
 #### assertInvalid
 
-斷言回應中給定的鍵具有驗證錯誤。此方法可用於針對驗證錯誤以 JSON 結構回傳，或驗證錯誤已被快閃至 Session 的回應進行斷言：
+斷言回應對於給定的鍵值具有驗證錯誤。此方法可用於針對以 JSON 結構回傳驗證錯誤的回應，或將驗證錯誤快閃至 Session 儲存空間的回應進行斷言：
 
 ```php
 $response->assertInvalid(['name', 'email']);
 ```
 
-您也可以斷言給定的鍵具有特定的驗證錯誤訊息。執行此操作時，您可以提供完整的訊息，或僅提供訊息的一小部分：
+您也可以斷言給定的鍵值具有特定的驗證錯誤訊息。執行此操作時，您可以提供完整訊息或僅提供訊息的一小部分：
 
 ```php
 $response->assertInvalid([
