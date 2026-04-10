@@ -1,21 +1,21 @@
 # HTTP 回應
 
 - [建立回應](#creating-responses)
-    - [附加標頭至回應](#attaching-headers-to-responses)
-    - [附加 Cookie 至回應](#attaching-cookies-to-responses)
+    - [為回應附加標頭](#attaching-headers-to-responses)
+    - [為回應附加 Cookie](#attaching-cookies-to-responses)
     - [Cookie 與加密](#cookies-and-encryption)
 - [重新導向](#redirects)
     - [重新導向至具名路由](#redirecting-named-routes)
     - [重新導向至控制器動作](#redirecting-controller-actions)
     - [重新導向至外部網域](#redirecting-external-domains)
-    - [重新導向並攜帶 Session 閃存資料](#redirecting-with-flashed-session-data)
+    - [使用快閃工作階段資料重新導向](#redirecting-with-flashed-session-data)
 - [其他回應類型](#other-response-types)
     - [視圖回應](#view-responses)
     - [JSON 回應](#json-responses)
     - [檔案下載](#file-downloads)
     - [檔案回應](#file-responses)
 - [串流回應](#streamed-responses)
-    - [取用串流回應](#consuming-streamed-responses)
+    - [消費串流回應](#consuming-streamed-responses)
     - [串流 JSON 回應](#streamed-json-responses)
     - [事件串流 (SSE)](#event-streams)
     - [串流下載](#streamed-downloads)
@@ -36,7 +36,7 @@ Route::get('/', function () {
 });
 ```
 
-除了從路由與控制器回傳字串外，您也可以回傳陣列。框架會自動將該陣列轉換為 JSON 回應：
+除了從路由和控制器回傳字串外，您也可以回傳陣列。框架會自動將陣列轉換為 JSON 回應：
 
 ```php
 Route::get('/', function () {
@@ -45,15 +45,15 @@ Route::get('/', function () {
 ```
 
 > [!NOTE]
-> 您知道您也可以從路由或控制器回傳 [Eloquent 集合](/docs/{{version}}/eloquent-collections) 嗎？它們會自動被轉換為 JSON。嘗試看看吧！
+> 您知道您也可以從路由或控制器回傳 [Eloquent 集合](/docs/{{version}}/eloquent-collections) 嗎？它們會自動被轉換為 JSON。試試看吧！
 
 
 <a name="response-objects"></a>
 #### 回應物件
 
-通常，您不會只從路由動作中回傳簡單的字串或陣列。相反地，您會回傳完整的 `Illuminate\Http\Response` 實例或 [視圖](/docs/{{version}}/views)。
+通常情況下，您不會只從路由動作中回傳簡單的字串或陣列。相反地，您將會回傳完整的 `Illuminate\Http\Response` 實例或 [視圖](/docs/{{version}}/views)。
 
-回傳完整的 `Response` 實例允許您自訂回應的 HTTP 狀態碼與標頭。`Response` 實例繼承自 `Symfony\Component\HttpFoundation\Response` 類別，該類別提供了多種建構 HTTP 回應的方法：
+回傳完整的 `Response` 實例允許您自訂回應的 HTTP 狀態碼與標頭。`Response` 實例繼承自 `Symfony\Component\HttpFoundation\Response` 類別，該類別提供了多種建立 HTTP 回應的方法：
 
 ```php
 Route::get('/home', function () {
@@ -66,7 +66,7 @@ Route::get('/home', function () {
 <a name="eloquent-models-and-collections"></a>
 #### Eloquent 模型與集合
 
-您也可以直接從路由與控制器回傳 [Eloquent ORM](/docs/{{version}}/eloquent) 模型與集合。當您這樣做時，Laravel 會自動將模型與集合轉換為 JSON 回應，同時遵循模型的 [隱藏屬性](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)：
+您也可以直接從路由和控制器回傳 [Eloquent ORM](/docs/{{version}}/eloquent) 模型與集合。當您這樣做時，Laravel 會自動將模型與集合轉換為 JSON 回應，同時會尊重模型的 [隱藏屬性](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)：
 
 ```php
 use App\Models\User;
@@ -78,9 +78,9 @@ Route::get('/user/{user}', function (User $user) {
 
 
 <a name="attaching-headers-to-responses"></a>
-### 附加標頭至回應
+### 為回應附加標頭
 
-請記住，大多數的回應方法都是可以鏈結的，這使得建構回應實例的過程更加流暢。例如，您可以使用 `header` 方法在將回應傳送回使用者之前，為回應加入一系列的標頭：
+請記住，大多數的回應方法都是可鏈結的，這允許以流暢的方式建構回應實例。例如，您可以使用 `header` 方法在將回應傳送回使用者之前，為回應添加一系列標頭：
 
 ```php
 return response($content)
@@ -89,7 +89,7 @@ return response($content)
     ->header('X-Header-Two', 'Header Value');
 ```
 
-或者，您可以使用 `withHeaders` 方法來指定要加入到回應中的標頭陣列：
+或者，您可以使用 `withHeaders` 方法來指定要添加到回應中的標頭陣列：
 
 ```php
 return response($content)
@@ -100,7 +100,7 @@ return response($content)
     ]);
 ```
 
-您可以使用 `withoutHeader` 方法從傳出的回應中移除特定的標頭：
+您可以使用 `withoutHeader` 方法從發出的回應中移除特定的標頭：
 
 ```php
 return response($content)->withoutHeader('X-Debug');
@@ -112,7 +112,7 @@ return response($content)->withoutHeader(['X-Debug', 'X-Powered-By']);
 <a name="cache-control-middleware"></a>
 #### 快取控制中介層
 
-Laravel 包含一個 `cache.headers` 中介層，可用於快速為一組路由設定 `Cache-Control` 標頭。指示語 (Directives) 應使用與其對應的快取控制指示語之「蛇形命名法 (snake case)」格式，並以分號分隔。如果在指示語清單中指定了 `etag`，回應內容的 MD5 雜湊值將會自動被設定為 ETag 識別碼：
+Laravel 包含一個 `cache.headers` 中介層，可用於快速為一組路由設定 `Cache-Control` 標頭。指令應使用對應快取控制指令的「蛇形命名法 (snake case)」等效形式，並以分號分隔。如果在指令列表中指定了 `etag`，回應內容的 MD5 雜湊值將自動被設定為 ETag 識別碼：
 
 ```php
 Route::middleware('cache.headers:public;max_age=30;s_maxage=300;stale_while_revalidate=600;etag')->group(function () {
@@ -128,9 +128,9 @@ Route::middleware('cache.headers:public;max_age=30;s_maxage=300;stale_while_reva
 
 
 <a name="attaching-cookies-to-responses"></a>
-### 附加 Cookie 至回應
+### 為回應附加 Cookie
 
-您可以使用 `cookie` 方法將 Cookie 附加到傳出的 `Illuminate\Http\Response` 實例。您應該將名稱、值以及 Cookie 的有效分鐘數傳遞給此方法：
+您可以使用 `cookie` 方法將 Cookie 附加到發出的 `Illuminate\Http\Response` 實例。您應該將名稱、值以及該 Cookie 應被視為有效的分鐘數傳遞給此方法：
 
 ```php
 return response('Hello World')->cookie(
@@ -138,7 +138,7 @@ return response('Hello World')->cookie(
 );
 ```
 
-`cookie` 方法還接受一些較少使用的參數。通常，這些參數的目的與意義與 PHP 原生的 [setcookie](https://secure.php.net/manual/en/function.setcookie.php) 方法所使用的參數相同：
+`cookie` 方法還接受一些較少使用的引數。通常，這些引數的目的和含義與傳遞給 PHP 原生 [setcookie](https://secure.php.net/manual/en/function.setcookie.php) 方法的引數相同：
 
 ```php
 return response('Hello World')->cookie(
@@ -146,7 +146,7 @@ return response('Hello World')->cookie(
 );
 ```
 
-如果您希望確保 Cookie 隨傳出的回應一起傳送，但您尚未擁有該回應的實例，您可以使用 `Cookie` Facade 將 Cookie 「排入佇列 (queue)」，以便在回應傳送時附加。`queue` 方法接受建立 Cookie 實例所需的參數。這些 Cookie 將在傳送到瀏覽器之前被附加到傳出的回應中：
+如果您想確保 Cookie 與發出的回應一起傳送，但尚未擁有該回應的實例，您可以使用 `Cookie` Facade 來「佇列 (queue)」Cookie，以便在傳送回應時將其附加。`queue` 方法接受建立 Cookie 實例所需的引數。這些 Cookie 將在傳送至瀏覽器之前附加到發出的回應中：
 
 ```php
 use Illuminate\Support\Facades\Cookie;
@@ -158,7 +158,7 @@ Cookie::queue('name', 'value', $minutes);
 <a name="generating-cookie-instances"></a>
 #### 產生 Cookie 實例
 
-如果您想產生一個之後可以附加到回應實例的 `Symfony\Component\HttpFoundation\Cookie` 實例，您可以使用全域的 `cookie` 輔助函式。除非將此 Cookie 附加到回應實例，否則它不會被傳送回客戶端：
+如果您想產生一個 `Symfony\Component\HttpFoundation\Cookie` 實例，以便稍後附加到回應實例，您可以使用全域的 `cookie` 助手函數。除非該 Cookie 被附加到回應實例，否則不會被傳送回用戶端：
 
 ```php
 $cookie = cookie('name', 'value', $minutes);
@@ -168,15 +168,15 @@ return response('Hello World')->cookie($cookie);
 
 
 <a name="expiring-cookies-early"></a>
-#### 提前讓 Cookie 過期
+#### 提前使 Cookie 過期
 
-您可以透過傳出回應的 `withoutCookie` 方法讓 Cookie 過期，進而移除它：
+您可以通过發出回應的 `withoutCookie` 方法使 Cookie 過期來移除它：
 
 ```php
 return response('Hello World')->withoutCookie('name');
 ```
 
-如果您尚未擁有傳出回應的實例，可以使用 `Cookie` Facade 的 `expire` 方法讓 Cookie 過期：
+如果您尚未擁有發出回應的實例，您可以使用 `Cookie` Facade 的 `expire` 方法使 Cookie 過期：
 
 ```php
 Cookie::expire('name');
@@ -186,7 +186,7 @@ Cookie::expire('name');
 <a name="cookies-and-encryption"></a>
 ### Cookie 與加密
 
-預設情況下，得益於 `Illuminate\Cookie\Middleware\EncryptCookies` 中介層，Laravel 產生的所有 Cookie 都經過加密與簽署，因此客戶端無法修改或讀取它們。如果您想針對應用程式產生的部分 Cookie 停用加密，可以在應用程式的 `bootstrap/app.php` 檔案中使用 `encryptCookies` 方法：
+預設情況下，得益於 `Illuminate\Cookie\Middleware\EncryptCookies` 中介層，Laravel 產生的所有 Cookie 都經過加密與簽署，因此無法被用戶端修改或讀取。如果您想為應用程式產生的部分 Cookie 禁用加密，您可以在應用程式的 `bootstrap/app.php` 檔案中使用 `encryptCookies` 方法：
 
 ```php
 ->withMiddleware(function (Middleware $middleware): void {
@@ -197,12 +197,12 @@ Cookie::expire('name');
 ```
 
 > [!NOTE]
-> 一般來說，永遠不應該停用 Cookie 加密，因為這會使您的 Cookie 暴露於潛在的客戶端資料外洩與竄改風險中。
+> 一般而言，不應禁用 Cookie 加密，因為這會使您的 Cookie 面臨潛在的用戶端資料外洩與篡改風險。
 
 <a name="redirects"></a>
 ## 重新導向
 
-重新導向回應是 `Illuminate\Http\RedirectResponse` 類別的實例，並且包含將使用者重新導向至另一個 URL 所需的正確標頭。有幾種方法可以產生 `RedirectResponse` 實例。最簡單的方法是使用全域 `redirect` 輔助函式：
+重新導向回應是 `Illuminate\Http\RedirectResponse` 類別的實例，其中包含將使用者重新導向至另一個 URL 所需的正確標頭。有幾種方法可以產生 `RedirectResponse` 實例，最簡單的方法是使用全域的 `redirect` 輔助函數：
 
 ```php
 Route::get('/dashboard', function () {
@@ -210,7 +210,7 @@ Route::get('/dashboard', function () {
 });
 ```
 
-有時您可能希望將使用者重新導向到他們之前的位置，例如當提交的表單無效時。您可以使用全域 `back` 輔助函式來做到這一點。由於此功能利用了 [session](/docs/{{version}}/session)，請確保呼叫 `back` 函式的路由使用了 `web` 中介層群組：
+有時您可能希望將使用者重新導向回他們之前的位置，例如當提交的表單無效時。您可以使用全域的 `back` 輔助函數來達成。由於此功能使用了 [工作階段](/docs/{{version}}/session)，請確保呼叫 `back` 函數的路由使用了 `web` 中介層群組：
 
 ```php
 Route::post('/user/profile', function () {
@@ -224,13 +224,13 @@ Route::post('/user/profile', function () {
 <a name="redirecting-named-routes"></a>
 ### 重新導向至具名路由
 
-當您在不帶參數的情況下呼叫 `redirect` 輔助函式時，會回傳 `Illuminate\Routing\Redirector` 的實例，這讓您可以呼叫 `Redirector` 實例上的任何方法。例如，要產生一個到具名路由的 `RedirectResponse`，您可以使用 `route` 方法：
+當您在不帶參數的情況下呼叫 `redirect` 輔助函數時，會回傳一個 `Illuminate\Routing\Redirector` 實例，讓您可以呼叫該 `Redirector` 實例上的任何方法。例如，要產生一個重新導向至具名路由的 `RedirectResponse`，您可以使用 `route` 方法：
 
 ```php
 return redirect()->route('login');
 ```
 
-如果您的路由具有參數，您可以將它們作為第二個參數傳遞給 `route` 方法：
+如果您的路由具有參數，您可以將它們作為 `route` 方法的第二個引數傳遞：
 
 ```php
 // For a route with the following URI: /profile/{id}
@@ -240,9 +240,9 @@ return redirect()->route('profile', ['id' => 1]);
 
 
 <a name="populating-parameters-via-eloquent-models"></a>
-#### 透過 Eloquent 模型填入參數
+#### 透過 Eloquent 模型填充參數
 
-如果您正在重新導向到一個具有「ID」參數的路由，而該參數是從 Eloquent 模型填入的，則您可以直接傳遞模型本身。ID 將會被自動擷取：
+如果您正重新導向至一個具有由 Eloquent 模型填充的「ID」參數之路由，您可以直接傳遞該模型。ID 將會自動被提取：
 
 ```php
 // For a route with the following URI: /profile/{id}
@@ -250,7 +250,7 @@ return redirect()->route('profile', ['id' => 1]);
 return redirect()->route('profile', [$user]);
 ```
 
-如果您想自定義放置在路由參數中的值，可以在路由參數定義中指定欄位 (`/profile/{id:slug}`)，或者您可以覆寫 Eloquent 模型上的 `getRouteKey` 方法：
+如果您想自定義放入路由參數中的值，您可以在路由參數定義中指定欄位 (`/profile/{id:slug}`)，或者您可以覆寫 Eloquent 模型上的 `getRouteKey` 方法：
 
 ```php
 /**
@@ -266,7 +266,7 @@ public function getRouteKey(): mixed
 <a name="redirecting-controller-actions"></a>
 ### 重新導向至控制器動作
 
-您也可以產生到 [控制器動作](/docs/{{version}}/controllers) 的重新導向。為此，請將控制器和動作名稱傳遞給 `action` 方法：
+您也可以產生重新導向至 [控制器動作](/docs/{{version}}/controllers) 的回應。若要這樣做，請將控制器與動作名稱傳遞給 `action` 方法：
 
 ```php
 use App\Http\Controllers\UserController;
@@ -274,7 +274,7 @@ use App\Http\Controllers\UserController;
 return redirect()->action([UserController::class, 'index']);
 ```
 
-如果您的控制器路由需要參數，您可以將它們作為第二個參數傳遞給 `action` 方法：
+如果您的控制器路由需要參數，您可以將它們作為 `action` 方法的第二個引數傳遞：
 
 ```php
 return redirect()->action(
@@ -286,7 +286,7 @@ return redirect()->action(
 <a name="redirecting-external-domains"></a>
 ### 重新導向至外部網域
 
-有時您可能需要重新導向到應用程式之外的網域。您可以透過呼叫 `away` 方法來做到這一點，該方法會建立一個 `RedirectResponse`，而不進行任何額外的 URL 編碼、驗證或驗證：
+有時您可能需要重新導向至應用程式以外的網域。您可以透過呼叫 `away` 方法來達成，它會建立一個 `RedirectResponse`，且不會進行任何額外的 URL 編碼、驗證或核對：
 
 ```php
 return redirect()->away('https://www.google.com');
@@ -294,9 +294,9 @@ return redirect()->away('https://www.google.com');
 
 
 <a name="redirecting-with-flashed-session-data"></a>
-### 重新導向並攜帶 Session 閃存資料
+### 使用快閃工作階段資料重新導向
 
-重新導向到新的 URL 並將 [資料閃存 (Flash) 到 Session](/docs/{{version}}/session#flash-data) 通常是同時進行的。這通常在成功執行某個動作後，將成功訊息閃存到 Session 時進行。為了方便起見，您可以建立一個 `RedirectResponse` 實例並在單個流暢的方法鏈中將資料閃存到 Session：
+重新導向至新 URL 與 [將資料快閃至工作階段](/docs/{{version}}/session#flash-data) 通常是同時進行的。通常在成功執行某個動作後，將成功訊息快閃至工作階段時會這樣做。為了方便起見，您可以使用單一且流暢的方法鏈來建立 `RedirectResponse` 實例並將資料快閃至工作階段：
 
 ```php
 Route::post('/user/profile', function () {
@@ -306,7 +306,7 @@ Route::post('/user/profile', function () {
 });
 ```
 
-在使用者被重新導向後，您可以從 [session](/docs/{{version}}/session) 中顯示閃存的訊息。例如，使用 [Blade 語法](/docs/{{version}}/blade)：
+在使用者被重新導向後，您可以從 [工作階段](/docs/{{version}}/session) 顯示快閃訊息。例如，使用 [Blade 語法](/docs/{{version}}/blade)：
 
 ```blade
 @if (session('status'))
@@ -318,9 +318,9 @@ Route::post('/user/profile', function () {
 
 
 <a name="redirecting-with-input"></a>
-#### 重新導向並攜帶輸入資料
+#### 帶著輸入資料重新導向
 
-您可以使用 `RedirectResponse` 實例提供的 `withInput` 方法，在將使用者重新導向到新位置之前，將當前請求的輸入資料閃存到 Session。這通常在使用者遇到驗證錯誤時使用。一旦輸入資料被閃存到 Session，您就可以在下一個請求中輕鬆地 [取得它](/docs/{{version}}/requests#retrieving-old-input) 以重新填充表單：
+您可以使用 `RedirectResponse` 實例提供的 `withInput` 方法，在將使用者重新導向至新位置之前，將目前請求的輸入資料快閃至工作階段。這通常發生在使用者遇到驗證錯誤時。一旦輸入資料被快閃至工作階段，您就可以在下一次請求期間輕鬆地 [擷取它](/docs/{{version}}/requests#retrieving-old-input) 以重新填充表單：
 
 ```php
 return back()->withInput();
@@ -330,13 +330,13 @@ return back()->withInput();
 <a name="other-response-types"></a>
 ## 其他回應類型
 
-`response` 輔助函式可以用於產生其他類型的回應實例。當在不帶參數的情況下呼叫 `response` 輔助函式時，會回傳 `Illuminate\Contracts\Routing\ResponseFactory` [合約 (Contract)](/docs/{{version}}/contracts) 的實作。此合約提供了幾個有用的方法來產生回應。
+`response` 輔助函數可用於產生其他類型的回應實例。當在不帶參數的情況下呼叫 `response` 輔助函數時，會回傳一個 `Illuminate\Contracts\Routing\ResponseFactory` [契約(Contracts)](/docs/{{version}}/contracts) 的實作。此契約提供了幾個用於產生回應的實用方法。
 
 
 <a name="view-responses"></a>
 ### 視圖回應
 
-如果您需要控制回應的狀態和標頭，但也需要回傳 [視圖 (View)](/docs/{{version}}/views) 作為回應內容，則應使用 `view` 方法：
+如果您需要控制回應的狀態與標頭，但同時也需要回傳 [視圖](/docs/{{version}}/views) 作為回應內容，您應該使用 `view` 方法：
 
 ```php
 return response()
@@ -344,13 +344,13 @@ return response()
     ->header('Content-Type', $type);
 ```
 
-當然，如果您不需要傳遞自定義的 HTTP 狀態碼或自定義標頭，您可以使用全域 `view` 輔助函式。
+當然，如果您不需要傳遞自定義的 HTTP 狀態碼或自定義標頭，您可以使用全域的 `view` 輔助函數。
 
 
 <a name="json-responses"></a>
 ### JSON 回應
 
-`json` 方法會自動將 `Content-Type` 標頭設置為 `application/json`，並使用 PHP 的 `json_encode` 函式將給定的陣列轉換為 JSON：
+`json` 方法會自動將 `Content-Type` 標頭設定為 `application/json`，並使用 PHP 的 `json_encode` 函數將給定的陣列轉換為 JSON：
 
 ```php
 return response()->json([
@@ -359,7 +359,7 @@ return response()->json([
 ]);
 ```
 
-如果您想建立一個 JSONP 回應，可以將 `json` 方法與 `withCallback` 方法結合使用：
+如果您想建立 JSONP 回應，可以使用 `json` 方法搭配 `withCallback` 方法：
 
 ```php
 return response()
@@ -371,7 +371,7 @@ return response()
 <a name="file-downloads"></a>
 ### 檔案下載
 
-`download` 方法可以用於產生一個回應，強制使用者的瀏覽器下載給定路徑的檔案。`download` 方法接受檔名作為其第二個參數，這將決定下載檔案的使用者所看到的檔名。最後，您可以將 HTTP 標頭陣列作為其第三個參數進行傳遞：
+`download` 方法可用於產生一個強制使用者瀏覽器下載指定路徑檔案的回應。`download` 方法接受一個檔名作為第二個引數，這將決定使用者在下載檔案時看到的檔名。最後，您可以將 HTTP 標頭陣列作為該方法的第三個引數傳遞：
 
 ```php
 return response()->download($pathToFile);
@@ -386,7 +386,7 @@ return response()->download($pathToFile, $name, $headers);
 <a name="file-responses"></a>
 ### 檔案回應
 
-`file` 方法可以用於直接在使用者瀏覽器中顯示檔案（例如圖片或 PDF），而不是啟動下載。此方法接受檔案的絕對路徑作為其第一個參數，並接受標頭陣列作為其第二個參數：
+`file` 方法可用於直接在使用者瀏覽器中顯示檔案（例如圖片或 PDF），而不是啟動下載。此方法接受檔案的絕對路徑作為第一個引數，以及標頭陣列作為第二個引數：
 
 ```php
 return response()->file($pathToFile);
@@ -397,7 +397,7 @@ return response()->file($pathToFile, $headers);
 <a name="streamed-responses"></a>
 ## 串流回應
 
-透過將產生的資料即時串流給用戶端，您可以顯著減少記憶體使用量並提高效能，特別是對於非常大的回應。串流回應允許用戶端在伺服器完成傳送之前就開始處理資料：
+透過在資料生成時將其串流傳輸給用戶端，您可以顯著減少記憶體使用量並提高效能，特別是對於非常大型的回應。串流回應允許用戶端在伺服器完成傳送之前就開始處理資料：
 
 ```php
 Route::get('/stream', function () {
@@ -412,7 +412,7 @@ Route::get('/stream', function () {
 });
 ```
 
-為了方便起見，如果您提供給 `stream` 方法的閉包回傳了一個 [Generator](https://www.php.net/manual/en/language.generators.overview.php)，Laravel 將自動在產生器回傳的字串之間排空 (Flush) 輸出緩衝區，並停用 Nginx 的輸出緩衝：
+為了方便起見，如果您提供給 `stream` 方法的閉包回傳一個 [Generator](https://www.php.net/manual/en/language.generators.overview.php)，Laravel 將會自動在產生器回傳的字串之間清除輸出緩衝區，並禁用 Nginx 的輸出緩衝：
 
 ```php
 Route::post('/chat', function () {
@@ -426,11 +426,10 @@ Route::post('/chat', function () {
 });
 ```
 
-
 <a name="consuming-streamed-responses"></a>
-### 取用串流回應
+### 消費串流回應
 
-您可以使用 Laravel 的 `stream` npm 套件來取用串流回應，該套件提供了方便的 API 用於與 Laravel 回應和事件串流進行互動。首先，請安裝 `@laravel/stream-react` 或 `@laravel/stream-vue` 套件：
+您可以透過 Laravel 的 `stream` npm 套件來消費串流回應，該套件提供了一個便捷的 API 用於與 Laravel 的回應和事件串流進行互動。要開始使用，請安裝 `@laravel/stream-react`、`@laravel/stream-vue` 或 `@laravel/stream-svelte` 套件：
 
 ```shell tab=React
 npm install @laravel/stream-react
@@ -440,7 +439,11 @@ npm install @laravel/stream-react
 npm install @laravel/stream-vue
 ```
 
-接著，可以使用 `useStream` 來取用事件串流。提供串流 URL 後，當您的 Laravel 應用程式傳回內容時，該 Hook 會自動將 `data` 更新為串接後的回應：
+```shell tab=Svelte
+npm install @laravel/stream-svelte
+```
+
+接著，可以使用 `useStream` 來消費事件串流。在提供串流 URL 後，當 Laravel 應用程式回傳內容時，hook 會自動將串接後的回應更新至 `data` 中：
 
 ```tsx tab=React
 import { useStream } from "@laravel/stream-react";
@@ -488,12 +491,37 @@ const sendMessage = () => {
 </template>
 ```
 
-透過 `send` 將資料傳回串流時，系統會在傳送新資料前取消與該串流的現有連線。所有請求都以 JSON `POST` 請求發送。
+```svelte tab=Svelte
+<script>
+import { useStream } from "@laravel/stream-svelte";
+
+const stream = useStream("chat");
+
+const sendMessage = () => {
+    stream.send({
+        message: `Current timestamp: ${Date.now()}`,
+    });
+};
+</script>
+
+<div>
+    <div>{$stream.data}</div>
+    {#if $stream.isFetching}
+        <div>Connecting...</div>
+    {/if}
+    {#if $stream.isStreaming}
+        <div>Generating...</div>
+    {/if}
+    <button onclick={sendMessage}>Send Message</button>
+</div>
+```
+
+當透過 `send` 將資料傳回串流時，在傳送新資料之前會先取消目前的串流連線。所有請求都以 JSON `POST` 請求發送。
 
 > [!WARNING]
-> 由於 `useStream` Hook 會向您的應用程式發送 `POST` 請求，因此需要有效的 CSRF 權杖。最簡單的提供方式是[透過應用程式佈局的 head 區塊中的 meta 標籤包含它](/docs/{{version}}/csrf#csrf-x-csrf-token)。
+> 由於 `useStream` hook 會向您的應用程式發送 `POST` 請求，因此需要有效的 CSRF Token。提供 CSRF Token 最簡單的方法是在應用程式佈局的 head 中 [透過 meta 標籤包含它](/docs/{{version}}/csrf#csrf-x-csrf-token)。
 
-提供給 `useStream` 的第二個參數是一個選項物件，您可以用它來定義串流取用行為。該物件的預設值如下所示：
+傳遞給 `useStream` 的第二個引數是一個選項物件，您可以用它來自訂串流消費行為。此物件的預設值如下所示：
 
 ```tsx tab=React
 import { useStream } from "@laravel/stream-react";
@@ -537,9 +565,29 @@ const { data } = useStream("chat", {
 </template>
 ```
 
-`onResponse` 在串流收到成功的初始回應後觸發，且原始的 [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) 會被傳遞給回呼函式。`onData` 在接收到每個分塊 (Chunk) 時被呼叫，目前的分塊會被傳遞給回呼函式。`onFinish` 在串流完成以及在擷取 / 讀取週期中發生錯誤時被呼叫。
+```svelte tab=Svelte
+<script>
+import { useStream } from "@laravel/stream-svelte";
 
-預設情況下，初始化時不會對串流發送請求。您可以使用 `initialInput` 選項傳送初始負載給串流：
+const stream = useStream("chat", {
+    id: undefined,
+    initialInput: undefined,
+    headers: undefined,
+    csrfToken: undefined,
+    onResponse: (response) => {},
+    onData: (data) => {},
+    onCancel: () => {},
+    onFinish: () => {},
+    onError: (error) => {},
+});
+</script>
+
+<div>{$stream.data}</div>
+```
+
+`onResponse` 會在串流成功回傳初始回應後觸發，且原始的 [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) 會被傳遞至回呼函式。`onData` 會在接收到每個區塊 (chunk) 時被呼叫，目前的區塊會被傳遞至回呼函式。`onFinish` 則在串流結束或在擷取/讀取週期中拋出錯誤時被呼叫。
+
+預設情況下，初始化時不會向串流發送請求。您可以使用 `initialInput` 選項向串流傳遞初始負載：
 
 ```tsx tab=React
 import { useStream } from "@laravel/stream-react";
@@ -571,7 +619,21 @@ const { data } = useStream("chat", {
 </template>
 ```
 
-若要手動取消串流，您可以使用 Hook 回傳的 `cancel` 方法：
+```svelte tab=Svelte
+<script>
+import { useStream } from "@laravel/stream-svelte";
+
+const stream = useStream("chat", {
+    initialInput: {
+        message: "Introduce yourself.",
+    },
+});
+</script>
+
+<div>{$stream.data}</div>
+```
+
+若要手動取消串流，您可以使用 hook 回傳的 `cancel` 方法：
 
 ```tsx tab=React
 import { useStream } from "@laravel/stream-react";
@@ -603,7 +665,20 @@ const { data, cancel } = useStream("chat");
 </template>
 ```
 
-每次使用 `useStream` Hook 時，都會產生一個隨機的 `id` 來識別串流。這會隨每個請求一起在 `X-STREAM-ID` 標頭中傳回伺服器。當從多個組件取用同一個串流時，您可以透過提供自己的 `id` 來讀取或寫入該串流：
+```svelte tab=Svelte
+<script>
+import { useStream } from "@laravel/stream-svelte";
+
+const stream = useStream("chat");
+</script>
+
+<div>
+    <div>{$stream.data}</div>
+    <button onclick={() => stream.cancel()}>Cancel</button>
+</div>
+```
+
+每次使用 `useStream` hook 時，都會生成一個隨機的 `id` 來識別該串流並於每次請求以標頭 `X-STREAM-ID` 中帶入傳至伺服器。當從多個元件需要使用同一個串流時，您可以自行提供 `id` 來對該串流進行讀寫：
 
 ```tsx tab=React
 // App.tsx
@@ -670,10 +745,43 @@ const { isFetching, isStreaming } = useStream("chat", { id: props.id });
 </template>
 ```
 
+```svelte tab=Svelte
+<!-- App.svelte -->
+<script>
+import { useStream } from "@laravel/stream-svelte";
+import StreamStatus from "./StreamStatus.svelte";
+
+const stream = useStream("chat");
+</script>
+
+<div>
+    <div>{$stream.data}</div>
+    <StreamStatus id={stream.id} />
+</div>
+
+<!-- StreamStatus.svelte -->
+<script>
+import { useStream } from "@laravel/stream-svelte";
+
+let { id } = $props();
+
+const stream = useStream("chat", { id });
+</script>
+
+<div>
+    {#if $stream.isFetching}
+        <div>Connecting...</div>
+    {/if}
+    {#if $stream.isStreaming}
+        <div>Generating...</div>
+    {/if}
+</div>
+```
+
 <a name="streamed-json-responses"></a>
 ### 串流 JSON 回應
 
-若您需要以漸進方式串流 JSON 資料，可以使用 `streamJson` 方法。此方法對於需要以 JavaScript 易於解析的格式，將大型資料集逐步傳送到瀏覽器的場景特別有用：
+如果您需要漸進式地串流 JSON 資料，可以使用 `streamJson` 方法。這個方法對於需要逐步傳送到瀏覽器且能被 JavaScript 輕鬆解析的大型資料集特別有用：
 
 ```php
 use App\Models\User;
@@ -685,7 +793,7 @@ Route::get('/users.json', function () {
 });
 ```
 
-`useJsonStream` hook 與 [useStream hook](#consuming-streamed-responses) 完全相同，唯一的區別在於它會在串流完成後嘗試將資料解析為 JSON：
+`useJsonStream` 鉤子 (hook) 與 [useStream 鉤子](#consuming-streamed-responses) 相同，不同之處在於它會在串流結束後嘗試將資料解析為 JSON：
 
 ```tsx tab=React
 import { useJsonStream } from "@laravel/stream-react";
@@ -751,11 +859,36 @@ const loadUsers = () => {
 </template>
 ```
 
+```svelte tab=Svelte
+<script>
+import { useJsonStream } from "@laravel/stream-svelte";
+
+const stream = useJsonStream("users");
+
+const loadUsers = () => {
+    stream.send({
+        query: "taylor",
+    });
+};
+</script>
+
+<div>
+    <ul>
+        {#if $stream.data?.users}
+            {#each $stream.data.users as user (user.id)}
+                <li>{user.id}: {user.name}</li>
+            {/each}
+        {/if}
+    </ul>
+    <button onclick={loadUsers}>Load Users</button>
+</div>
+```
+
 
 <a name="event-streams"></a>
 ### 事件串流 (SSE)
 
-`eventStream` 方法可用於回傳使用 `text/event-stream` 內容類型的伺服器傳送事件 (SSE) 串流回應。`eventStream` 方法接受一個閉包，該閉包應在回應可用時將其 [yield](https://www.php.net/manual/en/language.generators.overview.php) 到串流中：
+`eventStream` 方法可用於使用 `text/event-stream` 內容類型回傳一個伺服器發送事件 (SSE) 的串流回應。`eventStream` 方法接受一個閉包，該閉包應該在回應可用時將回應 [產出 (yield)](https://www.php.net/manual/en/language.generators.overview.php) 到串流中：
 
 ```php
 Route::get('/chat', function () {
@@ -769,7 +902,7 @@ Route::get('/chat', function () {
 });
 ```
 
-如果您想自定義事件名稱，可以 yield 一個 `StreamedEvent` 類別的實例：
+如果您想要自訂事件名稱，可以產出一個 `StreamedEvent` 類別的實例：
 
 ```php
 use Illuminate\Http\StreamedEvent;
@@ -782,9 +915,9 @@ yield new StreamedEvent(
 
 
 <a name="consuming-event-streams"></a>
-#### 取用事件串流
+#### 消費事件串流
 
-可以使用 Laravel 的 `stream` npm 套件來取用事件串流，該套件提供了與 Laravel 事件串流互動的便利 API。首先，請安裝 `@laravel/stream-react` 或 `@laravel/stream-vue` 套件：
+事件串流可以使用 Laravel 的 `stream` npm 套件來消費，它提供了一個方便的 API 用於與 Laravel 事件串流互動。要開始使用，請安裝 `@laravel/stream-react`、`@laravel/stream-vue` 或 `@laravel/stream-svelte` 套件：
 
 ```shell tab=React
 npm install @laravel/stream-react
@@ -794,7 +927,11 @@ npm install @laravel/stream-react
 npm install @laravel/stream-vue
 ```
 
-接著，可以使用 `useEventStream` 來取用事件串流。提供串流 URL 後，當訊息從您的 Laravel 應用程式回傳時，此 hook 會自動使用串接後的回應來更新 `message`：
+```shell tab=Svelte
+npm install @laravel/stream-svelte
+```
+
+接著，可以使用 `useEventStream` 來消費事件串流。在提供串流 URL 後，當 Laravel 應用程式回傳訊息時，該鉤子會自動將拼接後的回應更新到 `message` 中：
 
 ```jsx tab=React
 import { useEventStream } from "@laravel/stream-react";
@@ -818,7 +955,17 @@ const { message } = useEventStream("/chat");
 </template>
 ```
 
-傳給 `useEventStream` 的第二個參數是一個選項物件，您可以用它來自定義串流取用行為。該物件的預設值如下所示：
+```svelte tab=Svelte
+<script>
+import { useEventStream } from "@laravel/stream-svelte";
+
+const eventStream = useEventStream("/chat");
+</script>
+
+<div>{$eventStream.message}</div>
+```
+
+傳遞給 `useEventStream` 的第二個引數是一個選項物件，您可以用它來自訂串流消費行為。該物件的預設值如下所示：
 
 ```jsx tab=React
 import { useEventStream } from "@laravel/stream-react";
@@ -864,7 +1011,29 @@ const { message } = useEventStream("/chat", {
 </script>
 ```
 
-事件串流也可以由您的應用程式前端透過 [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) 物件手動取用。當串流完成時，`eventStream` 方法會自動發送 `</stream>` 更新至事件串流：
+```svelte tab=Svelte
+<script>
+import { useEventStream } from "@laravel/stream-svelte";
+
+const eventStream = useEventStream("/chat", {
+    eventName: "update",
+    onMessage: (event) => {
+        //
+    },
+    onError: (error) => {
+        //
+    },
+    onComplete: () => {
+        //
+    },
+    endSignal: "</stream>",
+    glue: " ",
+    replace: false,
+});
+</script>
+```
+
+您的應用程式前端也可以透過 [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) 物件手動消費事件串流。`eventStream` 方法會在串流完成時，自動向事件串流發送一個 `</stream>` 更新：
 
 ```js
 const source = new EventSource('/chat');
@@ -880,7 +1049,7 @@ source.addEventListener('update', (event) => {
 });
 ```
 
-若要自定義發送到事件串流的最後一個事件，您可以將 `StreamedEvent` 實例提供給 `eventStream` 方法的 `endStreamWith` 參數：
+若要自訂發送到事件串流的最後一個事件，您可以將 `StreamedEvent` 實例提供給 `eventStream` 方法的 `endStreamWith` 引數：
 
 ```php
 return response()->eventStream(function () {
@@ -892,7 +1061,7 @@ return response()->eventStream(function () {
 <a name="streamed-downloads"></a>
 ### 串流下載
 
-有時您可能希望將特定操作的字串回應轉換為可下載的回應，而無需將操作內容寫入磁碟。在這種情況下，您可以使用 `streamDownload` 方法。此方法接受一個回呼、檔名以及一個選用的標頭陣列作為其參數：
+有時候您可能希望將特定操作的字串回應轉換為可下載的回應，而無需將操作內容寫入磁碟。在這種情況下，您可以使用 `streamDownload` 方法。此方法接受回呼函數 (callback)、檔案名稱以及一個可選的標頭陣列作為其引數：
 
 ```php
 use App\Services\GitHub;
@@ -907,7 +1076,7 @@ return response()->streamDownload(function () {
 <a name="response-macros"></a>
 ## 回應巨集
 
-如果您想要定義一個可以在多種路由與控制器中重複使用的自定義回應，您可以使用 `Response` Facade 上的 `macro` 方法。通常，您應該在應用程式的其中一個服務提供者（例如 `App\Providers\AppServiceProvider`）的 `boot` 方法中呼叫此方法：
+如果您想要定義一個可以在多個路由和控制器中重複使用的自定義回應，您可以使用 `Response` facade 的 `macro` 方法。通常，您應該在應用程式的其中一個 [服務提供者(Service Providers)](/docs/{{version}}/providers) 的 `boot` 方法中呼叫此方法，例如 `App\Providers\AppServiceProvider` 服務提供者：
 
 ```php
 <?php
@@ -931,7 +1100,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-`macro` 函式的第一個參數為名稱，第二個參數為一個閉包。當從 `ResponseFactory` 實作或 `response` 輔助函式呼叫該巨集名稱時，將會執行巨集的閉包：
+`macro` 函式接受一個名稱作為第一個引數，以及一個閉包 (closure) 作為第二個引數。當從 `ResponseFactory` 實作或 `response` 輔助函式呼叫該巨集名稱時，該巨集的閉包將會被執行：
 
 ```php
 return response()->caps('foo');
