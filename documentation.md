@@ -14,7 +14,7 @@
 - ## 架構概念
     - [請求生命週期](/docs/{{version}}/lifecycle)
     - [服務容器](/docs/{{version}}/container)
-    - [服務提供者(Service Providers)](/docs/{{version}}/providers)
+    - [服務提供者](/docs/{{version}}/providers)
     - [Facades](/docs/{{version}}/facades)
 
 - ## 基礎功能
@@ -68,7 +68,7 @@
     - [快速入門](/docs/{{version}}/database)
     - [查詢產生器](/docs/{{version}}/queries)
     - [分頁](/docs/{{version}}/pagination)
-    - [遷移(Migrations)](/docs/{{version}}/migrations)
+    - [遷移](/docs/{{version}}/migrations)
     - [資料填充](/docs/{{version}}/seeding)
     - [Redis](/docs/{{version}}/redis)
     - [MongoDB](/docs/{{version}}/mongodb)
@@ -119,4 +119,4 @@
     - [Socialite](/docs/{{version}}/socialite)
     - [Telescope](/docs/{{version}}/telescope)
     - [Valet](/docs/{{version}}/valet)
-- [API 文件](https://api.laravel.com/docs/12.x)
+- [API 文件](https://api.laravel.com/docs/{{version}})
