@@ -2335,7 +2335,7 @@ php artisan queue:work --stop-when-empty
 `--max-time` 選項可用於指示工作處理程式處理工作指定秒數後退出。此選項在與 [Supervisor](#supervisor-configuration) 結合使用時非常有用，這樣您的工作處理程式在處理工作一定時間後會自動重新啟動，從而釋放它們可能累積的記憶體：
 
 ```shell
-# 處理工作一小時後退出...
+# Process jobs for one hour and then exit...
 php artisan queue:work --max-time=3600
 ```
 

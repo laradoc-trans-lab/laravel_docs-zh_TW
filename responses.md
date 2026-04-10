@@ -678,7 +678,7 @@ const stream = useStream("chat");
 </div>
 ```
 
-每次使用 `useStream` hook 時，都會生成一個隨機的 `id` 來識別該串流。此 `id` 會隨著每次請求在 `X-STREAM-ID` 標頭中傳回伺服器。當從多個元件消費同一個串流時，您可以透過提供自己的 `id` 來對該串流進行讀寫：
+每次使用 `useStream` hook 時，都會生成一個隨機的 `id` 來識別該串流並於每次請求以標頭 `X-STREAM-ID` 中帶入傳至伺服器。當從多個元件需要使用同一個串流時，您可以自行提供 `id` 來對該串流進行讀寫：
 
 ```tsx tab=React
 // App.tsx

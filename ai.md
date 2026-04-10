@@ -111,7 +111,7 @@ Boost 包含一個強大的文件 API，讓 AI 代理能存取超過 17,000 條 
 當代理需要理解某項功能如何運作時，它可以搜尋 Boost 的文件 API 並獲得準確且符合版本的資訊。這解決了 AI 代理經常建議已廢棄方法或舊版本框架語法常見問題。
 
 
-<a name="agent-integration"></a>
+<a name="agents-integration"></a>
 ### 代理整合
 
 Boost 整合了支援模型上下文協議的熱門 IDE 與 AI 工具。有關 Cursor, Claude Code, Codex, Gemini CLI, GitHub Copilot 以及 Junie 的詳細設定指南，請參閱 Boost 文件的 [設定您的代理](/docs/{{version}}/boost#set-up-your-agents) 章節。

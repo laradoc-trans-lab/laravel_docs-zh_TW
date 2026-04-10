@@ -690,7 +690,7 @@ return $this->throughEnvironments()->hasDeployments();
 
 
 <a name="scoped-relationships"></a>
-### Scoped Relationships
+### 範圍限定關聯
 
 在模型中加入額外的方法來限制關聯是很常見的。例如，您可能會在 `User` 模型中加入一個 `featuredPosts` 方法，該方法透過額外的 `where` 限制來約束更廣泛的 `posts` 關聯：
 

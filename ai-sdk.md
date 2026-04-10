@@ -1186,7 +1186,7 @@ $response = Embeddings::for(['Napa Valley has great wine.'])
 <a name="querying-embeddings"></a>
 ### 查詢向量嵌入
 
-一旦產生了向量嵌入，您通常會將它們儲存在資料庫的 `vector` 欄位中以便日後查詢。Laravel 透過 `pgvector` 擴充功能為 PostgreSQL 提供了對 `vector` 欄位的原生支援。要開始使用，請在遷移檔案中定義一個 `vector` 欄位，並指定維度數量：
+一旦產生了向量嵌入，您通常會將它們儲存在資料庫的 `vector` 欄位中以便日後查詢。Laravel 透過 `pgvector` 擴充功能為 PostgreSQL 提供了對向量欄位的原生支援。要開始使用，請在遷移檔案中定義一個 `vector` 欄位，並指定維度數量：
 
 ```php
 Schema::ensureVectorExtensionExists();
@@ -1200,13 +1200,13 @@ Schema::create('documents', function (Blueprint $table) {
 });
 ```
 
-您也可以新增向量索引來加速相似度搜尋。當在 `vector` 欄位上呼叫 `index` 時，Laravel 會自動建立一個使用餘弦距離 (cosine distance) 的 HNSW 索引：
+您也可以新增向量索引來加速相似度搜尋。當在向量欄位上呼叫 `index` 時，Laravel 會自動建立一個使用餘弦距離 (cosine distance) 的 HNSW 索引：
 
 ```php
 $table->vector('embedding', dimensions: 1536)->index();
 ```
 
-在您的 Eloquent 模型中，您應該將 `vector` 欄位轉換為 `array`：
+在您的 Eloquent 模型中，您應該將向量欄位轉換為 `array`：
 
 ```php
 protected function casts(): array
@@ -1288,7 +1288,7 @@ $response = Embeddings::for(['Napa Valley has great wine.'])
     ->generate();
 ```
 
-`Stringable` 的 `toEmbeddings` 方法也接受一個 `cache` 引數：
+Stringable 的 `toEmbeddings` 方法也接受一個 `cache` 引數：
 
 ```php
 // Cache with default duration...

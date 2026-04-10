@@ -18,7 +18,7 @@
     - [Policy 篩選器](#policy-filters)
 - [使用 Policies 對動作進行授權](#authorizing-actions-using-policies)
     - [透過 User 模型](#via-the-user-model)
-    - [透過 Gate Facade](#via-the-gate-facade)
+    - [透過 `Gate` Facade](#via-the-gate-facade)
     - [透過中介層](#via-middleware)
     - [透過 Blade 模板](#via-blade-templates)
     - [提供額外上下文](#supplying-additional-context)
@@ -636,7 +636,7 @@ class PostController extends Controller
 
 
 <a name="via-the-gate-facade"></a>
-### 透過 Gate Facade
+### 透過 `Gate` Facade
 
 除了 `App\Models\User` 模型提供的方法外，您也可以隨時透過 `Gate` facade 的 `authorize` 方法來對動作進行授權。
 

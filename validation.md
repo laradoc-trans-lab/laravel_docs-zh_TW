@@ -1623,7 +1623,7 @@ Validator::make($data, [
 'foo.*.id' => 'distinct'
 ```
 
-`distinct` 預設使用鬆散的變數比較。若要使用嚴格比較，您可以在驗證規則定義中加入 `strict` 參數：
+distinct 預設使用鬆散的變數比較。若要使用嚴格比較，您可以在驗證規則定義中加入 `strict` 參數：
 
 ```php
 'foo.*.id' => 'distinct:strict'
@@ -1931,7 +1931,7 @@ Validator::make($data, [
 驗證的檔案必須是一張圖片 (jpg, jpeg, png, bmp, gif 或 webp)。
 
 > [!WARNING]
-> 由於 XSS 漏洞的可能性，預設情況下 `image` 規則不允許 SVG 檔案。如果您需要允許 SVG 檔案，可以將 `allow_svg` 指令傳遞給 `image` 規則 (`image:allow_svg`)。
+> 由於 XSS 漏洞的可能性，預設情況下 image 規則不允許 SVG 檔案。如果您需要允許 SVG 檔案，可以將 `allow_svg` 指令傳遞給 `image` 規則 (`image:allow_svg`)。
 
 
 <a name="rule-in"></a>
@@ -3213,7 +3213,7 @@ $validator = Validator::make($request->all(), [
 <a name="implicit-rules"></a>
 ### 隱含規則 (Implicit Rules)
 
-預設情況下，當被驗證的屬性不存在或包含空字串時，一般的驗證規則（包括自訂規則）不會被執行。例如，`unique` 規則不會對空字串執行驗證：
+預設情況下，當被驗證的屬性不存在或包含空字串時，一般的驗證規則（包括自訂規則）不會被執行。例如，unique 規則不會對空字串執行驗證：
 
 ```php
 use Illuminate\Support\Facades\Validator;

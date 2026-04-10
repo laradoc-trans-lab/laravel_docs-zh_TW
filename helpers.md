@@ -6,10 +6,10 @@
     - [效能基準測試](#benchmarking)
     - [日期與時間](#dates)
     - [延遲函數](#deferred-functions)
-    - [抽獎(Lottery)](#lottery)
-    - [管線(Pipeline)](#pipeline)
-    - [休眠(Sleep)](#sleep)
-    - [時間盒(Timebox)](#timebox)
+    - [Lottery](#lottery)
+    - [Pipeline](#pipeline)
+    - [Sleep](#sleep)
+    - [Timebox](#timebox)
     - [URI](#uri)
 
 <a name="introduction"></a>
@@ -3540,9 +3540,9 @@ abstract class TestCase extends BaseTestCase
 
 
 <a name="lottery"></a>
-### 抽獎(Lottery)
+### Lottery
 
-Laravel 的抽獎類別可用於根據一組給定的機率來執行回呼函數。當您只想針對一定百分比的傳入請求執行程式碼時，這會特別有用：
+Laravel 的 Lottery 類別可用於根據一組給定的機率來執行回呼函數。當您只想針對一定百分比的傳入請求執行程式碼時，這會特別有用：
 
 ```php
 use Illuminate\Support\Lottery;
@@ -3553,7 +3553,7 @@ Lottery::odds(1, 20)
     ->choose();
 ```
 
-您可以將 Laravel 的抽獎類別與其他 Laravel 功能結合使用。例如，您可能只想將小部分比例的慢查詢回報給您的異常處理器。此外，由於抽獎類別是可呼叫的 (callable)，我們可以將該類別的實例傳遞給任何接受可呼叫對象的方法：
+您可以將 Laravel 的 Lottery類別與其他 Laravel 功能結合使用。例如，您可能只想將小部分比例的慢查詢回報給您的異常處理器。此外，由於 Lottery 類別是可呼叫的 (callable)，我們可以將該類別的實例傳遞給任何接受可呼叫對象的方法：
 
 ```php
 use Carbon\CarbonInterval;
@@ -3568,9 +3568,9 @@ DB::whenQueryingForLongerThan(
 
 
 <a name="testing-lotteries"></a>
-#### 測試抽獎
+#### 測試 Lottery
 
-Laravel 提供了一些簡單的方法，讓您能夠輕鬆地測試應用程式中的抽獎呼叫：
+Laravel 提供了一些簡單的方法，讓您能夠輕鬆地測試應用程式中的 Lottery 呼叫：
 
 ```php
 // Lottery will always win...
@@ -3824,7 +3824,7 @@ Laravel 的 `Timebox` 類別確保給定的回呼函數 (callback) 總是花費�
 
 如果執行時間超過了固定時長，`Timebox` 將沒有影響。開發者應選擇足夠長的固定時長，以應對最糟的情況。
 
-`call` 方法接受一個閉包和以微秒為單位的時間限制，然後執行該閉包並等待直到達到時間限制：
+call 方法接受一個閉包和以微秒為單位的時間限制，然後執行該閉包並等待直到達到時間限制：
 
 ```php
 use Illuminate\Support\Timebox;
