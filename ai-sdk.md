@@ -22,10 +22,10 @@
 - [圖片](#images)
 - [音訊 (TTS)](#audio)
 - [逐字稿 (STT)](#transcription)
-- [向量嵌入](#embeddings)
-    - [查詢向量嵌入](#querying-embeddings)
-    - [快取向量嵌入](#caching-embeddings)
-- [重新排序](#reranking)
+- [嵌入](#embeddings)
+    - [查詢嵌入](#querying-embeddings)
+    - [快取嵌入](#caching-embeddings)
+- [重新排名](#reranking)
 - [檔案](#files)
 - [向量儲存庫](#vector-stores)
     - [將檔案新增至儲存庫](#adding-files-to-stores)
@@ -35,8 +35,8 @@
     - [圖片](#testing-images)
     - [音訊](#testing-audio)
     - [逐字稿](#testing-transcriptions)
-    - [向量嵌入](#testing-embeddings)
-    - [重新排序](#testing-reranking)
+    - [嵌入](#testing-embeddings)
+    - [重新排名](#testing-reranking)
     - [檔案](#testing-files)
     - [向量儲存庫](#testing-vector-stores)
 - [事件](#events)
@@ -44,25 +44,25 @@
 <a name="introduction"></a>
 ## 簡介
 
-[Laravel AI SDK](https://github.com/laravel/ai) 提供了一個統一且具有表現力的 API，用於與 OpenAI、Anthropic、Gemini 等 AI 提供者進行互動。透過 AI SDK，您可以使用工具和結構化輸出來建構智慧 AI 代理、生成圖片、合成與轉錄音訊、建立向量嵌入等，且全部使用一致且對 Laravel 友善的介面。
+[Laravel AI SDK](https://github.com/laravel/ai) 提供了一個統一且具表現力的 API，用於與 OpenAI、Anthropic、Gemini 等 AI 提供者進行互動。透過 AI SDK，您可以使用工具和結構化輸出來建構智慧 AI 代理、生成圖片、合成與轉錄音訊、建立向量嵌入 (vector embeddings) 等等 —— 這一切都使用一個一致且符合 Laravel 習慣的介面來完成。
 
 
 <a name="installation"></a>
 ## 安裝
 
-您可以透過 Composer 安裝 Laravel AI SDK：
+您可以使用 Composer 安裝 Laravel AI SDK：
 
 ```shell
 composer require laravel/ai
 ```
 
-接下來，您應該使用 `vendor:publish` Artisan 命令來發布 AI SDK 的設定與遷移檔案：
+接下來，您應該使用 `vendor:publish` Artisan 指令來發布 AI SDK 的設定檔與遷移檔：
 
 ```shell
 php artisan vendor:publish --provider="Laravel\Ai\AiServiceProvider"
 ```
 
-最後，您應該執行應用程式的資料庫遷移。這將建立 `agent_conversations` 與 `agent_conversation_messages` 資料表，AI SDK 將使用這些資料表來驅動其對話儲存功能：
+最後，您應該執行應用程式的資料庫遷移。這將會建立 `agent_conversations` 與 `agent_conversation_messages` 資料表，AI SDK 會使用這些資料表來驅動其對話儲存功能：
 
 ```shell
 php artisan migrate
@@ -72,7 +72,7 @@ php artisan migrate
 <a name="configuration"></a>
 ### 設定
 
-您可以在應用程式的 `config/ai.php` 設定檔中定義 AI 提供者的憑據，或是將其定義為應用程式 `.env` 檔案中的環境變數：
+您可以在應用程式的 `config/ai.php` 設定檔中定義 AI 提供者的認證資訊，或是將其定義在應用程式 `.env` 檔案中的環境變數：
 
 ```ini
 ANTHROPIC_API_KEY=
@@ -87,13 +87,13 @@ VOYAGEAI_API_KEY=
 XAI_API_KEY=
 ```
 
-用於文字、圖片、音訊、逐字稿與向量嵌入的預設模型，也可以在應用程式的 `config/ai.php` 設定檔中進行配置。
+用於文字、圖片、音訊、逐字稿以及嵌入的預設模型，也可以在應用程式的 `config/ai.php` 設定檔中進行配置。
 
 
 <a name="custom-base-urls"></a>
 ### 自訂基礎 URL
 
-預設情況下，Laravel AI SDK 會直接連接到每個提供者的公開 API 端點。然而，您可能需要將請求路由到不同的端點 —— 例如，當您使用代理服務來集中管理 API 金鑰、實作速率限制，或將流量路由透過企業閘道時。
+預設情況下，Laravel AI SDK 會直接連接到每個提供者的公開 API 端點。然而，您可能需要將請求路由到不同的端點 —— 例如，當您使用代理服務來集中管理 API 金鑰、實作速率限制 (rate limiting)，或將流量路由經過公司閘道時。
 
 您可以在提供者設定中新增 `url` 參數來配置自訂基礎 URL：
 
@@ -113,7 +113,7 @@ XAI_API_KEY=
 ],
 ```
 
-這在將請求路由透過代理服務（例如 LiteLLM 或 Azure OpenAI Gateway）或使用替代端點時非常有用。
+當您將請求路由經過代理服務（例如 LiteLLM 或 Azure OpenAI Gateway）或使用替代端點時，這會非常有用。
 
 以下提供者支援自訂基礎 URL：OpenAI, Anthropic, Gemini, Groq, Cohere, DeepSeek, xAI, 以及 OpenRouter。
 
@@ -121,7 +121,7 @@ XAI_API_KEY=
 <a name="provider-support"></a>
 ### 提供者支援
 
-AI SDK 的各項功能支援多種提供者。下表總結了每項功能可用的提供者：
+AI SDK 在各項功能中支援多種提供者。下表總結了每項功能可用的提供者：
 
 | 功能 | 提供者 |
 |---|---|
@@ -129,11 +129,11 @@ AI SDK 的各項功能支援多種提供者。下表總結了每項功能可用�
 | 圖片 | OpenAI, Gemini, xAI |
 | TTS | OpenAI, ElevenLabs |
 | STT | OpenAI, ElevenLabs, Mistral |
-| 向量嵌入 | OpenAI, Gemini, Azure, Cohere, Mistral, Jina, VoyageAI |
-| 重新排序 | Cohere, Jina |
+| 嵌入 | OpenAI, Gemini, Azure, Cohere, Mistral, Jina, VoyageAI |
+| 重新排名 | Cohere, Jina |
 | 檔案 | OpenAI, Anthropic, Gemini |
 
-您可以在程式碼中使用 `Laravel\Ai\Enums\Lab` 列舉來引用提供者，而不需要使用純字串：
+您可以在程式碼中使用 `Laravel\Ai\Enums\Lab` 列舉來引用提供者，而不是使用純字串：
 
 ```php
 use Laravel\Ai\Enums\Lab;
@@ -147,7 +147,7 @@ Lab::Gemini;
 <a name="agents"></a>
 ## AI 代理
 
-AI 代理是 Laravel AI SDK 中與 AI 提供者互動的基礎構件。每個 AI 代理都是一個專用的 PHP 類別，封裝了與大型語言模型互動所需的指令、對話上下文、工具以及輸出結構 (schema)。您可以將 AI 代理視為一個專業的助手 —— 例如銷售教練、文件分析師或支援機器人 —— 您只需設定一次，即可在整個應用程式中根據需要對其進行提示。
+AI 代理是 Laravel AI SDK 中與 AI 提供者互動的基礎構件。每個 AI 代理都是一個專用的 PHP 類別，封裝了與大型語言模型互動所需的指令、對話上下文、工具以及輸出結構。您可以將 AI 代理視為一個專門的助手 — 例如銷售教練、文件分析師或支援機器人 — 您只需設定一次，即可在整個應用程式中根據需要對其進行提示。
 
 您可以使用 `make:agent` Artisan 命令來建立 AI 代理：
 
@@ -234,7 +234,7 @@ class SalesCoach implements Agent, Conversational, HasTools, HasStructuredOutput
 <a name="prompting"></a>
 ### 提示
 
-要對 AI 代理進行提示，請先使用 `make` 方法或標準實例化來建立執行個體，然後呼叫 `prompt`：
+要對 AI 代理進行提示，請先使用 `make` 方法或標準實例化來建立實例，然後呼叫 `prompt` 方法：
 
 ```php
 $response = (new SalesCoach)
@@ -249,7 +249,7 @@ return (string) $response;
 $agent = SalesCoach::make(user: $user);
 ```
 
-透過向 `prompt` 方法傳遞額外引數，您可以在提示時覆蓋預設的提供者、模型或 HTTP 逾時時間：
+透過向 `prompt` 方法傳遞額外參數，您可以在提示時覆蓋預設的提供者、模型或 HTTP 逾時設定：
 
 ```php
 $response = (new SalesCoach)->prompt(
@@ -264,7 +264,7 @@ $response = (new SalesCoach)->prompt(
 <a name="conversation-context"></a>
 ### 對話上下文
 
-如果您的 AI 代理實作了 `Conversational` 介面，您可以使用 `messages` 方法來回傳之前的對話上下文（如果適用）：
+如果您的 AI 代理實作了 `Conversational` 介面，您可以使用 `messages` 方法來回傳先前的對話上下文（如果適用）：
 
 ```php
 use App\Models\History;
@@ -290,9 +290,9 @@ public function messages(): iterable
 <a name="remembering-conversations"></a>
 #### 記憶對話
 
-> **注意：** 在使用 `RemembersConversations` trait 之前，您應該使用 `vendor:publish` Artisan 命令來發布並執行 AI SDK 遷移檔。這些遷移檔將建立儲存對話所需的資料庫資料表。
+> **注意：** 在使用 `RemembersConversations` Trait 之前，您應該使用 `vendor:publish` Artisan 命令來發布並執行 AI SDK 的 Migration。這些 Migration 將建立儲存對話所需的資料庫資料表。
 
-如果您希望 Laravel 為您的 AI 代理自動儲存並檢索對話歷史紀錄，可以使用 `RemembersConversations` trait。這個 trait 提供了一種簡單的方法，可以將對話訊息持久化到資料庫中，而無需手動實作 `Conversational` 介面：
+如果您希望 Laravel 為您的 AI 代理自動儲存和擷取對話歷史記錄，可以使用 `RemembersConversations` Trait。這個 Trait 提供了一種簡單的方法，可以將對話訊息持久化到資料庫，而無需手動實作 `Conversational` 介面：
 
 ```php
 <?php
@@ -326,7 +326,7 @@ $response = (new SalesCoach)->forUser($user)->prompt('Hello!');
 $conversationId = $response->conversationId;
 ```
 
-對話 ID 會在回應中回傳，可以用於未來參考而儲存，或者您可以直接從 `agent_conversations` 資料表中檢索該使用者的所有對話。
+對話 ID 會在回應中回傳，可用於未來參考，或者您可以直接從 `agent_conversations` 資料表中擷取該使用者的所有對話。
 
 要繼續現有的對話，請使用 `continue` 方法：
 
@@ -336,13 +336,12 @@ $response = (new SalesCoach)
     ->prompt('Tell me more about that.');
 ```
 
-使用 `RemembersConversations` trait 時，之前的訊息會在提示時自動載入並包含在對話上下文中。每次互動後，新訊息（包括使用者和助手）都會被自動儲存。
-
+使用 `RemembersConversations` Trait 時，先前的訊息會在提示時自動載入並包含在對話上下文中。每次互動後，新訊息（包括使用者和助手的訊息）都會被自動儲存。
 
 <a name="structured-output"></a>
 ### 結構化輸出
 
-如果您希望 AI 代理回傳結構化輸出，請實作 `HasStructuredOutput` 介面，該介面要求您的 AI 代理定義一個 `schema` 方法：
+如果您希望您的 AI 代理返回結構化輸出，請實作 `HasStructuredOutput` 介面，這要求您的 AI 代理必須定義一個 `schema` 方法：
 
 ```php
 <?php
@@ -372,7 +371,7 @@ class SalesCoach implements Agent, HasStructuredOutput
 }
 ```
 
-在對回傳結構化輸出的 AI 代理進行提示時，您可以像操作陣列一樣存取回傳的 `StructuredAgentResponse`：
+在對返回結構化輸出的 AI 代理進行提示時，您可以像存取陣列一樣存取返回的 `StructuredAgentResponse`：
 
 ```php
 $response = (new SalesCoach)->prompt('Analyze this sales transcript...');
@@ -381,10 +380,70 @@ return $response['score'];
 ```
 
 
+<a name="structured-output-nested-objects"></a>
+#### 巢狀物件
+
+若要定義巢狀的結構化輸出，請搭配閉包 (closure) 使用 `object` 方法：
+
+```php
+<?php
+
+namespace App\Ai\Agents;
+
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Ai\Contracts\Agent;
+use Laravel\Ai\Contracts\HasStructuredOutput;
+use Laravel\Ai\Promptable;
+
+class SalesCoach implements Agent, HasStructuredOutput
+{
+    use Promptable;
+
+    // ...
+
+    /**
+     * Get the agent's structured output schema definition.
+     */
+    public function schema(JsonSchema $schema): array
+    {
+        return [
+            'score' => $schema->integer()->required(),
+            'metadata' => $schema->object(fn ($schema) => [
+                'confidence' => $schema->string()->enum(['low', 'medium', 'high'])->required(),
+                'language' => $schema->string()->required(),
+            ])->required(),
+        ];
+    }
+}
+```
+
+
+<a name="structured-output-arrays-of-objects"></a>
+#### 物件陣列
+
+如果您的 AI 代理應該返回一個結構化項目的列表，請結合使用 `array` 與 `object` 方法：
+
+```php
+public function schema(JsonSchema $schema): array
+{
+    return [
+        'feedback' => $schema->array()
+            ->items(
+                $schema->object(fn ($schema) => [
+                    'comment' => $schema->string()->required(),
+                    'score' => $schema->integer()->required(),
+                ])
+            )
+            ->required(),
+    ];
+}
+```
+
+
 <a name="attachments"></a>
 ### 附件
 
-在提示時，您也可以隨提示詞傳遞附件，讓模型能夠檢查圖片和文件：
+在進行提示時，您也可以在提示詞中傳遞附件，以便讓模型檢查圖片與文件：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -400,7 +459,7 @@ $response = (new SalesCoach)->prompt(
 );
 ```
 
-同樣地，可以使用 `Laravel\Ai\Files\Image` 類別將圖片附加到提示中：
+同樣地，您可以使用 `Laravel\Ai\Files\Image` 類別將圖片附加到提示中：
 
 ```php
 use App\Ai\Agents\ImageAnalyzer;
@@ -416,10 +475,11 @@ $response = (new ImageAnalyzer)->prompt(
 );
 ```
 
+
 <a name="streaming"></a>
 ### 串流
 
-您可以透過呼叫 `stream` 方法來串流 AI 代理的回應。回傳的 `StreamableAgentResponse` 可以直接從路由回傳，以自動向客戶端發送串流回應 (SSE)：
+您可以透過呼叫 `stream` 方法來串流 AI 代理的回應。返回的 `StreamableAgentResponse` 可以直接由路由返回，以便自動向客戶端發送串流回應 (SSE)：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -429,7 +489,7 @@ Route::get('/coach', function () {
 });
 ```
 
-可以使用 `then` 方法提供一個閉包，當整個回應已串流至客戶端時，該閉包將被呼叫：
+`then` 方法可用於提供一個閉包，當整個回應都已串流至客戶端時，該閉包將被呼叫：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -444,7 +504,7 @@ Route::get('/coach', function () {
 });
 ```
 
-或者，您也可以手動迭代處理串流事件：
+或者，您也可以手動迭代串流事件：
 
 ```php
 $stream = (new SalesCoach)->stream('Analyze this sales transcript...');
@@ -487,7 +547,7 @@ foreach ($stream as $event) {
 }
 ```
 
-或者，您可以呼叫 AI 代理的 `broadcastOnQueue` 方法，將 AI 代理操作放入佇列，並在串流事件可用時將其廣播：
+或者，您可以呼叫 AI 代理的 `broadcastOnQueue` 方法將 AI 代理操作放入佇列，並在串流事件可用時將其廣播：
 
 ```php
 (new SalesCoach)->broadcastOnQueue(
@@ -500,7 +560,7 @@ foreach ($stream as $event) {
 <a name="queueing"></a>
 ### 佇列
 
-使用 AI 代理的 `queue` 方法，您可以對 AI 代理發出提示，但允許它在背景處理回應，讓您的應用程式保持快速且靈活的感受。可以使用 `then` 與 `catch` 方法來註冊閉包，當回應可用或發生例外時，這些閉包將被呼叫：
+使用 AI 代理的 `queue` 方法，您可以對 AI 代理進行提示，但讓它在背景處理回應，使您的應用程式保持快速且靈敏的感受。您可以使用 `then` 與 `catch` 方法來註冊閉包，當回應可用或發生異常時將會呼叫該閉包：
 
 ```php
 use Illuminate\Http\Request;
@@ -521,17 +581,16 @@ Route::post('/coach', function (Request $request) {
 });
 ```
 
-
 <a name="tools"></a>
 ### 工具
 
-工具可用於賦予 AI 代理額外的功能，讓它們在回應提示詞時可以使用。您可以使用 `make:tool` Artisan 指令來建立工具：
+工具可以用來賦予 AI 代理額外的功能，讓它們在回應提示詞時可以使用這些功能。您可以使用 `make:tool` Artisan 命令來建立工具：
 
 ```shell
 php artisan make:tool RandomNumberGenerator
 ```
 
-產生的工具將被放置在應用程式的 `app/Ai/Tools` 目錄中。每個工具都包含一個 `handle` 方法，當 AI 代理需要使用該工具時，會呼叫此方法：
+產生的工具將被放置在應用程式的 `app/Ai/Tools` 目錄中。每個工具都包含一個 `handle` 方法，當 AI 代理需要使用該工具時，會調用此方法：
 
 ```php
 <?php
@@ -574,7 +633,7 @@ class RandomNumberGenerator implements Tool
 }
 ```
 
-定義好工具後，您可以將其從任何 AI 代理的 `tools` 方法中回傳：
+定義好工具後，您可以從任何 AI 代理的 `tools` 方法中回傳該工具：
 
 ```php
 use App\Ai\Tools\RandomNumberGenerator;
@@ -596,7 +655,7 @@ public function tools(): iterable
 <a name="similarity-search"></a>
 #### 相似度搜尋
 
-`SimilaritySearch` 工具允許 AI 代理使用儲存在資料庫中的向量嵌入，來搜尋與給定查詢相似的文件。當您希望 AI 代理能夠搜尋應用程式的資料時，這對於檢索增強生成 (RAG) 非常有用。
+`SimilaritySearch` 工具允許 AI 代理使用儲存在資料庫中的向量嵌入，來搜尋與給定查詢相似的文件。這在您想要讓 AI 代理能夠搜尋應用程式數據以實現檢索增強生成 (RAG) 時非常有用。
 
 建立相似度搜尋工具最簡單的方法是使用 `usingModel` 方法，並搭配一個具有向量嵌入的 Eloquent 模型：
 
@@ -614,7 +673,7 @@ public function tools(): iterable
 
 第一個引數是 Eloquent 模型類別，第二個引數是包含向量嵌入的欄位。
 
-您也可以提供一個介於 `0.0` 到 `1.0` 之間的最低相似度閾值，以及一個用來自訂查詢的閉包：
+您也可以提供一個介於 `0.0` 到 `1.0` 之間的最小相似度閾值，以及一個閉包來自訂查詢：
 
 ```php
 SimilaritySearch::usingModel(
@@ -626,7 +685,7 @@ SimilaritySearch::usingModel(
 ),
 ```
 
-若需要更多控制權，您可以建立一個帶有自訂閉包的相似度搜尋工具，由該閉包回傳搜尋結果：
+為了獲得更多控制權，您可以建立一個使用自訂閉包來回傳搜尋結果的相似度搜尋工具：
 
 ```php
 use App\Models\Document;
@@ -653,18 +712,19 @@ SimilaritySearch::usingModel(Document::class, 'embedding')
     ->withDescription('Search the knowledge base for relevant articles.'),
 ```
 
+
 <a name="provider-tools"></a>
 ### 提供者工具
 
-提供者工具是由 AI 提供者原生實作的特殊工具，提供了如網頁搜尋、URL 抓取和檔案搜尋等功能。與一般工具不同，提供者工具是由提供者本身而非您的應用程式執行。
+提供者工具是由 AI 提供者原生實作的特殊工具，提供了如網頁搜尋、URL 抓取和檔案搜尋等功能。與一般工具不同，提供者工具是由提供者本身執行，而非由您的應用程式執行。
 
-提供者工具可以透過 AI 代理的 `tools` 方法回傳。
+提供者工具可以由 AI 代理的 `tools` 方法回傳。
 
 
 <a name="web-search"></a>
 #### 網頁搜尋
 
-`WebSearch` 提供者工具允許 AI 代理在網路上搜尋即時資訊。這對於回答有關當前事件、近期數據或自模型訓練截止日期以來可能已變更的主題非常有用。
+`WebSearch` 提供者工具允許 AI 代理在網路上搜尋即時資訊。這對於回答關於當前事件、近期數據或在模型訓練截止日期後可能已變動的主題之問題非常有用。
 
 **支援的提供者：** Anthropic, OpenAI, Gemini
 
@@ -685,7 +745,7 @@ public function tools(): iterable
 (new WebSearch)->max(5)->allow(['laravel.com', 'php.net']),
 ```
 
-若要根據使用者位置精確化搜尋結果，請使用 `location` 方法：
+若要根據使用者位置來精確化搜尋結果，請使用 `location` 方法：
 
 ```php
 (new WebSearch)->location(
@@ -699,7 +759,7 @@ public function tools(): iterable
 <a name="web-fetch"></a>
 #### 網頁抓取
 
-`WebFetch` 提供者工具允許 AI 代理抓取並閱讀網頁內容。當您需要 AI 代理分析特定 URL 或從已知網頁中擷取詳細資訊時，這非常有用。
+`WebFetch` 提供者工具允許 AI 代理抓取並閱讀網頁內容。當您需要 AI 代理分析特定 URL 或從已知網頁中獲取詳細資訊時，這會非常有用。
 
 **支援的提供者：** Anthropic, Gemini
 
@@ -724,7 +784,7 @@ public function tools(): iterable
 <a name="file-search"></a>
 #### 檔案搜尋
 
-`FileSearch` 提供者工具允許 AI 代理搜尋儲存在 [向量儲存庫](#vector-stores) 中的 [檔案](#files)。這透過允許 AI 代理在您上傳的文件中搜尋相關資訊，進而實現檢索增強生成 (RAG)。
+`FileSearch` 提供者工具允許 AI 代理在[向量儲存庫](#vector-stores)中儲存的[檔案](#files)裡進行搜尋。這透過允許 AI 代理在您上傳的文件中搜尋相關資訊，來實現檢索增強生成 (RAG)。
 
 **支援的提供者：** OpenAI, Gemini
 
@@ -745,7 +805,7 @@ public function tools(): iterable
 new FileSearch(stores: ['store_1', 'store_2']);
 ```
 
-如果您的檔案具有 [元數據 (metadata)](#adding-files-to-stores)，您可以透過提供 `where` 引數來過濾搜尋結果。對於簡單的相等過濾，請傳遞一個陣列：
+如果您的檔案具有[中繼資料](#adding-files-to-stores)，您可以通过提供 `where` 引數來過濾搜尋結果。對於簡單的等值過濾，請傳遞一個陣列：
 
 ```php
 new FileSearch(stores: ['store_id'], where: [
@@ -754,7 +814,7 @@ new FileSearch(stores: ['store_id'], where: [
 ]);
 ```
 
-對於更複雜的過濾，您可以傳遞一個接收 `FileSearchQuery` 實例的閉包：
+對於更複雜的過濾條件，您可以傳遞一個接收 `FileSearchQuery` 實例的閉包：
 
 ```php
 use Laravel\Ai\Providers\Tools\FileSearchQuery;
@@ -766,17 +826,16 @@ new FileSearch(stores: ['store_id'], where: fn (FileSearchQuery $query) =>
 );
 ```
 
-
 <a name="middleware"></a>
 ### 中介層
 
-AI 代理支援中介層，允許您在提示詞發送至提供者之前進行攔截與修改。您可以使用 `make:agent-middleware` Artisan 命令來建立中介層：
+AI 代理支援中介層，允許您在提示詞被發送到提供者之前對其進行攔截與修改。您可以使用 `make:agent-middleware` Artisan 指令來建立中介層：
 
 ```shell
 php artisan make:agent-middleware LogPrompts
 ```
 
-產生的中介層將被放置在您應用程式的 `app/Ai/Middleware` 目錄中。若要將中介層新增至 AI 代理，請實作 `HasMiddleware` 介面並定義一個回傳中介層類別陣列的 `middleware` 方法：
+產生的中介層將被放置在應用程式的 `app/Ai/Middleware` 目錄中。若要在 AI 代理中加入中介層，請實作 `HasMiddleware` 介面並定義一個 `middleware` 方法，該方法需回傳一個包含中介層類別的陣列：
 
 ```php
 <?php
@@ -806,7 +865,7 @@ class SalesCoach implements Agent, HasMiddleware
 }
 ```
 
-每個中介層類別應該定義一個 `handle` 方法，該方法接收 `AgentPrompt` 以及一個用於將提示詞傳遞給下一個中介層的 `Closure`：
+每個中介層類別都應該定義一個 `handle` 方法，該方法會接收 `AgentPrompt` 以及一個用於將提示詞傳遞至下一個中介層的 `Closure`：
 
 ```php
 <?php
@@ -830,7 +889,7 @@ class LogPrompts
 }
 ```
 
-您可以在回應上使用 `then` 方法，在 AI 代理完成處理後執行程式碼。這對於同步和串流回應都有效：
+您可以使用回應上的 `then` 方法，在 AI 代理處理完成後執行程式碼。這適用於同步以及串流回應：
 
 ```php
 public function handle(AgentPrompt $prompt, Closure $next)
@@ -875,16 +934,16 @@ $response = agent(
 <a name="agent-configuration"></a>
 ### AI 代理設定
 
-您可以使用 PHP 屬性 (Attributes) 為 AI 代理設定文字生成選項。可用的屬性如下：
+您可以使用 PHP 屬性 (Attributes) 來設定 AI 代理的文字生成選項。提供以下屬性：
 
-- `MaxSteps`: AI 代理在使用工具時可採取的最大步驟數。
-- `MaxTokens`: 模型可產生的最大詞元 (token) 數量。
-- `Model`: AI 代理應使用的模型。
-- `Provider`: AI 代理要使用的 AI 提供者（或用於故障轉移的提供者列表）。
-- `Temperature`: 用於生成的採樣溫度 (0.0 到 1.0)。
-- `Timeout`: AI 代理請求的 HTTP 逾時秒數 (預設值：60)。
-- `UseCheapestModel`: 使用提供者最便宜的文字模型以最佳化成本。
-- `UseSmartestModel`: 使用提供者最強大的文字模型以處理複雜任務。
+- `MaxSteps`：AI 代理在使用工具時可採取的最大步驟數。
+- `MaxTokens`：模型可產生的最大 token 數量。
+- `Model`：AI 代理應使用的模型。
+- `Provider`：AI 代理要使用的 AI 提供者（或用於故障轉移的提供者列表）。
+- `Temperature`：生成時使用的採樣溫度 (0.0 到 1.0)。
+- `Timeout`：AI 代理請求的 HTTP 逾時秒數（預設值：60）。
+- `UseCheapestModel`：使用提供者最便宜的文字模型以優化成本。
+- `UseSmartestModel`：使用提供者能力最強的文字模型以處理複雜任務。
 
 ```php
 <?php
@@ -915,7 +974,7 @@ class SalesCoach implements Agent
 }
 ```
 
-`UseCheapestModel` 和 `UseSmartestModel` 屬性允許您在不指定模型名稱的情況下，針對給定提供者自動選擇最具成本效益或最強大的模型。當您想要在不同提供者之間最佳化成本或能力時，這非常有用：
+`UseCheapestModel` 與 `UseSmartestModel` 屬性允許您在不指定模型名稱的情況下，為特定的提供者自動選擇成本最低或能力最強的模型。當您想要在不同提供者之間優化成本或能力時，這非常有用：
 
 ```php
 use Laravel\Ai\Attributes\UseCheapestModel;
@@ -940,10 +999,11 @@ class ComplexReasoner implements Agent
 }
 ```
 
+
 <a name="provider-options"></a>
 ### 提供者選項
 
-如果您的 AI 代理需要傳遞提供者特定的選項（例如 OpenAI 的推理努力程度或懲罰設定），請實作 `HasProviderOptions` 契約並定義一個 `providerOptions` 方法：
+如果您的 AI 代理需要傳遞提供者特定的選項（例如 OpenAI 的推理強度 (reasoning effort) 或懲罰設定），請實作 `HasProviderOptions` 契約並定義一個 `providerOptions` 方法：
 
 ```php
 <?php
@@ -981,12 +1041,12 @@ class SalesCoach implements Agent, HasProviderOptions
 }
 ```
 
-`providerOptions` 方法會接收目前正在使用的提供者（`Lab` 枚舉或字串），讓您可以為每個提供者回傳不同的選項。這在使用了 [故障轉移](#failover) 時特別有用，因為每個備援提供者都可以接收其自身的設定。
+`providerOptions` 方法會接收目前正在使用的提供者（`Lab` 列舉或字串），讓您可以針對不同的提供者回傳不同的選項。這在使用了 [故障轉移](#failover) 時特別有用，因為每個備用提供者都可以接收自己的設定。
 
 <a name="images"></a>
 ## 圖片
 
-可以使用 `Laravel\Ai\Image` 類別透過 `openai`、`gemini` 或 `xai` 提供者來產生圖片：
+`Laravel\Ai\Image` 類別可用於使用 `openai`、`gemini` 或 `xai` 提供者來產生圖片：
 
 ```php
 use Laravel\Ai\Image;
@@ -996,7 +1056,7 @@ $image = Image::of('A donut sitting on the kitchen counter')->generate();
 $rawContent = (string) $image;
 ```
 
-可以使用 `square`、`portrait` 和 `landscape` 方法來控制圖片的長寬比，而 `quality` 方法可用於引導模型設定最終圖片的品質 (`high`、`medium`、`low`)。`timeout` 方法則可用於指定 HTTP 逾時秒數：
+`square`、`portrait` 與 `landscape` 方法可用於控制圖片的長寬比，而 `quality` 方法可用於引導模型決定最終圖片品質 (`high`、`medium`、`low`)。`timeout` 方法可用於指定 HTTP 超時秒數：
 
 ```php
 use Laravel\Ai\Image;
@@ -1025,7 +1085,7 @@ $image = Image::of('Update this photo of me to be in the style of an impressioni
     ->generate();
 ```
 
-產生的圖片可以輕鬆儲存在應用程式 `config/filesystems.php` 設定檔中所配置的預設磁碟中：
+產生的圖片可以輕鬆儲存在應用程式 `config/filesystems.php` 設定檔中配置的預設磁碟上：
 
 ```php
 $image = Image::of('A donut sitting on the kitchen counter');
@@ -1036,7 +1096,7 @@ $path = $image->storePublicly();
 $path = $image->storePubliclyAs('image.jpg');
 ```
 
-圖片產生也可以放入佇列中：
+圖片產生也可以放入佇列：
 
 ```php
 use Laravel\Ai\Image;
@@ -1056,7 +1116,7 @@ Image::of('A donut sitting on the kitchen counter')
 <a name="audio"></a>
 ## 音訊 (TTS)
 
-可以使用 `Laravel\Ai\Audio` 類別將給定的文字產生為音訊：
+`Laravel\Ai\Audio` 類別可用於將給定的文字產生為音訊：
 
 ```php
 use Laravel\Ai\Audio;
@@ -1066,7 +1126,7 @@ $audio = Audio::of('I love coding with Laravel.')->generate();
 $rawContent = (string) $audio;
 ```
 
-可以使用 `male`、`female` 和 `voice` 方法來決定產生音訊的聲音：
+`male`、`female` 與 `voice` 方法可用於決定產生音訊的聲音：
 
 ```php
 $audio = Audio::of('I love coding with Laravel.')
@@ -1078,7 +1138,7 @@ $audio = Audio::of('I love coding with Laravel.')
     ->generate();
 ```
 
-同樣地，可以使用 `instructions` 方法來動態引導模型產生音訊的聲音效果：
+同樣地，`instructions` 方法可用於動態引導模型決定產生音訊的聲音效果：
 
 ```php
 $audio = Audio::of('I love coding with Laravel.')
@@ -1087,7 +1147,7 @@ $audio = Audio::of('I love coding with Laravel.')
     ->generate();
 ```
 
-產生的音訊可以輕鬆儲存在應用程式 `config/filesystems.php` 設定檔中所配置的預設磁碟中：
+產生的音訊可以輕鬆儲存在應用程式 `config/filesystems.php` 設定檔中配置的預設磁碟上：
 
 ```php
 $audio = Audio::of('I love coding with Laravel.')->generate();
@@ -1098,7 +1158,7 @@ $path = $audio->storePublicly();
 $path = $audio->storePubliclyAs('audio.mp3');
 ```
 
-音訊產生也可以放入佇列中：
+音訊產生也可以放入佇列：
 
 ```php
 use Laravel\Ai\Audio;
@@ -1117,7 +1177,7 @@ Audio::of('I love coding with Laravel.')
 <a name="transcription"></a>
 ## 逐字稿 (STT)
 
-可以使用 `Laravel\Ai\Transcription` 類別將給定的音訊產生為逐字稿：
+`Laravel\Ai\Transcription` 類別可用於產生給定音訊的逐字稿：
 
 ```php
 use Laravel\Ai\Transcription;
@@ -1129,7 +1189,7 @@ $transcript = Transcription::fromUpload($request->file('audio'))->generate();
 return (string) $transcript;
 ```
 
-可以使用 `diarize` 方法來表示您希望回應中除了原始文字逐字稿外，還包含角色標記 (diarized) 的逐字稿，以便您可以根據說話者存取分段的逐字稿：
+`diarize` 方法可用於指示您希望回應在包含原始文字逐字稿之外，也包含角色分離 (diarized) 的逐字稿，讓您可以根據說話者存取分段的逐字稿：
 
 ```php
 $transcript = Transcription::fromStorage('audio.mp3')
@@ -1137,7 +1197,7 @@ $transcript = Transcription::fromStorage('audio.mp3')
     ->generate();
 ```
 
-逐字稿產生也可以放入佇列中：
+逐字稿產生也可以放入佇列：
 
 ```php
 use Laravel\Ai\Transcription;
@@ -1151,9 +1211,9 @@ Transcription::fromStorage('audio.mp3')
 ```
 
 <a name="embeddings"></a>
-## 向量嵌入
+## 嵌入
 
-您可以使用 Laravel 的 `Stringable` 類別中提供的新 `toEmbeddings` 方法，輕鬆地為任何給定的字串產生向量嵌入：
+您可以使用 Laravel 的 `Stringable` 類別中提供的新 `toEmbeddings` 方法，輕鬆為任何給定的字串產生向量嵌入：
 
 ```php
 use Illuminate\Support\Str;
@@ -1161,7 +1221,7 @@ use Illuminate\Support\Str;
 $embeddings = Str::of('Napa Valley has great wine.')->toEmbeddings();
 ```
 
-或者，您可以使用 `Embeddings` 類別一次為多個輸入產生向量嵌入：
+或者，您可以使用 `Embeddings` 類別一次為多個輸入產生嵌入：
 
 ```php
 use Laravel\Ai\Embeddings;
@@ -1174,7 +1234,7 @@ $response = Embeddings::for([
 $response->embeddings; // [[0.123, 0.456, ...], [0.789, 0.012, ...]]
 ```
 
-您可以指定向量嵌入的維度與提供者：
+您可以為嵌入指定維度與提供者：
 
 ```php
 $response = Embeddings::for(['Napa Valley has great wine.'])
@@ -1184,9 +1244,9 @@ $response = Embeddings::for(['Napa Valley has great wine.'])
 
 
 <a name="querying-embeddings"></a>
-### 查詢向量嵌入
+### 查詢嵌入
 
-一旦產生了向量嵌入，您通常會將它們儲存在資料庫的 `vector` 欄位中以便日後查詢。Laravel 透過 `pgvector` 擴充功能為 PostgreSQL 提供了對向量欄位的原生支援。要開始使用，請在遷移檔案中定義一個 `vector` 欄位，並指定維度數量：
+一旦產生嵌入後，您通常會將它們儲存在資料庫的 `vector` 欄位中以便後續查詢。Laravel 透過 `pgvector` 擴展為 PostgreSQL 的向量欄位提供原生支援。若要開始使用，請在遷移檔中定義一個 `vector` 欄位，並指定維度數量：
 
 ```php
 Schema::ensureVectorExtensionExists();
@@ -1200,7 +1260,7 @@ Schema::create('documents', function (Blueprint $table) {
 });
 ```
 
-您也可以新增向量索引來加速相似度搜尋。當在向量欄位上呼叫 `index` 時，Laravel 會自動建立一個使用餘弦距離 (cosine distance) 的 HNSW 索引：
+您也可以新增向量索引以加速相似度搜尋。當在向量欄位上呼叫 `index` 時，Laravel 會自動建立一個使用餘弦距離 (cosine distance) 的 HNSW 索引：
 
 ```php
 $table->vector('embedding', dimensions: 1536)->index();
@@ -1217,7 +1277,7 @@ protected function casts(): array
 }
 ```
 
-若要查詢相似的紀錄，請使用 `whereVectorSimilarTo` 方法。此方法會根據最小餘弦相似度（介於 `0.0` 與 `1.0` 之間，`1.0` 表示完全相同）來篩選結果，並按相似度對結果進行排序：
+若要查詢相似紀錄，請使用 `whereVectorSimilarTo` 方法。此方法根據最小餘弦相似度（介於 `0.0` 與 `1.0` 之間，其中 `1.0` 為完全相同）來篩選結果，並按相似度對結果進行排序：
 
 ```php
 use App\Models\Document;
@@ -1228,7 +1288,7 @@ $documents = Document::query()
     ->get();
 ```
 
-`$queryEmbedding` 可以是一個浮點數陣列或一個純字串。當提供字串時，Laravel 會自動為其產生向量嵌入：
+`$queryEmbedding` 可以是一個浮點數陣列或純字串。當提供字串時，Laravel 會自動為其產生嵌入：
 
 ```php
 $documents = Document::query()
@@ -1237,7 +1297,7 @@ $documents = Document::query()
     ->get();
 ```
 
-如果您需要更多控制權，可以使用較低階的 `whereVectorDistanceLessThan`、`selectVectorDistance` 與 `orderByVectorDistance` 方法：
+如果您需要更多控制權，可以使用較底層的 `whereVectorDistanceLessThan`、`selectVectorDistance` 與 `orderByVectorDistance` 方法：
 
 ```php
 $documents = Document::query()
@@ -1249,16 +1309,16 @@ $documents = Document::query()
     ->get();
 ```
 
-如果您想賦予 AI 代理將相似度搜尋作為工具的能力，請參閱 [相似度搜尋 (Similarity Search)](#similarity-search) 工具文件。
+如果您想賦予 AI 代理使用相似度搜尋作為工具的能力，請參閱 [相似度搜尋 (Similarity Search)](#similarity-search) 工具文件。
 
 > [!NOTE]
-> 向量查詢目前僅支援使用 `pgvector` 擴充功能的 PostgreSQL 連線。
+> 向量查詢目前僅支援使用 `pgvector` 擴展的 PostgreSQL 連線。
 
 
 <a name="caching-embeddings"></a>
-### 快取向量嵌入
+### 快取嵌入
 
-向量嵌入的產生可以被快取，以避免對相同輸入進行重複的 API 呼叫。要啟用快取，請將 `ai.caching.embeddings.cache` 設定選項設為 `true`：
+嵌入產生可以被快取，以避免對相同輸入進行重複的 API 呼叫。若要啟用快取，請將 `ai.caching.embeddings.cache` 設定選項設為 `true`：
 
 ```php
 'caching' => [
@@ -1270,9 +1330,9 @@ $documents = Document::query()
 ],
 ```
 
-啟用快取後，向量嵌入將被快取 30 天。快取金鑰是根據提供者、模型、維度以及輸入內容而定，確保相同的請求會返回快取結果，而不同的設定則會產生新的向量嵌入。
+啟用快取後，嵌入將被快取 30 天。快取金鑰基於提供者、模型、維度與輸入內容，確保相同的請求會回傳快取結果，而不同的設定則會產生有效的嵌入。
 
-您也可以使用 `cache` 方法為特定請求啟用快取，即使全域快取已被停用：
+即使禁用了全域快取，您也可以使用 `cache` 方法為特定請求啟用快取：
 
 ```php
 $response = Embeddings::for(['Napa Valley has great wine.'])
@@ -1280,7 +1340,7 @@ $response = Embeddings::for(['Napa Valley has great wine.'])
     ->generate();
 ```
 
-您可以指定自訂的快取持續時間（秒）：
+您可以指定自訂的快取持續時間（以秒為單位）：
 
 ```php
 $response = Embeddings::for(['Napa Valley has great wine.'])
@@ -1288,7 +1348,7 @@ $response = Embeddings::for(['Napa Valley has great wine.'])
     ->generate();
 ```
 
-Stringable 的 `toEmbeddings` 方法也接受一個 `cache` 引數：
+`toEmbeddings` Stringable 方法也接受一個 `cache` 引數：
 
 ```php
 // Cache with default duration...
@@ -1300,11 +1360,11 @@ $embeddings = Str::of('Napa Valley has great wine.')->toEmbeddings(cache: 3600);
 
 
 <a name="reranking"></a>
-## 重新排序
+## 重新排名
 
-重新排序讓您可以根據文件與給定查詢的相關性來重新排列文件列表。這對於透過語義理解來改善搜尋結果非常有用：
+重新排名允許您根據文件與給定查詢的相關性來重新排列文件列表。這對於利用語義理解來改善搜尋結果非常有用：
 
-`Laravel\Ai\Reranking` 類別可用於對文件進行重新排序：
+可以使用 `Laravel\Ai\Reranking` 類別來對文件進行重新排名：
 
 ```php
 use Laravel\Ai\Reranking;
@@ -1321,7 +1381,7 @@ $response->first()->score;    // 0.95
 $response->first()->index;    // 1 (original position)
 ```
 
-`limit` 方法可用於限制返回的結果數量：
+可以使用 `limit` 方法來限制回傳的結果數量：
 
 ```php
 $response = Reranking::of($documents)
@@ -1331,9 +1391,9 @@ $response = Reranking::of($documents)
 
 
 <a name="reranking-collections"></a>
-### 重新排序集合
+### 重新排名集合
 
-為了方便起見，可以使用 `rerank` 巨集對 Laravel 集合進行重新排序。第一個引數指定用於重新排序的欄位，第二個引數則是查詢詞：
+為了方便起見，可以使用 `rerank` 巨集對 Laravel 集合進行重新排名。第一個引數指定用於重新排名的欄位，第二個引數則是查詢詞：
 
 ```php
 // Rerank by a single field...
@@ -1398,7 +1458,7 @@ $stored = Document::fromString('Hello, World!', 'text/plain')->put();
 $stored = Document::fromUpload($request->file('document'))->put();
 ```
 
-一旦檔案被儲存，您可以在透過 AI 代理生成文字時引用該檔案，而不需要重新上傳：
+檔案儲存後，您可以在透過 AI 代理生成文字時引用該檔案，而無需重新上傳：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -1412,7 +1472,7 @@ $response = (new SalesCoach)->prompt(
 );
 ```
 
-若要擷取先前儲存的檔案，請在檔案實例上使用 `get` 方法：
+若要檢索先前儲存的檔案，請在檔案實例上使用 `get` 方法：
 
 ```php
 use Laravel\Ai\Files\Document;
@@ -1439,9 +1499,9 @@ $response = Document::fromPath(
 
 
 <a name="using-stored-files-in-conversations"></a>
-### 在對話中使用已儲存的檔案
+### 在對話中使用儲存的檔案
 
-一旦檔案已儲存在提供者端，您可以使用 `Document` 或 `Image` 類別上的 `fromId` 方法在 AI 代理對話中引用它：
+檔案儲存在提供者之後，您可以使用 `Document` 或 `Image` 類別的 `fromId` 方法在 AI 代理對話中引用它：
 
 ```php
 use App\Ai\Agents\DocumentAnalyzer;
@@ -1458,7 +1518,7 @@ $response = (new DocumentAnalyzer)->prompt(
 );
 ```
 
-同樣地，已儲存的圖片可以使用 `Image` 類別來引用：
+同樣地，儲存的圖片可以使用 `Image` 類別來引用：
 
 ```php
 use Laravel\Ai\Files;
@@ -1478,7 +1538,7 @@ $response = (new ImageAnalyzer)->prompt(
 <a name="vector-stores"></a>
 ## 向量儲存庫
 
-向量儲存庫允許您建立可搜尋的檔案集合，可用於檢索增強生成 (RAG)。`Laravel\Ai\Stores` 類別提供了建立、擷取和刪除向量儲存庫的方法：
+向量儲存庫允許您建立可搜尋的檔案集合，可用於檢索增強生成 (RAG)。`Laravel\Ai\Stores` 類別提供了建立、檢索和刪除向量儲存庫的方法：
 
 ```php
 use Laravel\Ai\Stores;
@@ -1496,7 +1556,7 @@ $store = Stores::create(
 return $store->id;
 ```
 
-若要透過 ID 擷取現有的向量儲存庫，請使用 `get` 方法：
+若要透過 ID 檢索現有的向量儲存庫，請使用 `get` 方法：
 
 ```php
 use Laravel\Ai\Stores;
@@ -1527,7 +1587,7 @@ $store->delete();
 <a name="adding-files-to-stores"></a>
 ### 將檔案新增至儲存庫
 
-一旦您有了向量儲存庫，可以使用 `add` 方法將 [檔案](#files) 新增至其中。新增到儲存庫的檔案會自動建立索引，以便使用 [檔案搜尋提供者工具](#file-search) 進行語義搜尋：
+建立向量儲存庫後，您可以使用 `add` 方法將 [檔案](#files) 新增至其中。新增至儲存庫的檔案會自動建立索引，以便使用 [檔案搜尋提供者工具](#file-search) 進行語義搜尋：
 
 ```php
 use Laravel\Ai\Files\Document;
@@ -1548,9 +1608,9 @@ $document->id;
 $document->fileId;
 ```
 
-> **注意：** 通常在將先前儲存的檔案新增至向量儲存庫時，回傳的文件 ID 將與檔案先前分配的 ID 一致；然而，某些向量儲存提供者可能會回傳一個新的、不同的「文件 ID」。因此，建議您始終在資料庫中儲存這兩個 ID 以供日後參考。
+> **注意：** 通常在將先前儲存的檔案新增至向量儲存庫時，回傳的文件 ID 會與檔案先前分配的 ID 一致；然而，某些向量儲存提供者可能會回傳一個新的、不同的「文件 ID」。因此，建議您始終將這兩個 ID 儲存在資料庫中以便日後參考。
 
-在將檔案新增至儲存庫時，您可以附加元數據 (metadata)。這些元數據稍後可用於在使用 [檔案搜尋提供者工具](#file-search) 時過濾搜尋結果：
+您可以在將檔案新增至儲存庫時附加中繼資料。這些中繼資料稍後可用於在使用 [檔案搜尋提供者工具](#file-search) 時篩選搜尋結果：
 
 ```php
 $store->add(Document::fromPath('/path/to/document.pdf'), metadata: [
@@ -1576,7 +1636,7 @@ $store->remove('file_abc123', deleteFile: true);
 <a name="failover"></a>
 ## 故障轉移
 
-在進行提示或生成其他媒體時，您可以提供一個提供者 / 模型的陣列，以便在主要提供者遇到服務中斷或速率限制時，自動故障轉移至備用提供者 / 模型：
+在發送提示或生成其他媒體時，您可以提供一個提供者 / 模型的陣列，以便在主提供者遇到服務中斷或速率限制時，自動故障轉移至備用提供者 / 模型：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -1598,7 +1658,7 @@ $image = Image::of('A donut sitting on the kitchen counter')
 <a name="testing-agents"></a>
 ### AI 代理
 
-在測試過程中，若要模擬 AI 代理的回應，請呼叫 AI 代理類別上的 `fake` 方法。您可以選擇性地提供一個回應陣列或一個閉包：
+在測試過程中，若要模擬 AI 代理的回應，請在 AI 代理類別上呼叫 `fake` 方法。您可以選擇性地提供一個回應陣列或一個閉包 (closure)：
 
 ```php
 use App\Ai\Agents\SalesCoach;
@@ -1619,9 +1679,9 @@ SalesCoach::fake(function (AgentPrompt $prompt) {
 });
 ```
 
-> **注意：** 當在會回傳結構化輸出的 AI 代理上呼叫 `Agent::fake()` 時，Laravel 會自動產生符合該 AI 代理定義之輸出結構 (schema) 的模擬資料。
+> **注意：** 當在回傳結構化輸出的 AI 代理上呼叫 `Agent::fake()` 時，Laravel 會自動產生符合該 AI 代理定義之輸出結構 (schema) 的模擬數據。
 
-在提示 AI 代理後，您可以針對接收到的提示詞進行斷言 (assertions)：
+在提示 AI 代理後，您可以對接收到的提示進行斷言 (assertion)：
 
 ```php
 use Laravel\Ai\Prompts\AgentPrompt;
@@ -1653,7 +1713,7 @@ SalesCoach::assertNotQueued('Missing prompt');
 SalesCoach::assertNeverQueued();
 ```
 
-若要確保所有 AI 代理呼叫都有對應的模擬回應，您可以使用 `preventStrayPrompts`。如果 AI 代理在沒有定義模擬回應的情況下被呼叫，將會拋出異常：
+若要確保所有 AI 代理呼叫都有對應的模擬回應，您可以使用 `preventStrayPrompts`。如果呼叫 AI 代理時沒有定義模擬回應，將會拋出異常：
 
 ```php
 SalesCoach::fake()->preventStrayPrompts();
@@ -1663,7 +1723,7 @@ SalesCoach::fake()->preventStrayPrompts();
 <a name="testing-images"></a>
 ### 圖片
 
-圖片生成可以透過呼叫 `Image` 類別上的 `fake` 方法來模擬。一旦圖片生成被模擬後，您可以針對記錄到的圖片生成提示詞進行各種斷言：
+您可以透過在 `Image` 類別上呼叫 `fake` 方法來模擬圖片產生。圖片模擬完成後，您可以對記錄的圖片產生提示進行各種斷言：
 
 ```php
 use Laravel\Ai\Image;
@@ -1685,7 +1745,7 @@ Image::fake(function (ImagePrompt $prompt) {
 });
 ```
 
-在生成圖片後，您可以針對接收到的提示詞進行斷言：
+在產生圖片後，您可以對接收到的提示進行斷言：
 
 ```php
 Image::assertGenerated(function (ImagePrompt $prompt) {
@@ -1697,7 +1757,7 @@ Image::assertNotGenerated('Missing prompt');
 Image::assertNothingGenerated();
 ```
 
-對於進入佇列的圖片生成，請使用佇列斷言方法：
+對於進入佇列的圖片產生，請使用佇列斷言方法：
 
 ```php
 Image::assertQueued(
@@ -1709,7 +1769,7 @@ Image::assertNotQueued('Missing prompt');
 Image::assertNothingQueued();
 ```
 
-若要確保所有圖片生成都有對應的模擬回應，您可以使用 `preventStrayImages`。如果圖片在沒有定義模擬回應的情況下被生成，將會拋出異常：
+若要確保所有圖片產生都有對應的模擬回應，您可以使用 `preventStrayImages`。如果產生圖片時沒有定義模擬回應，將會拋出異常：
 
 ```php
 Image::fake()->preventStrayImages();
@@ -1719,7 +1779,7 @@ Image::fake()->preventStrayImages();
 <a name="testing-audio"></a>
 ### 音訊
 
-音訊生成可以透過呼叫 `Audio` 類別上的 `fake` 方法來模擬。一旦音訊生成被模擬後，您可以針對記錄到的音訊生成提示詞進行各種斷言：
+您可以透過在 `Audio` 類別上呼叫 `fake` 方法來模擬音訊產生。音訊模擬完成後，您可以對記錄的音訊產生提示進行各種斷言：
 
 ```php
 use Laravel\Ai\Audio;
@@ -1741,7 +1801,7 @@ Audio::fake(function (AudioPrompt $prompt) {
 });
 ```
 
-在生成音訊後，您可以針對接收到的提示詞進行斷言：
+在產生音訊後，您可以對接收到的提示進行斷言：
 
 ```php
 Audio::assertGenerated(function (AudioPrompt $prompt) {
@@ -1753,7 +1813,7 @@ Audio::assertNotGenerated('Missing prompt');
 Audio::assertNothingGenerated();
 ```
 
-對於進入佇列的音訊生成，請使用佇列斷言方法：
+對於進入佇列的音訊產生，請使用佇列斷言方法：
 
 ```php
 Audio::assertQueued(
@@ -1765,7 +1825,7 @@ Audio::assertNotQueued('Missing prompt');
 Audio::assertNothingQueued();
 ```
 
-若要確保所有音訊生成都有對應的模擬回應，您可以使用 `preventStrayAudio`。如果音訊在沒有定義模擬回應的情況下被生成，將會拋出異常：
+若要確保所有音訊產生都有對應的模擬回應，您可以使用 `preventStrayAudio`。如果產生音訊時沒有定義模擬回應，將會拋出異常：
 
 ```php
 Audio::fake()->preventStrayAudio();
@@ -1775,7 +1835,7 @@ Audio::fake()->preventStrayAudio();
 <a name="testing-transcriptions"></a>
 ### 逐字稿
 
-逐字稿生成可以透過呼叫 `Transcription` 類別上的 `fake` 方法來模擬。一旦逐字稿生成被模擬後，您可以針對記錄到的逐字稿生成提示詞進行各種斷言：
+您可以透過在 `Transcription` 類別上呼叫 `fake` 方法來模擬逐字稿產生。逐字稿模擬完成後，您可以對記錄的逐字稿產生提示進行各種斷言：
 
 ```php
 use Laravel\Ai\Transcription;
@@ -1797,7 +1857,7 @@ Transcription::fake(function (TranscriptionPrompt $prompt) {
 });
 ```
 
-在生成逐字稿後，您可以針對接收到的提示詞進行斷言：
+在產生逐字稿後，您可以對接收到的提示進行斷言：
 
 ```php
 Transcription::assertGenerated(function (TranscriptionPrompt $prompt) {
@@ -1811,7 +1871,7 @@ Transcription::assertNotGenerated(
 Transcription::assertNothingGenerated();
 ```
 
-對於進入佇列的逐字稿生成，請使用佇列斷言方法：
+對於進入佇列的逐字稿產生，請使用佇列斷言方法：
 
 ```php
 Transcription::assertQueued(
@@ -1825,16 +1885,16 @@ Transcription::assertNotQueued(
 Transcription::assertNothingQueued();
 ```
 
-若要確保所有逐字稿生成都有對應的模擬回應，您可以使用 `preventStrayTranscriptions`。如果逐字稿在沒有定義模擬回應的情況下被生成，將會拋出異常：
+若要確保所有逐字稿產生都有對應的模擬回應，您可以使用 `preventStrayTranscriptions`。如果產生逐字稿時沒有定義模擬回應，將會拋出異常：
 
 ```php
 Transcription::fake()->preventStrayTranscriptions();
 ```
 
 <a name="testing-embeddings"></a>
-### 向量嵌入
+### 嵌入
 
-向量嵌入的生成可以透過呼叫 `Embeddings` 類別的 `fake` 方法來進行模擬。一旦向量嵌入被模擬，就可以針對記錄的向量嵌入生成提示詞進行各種斷言：
+嵌入的產生可以使用 `Embeddings` 類別上的 `fake` 方法來模擬。一旦嵌入被模擬後，您就可以針對記錄的嵌入產生提示進行各種斷言：
 
 ```php
 use Laravel\Ai\Embeddings;
@@ -1859,7 +1919,7 @@ Embeddings::fake(function (EmbeddingsPrompt $prompt) {
 });
 ```
 
-在生成向量嵌入後，您可以對接收到的提示詞進行斷言：
+在產生嵌入後，您可以針對接收到的提示進行斷言：
 
 ```php
 Embeddings::assertGenerated(function (EmbeddingsPrompt $prompt) {
@@ -1873,7 +1933,7 @@ Embeddings::assertNotGenerated(
 Embeddings::assertNothingGenerated();
 ```
 
-對於佇列中的向量嵌入生成，請使用佇列斷言方法：
+對於佇列中的嵌入產生，請使用佇列斷言方法：
 
 ```php
 Embeddings::assertQueued(
@@ -1887,7 +1947,7 @@ Embeddings::assertNotQueued(
 Embeddings::assertNothingQueued();
 ```
 
-為了確保所有向量嵌入生成都有對應的模擬回應，您可以使用 `preventStrayEmbeddings`。如果生成向量嵌入時沒有定義模擬回應，將會拋出異常：
+為了確保所有嵌入產生都有對應的模擬回應，您可以使用 `preventStrayEmbeddings`。如果產生了嵌入但沒有定義模擬回應，將會拋出異常：
 
 ```php
 Embeddings::fake()->preventStrayEmbeddings();
@@ -1895,9 +1955,9 @@ Embeddings::fake()->preventStrayEmbeddings();
 
 
 <a name="testing-reranking"></a>
-### 重新排序
+### 重新排名
 
-重新排序操作可以透過呼叫 `Reranking` 類別的 `fake` 方法來進行模擬：
+重新排名操作可以使用 `Reranking` 類別上的 `fake` 方法來模擬：
 
 ```php
 use Laravel\Ai\Reranking;
@@ -1916,7 +1976,7 @@ Reranking::fake([
 ]);
 ```
 
-重新排序後，您可以對執行過的操作進行斷言：
+在重新排名後，您可以針對執行的操作進行斷言：
 
 ```php
 Reranking::assertReranked(function (RerankingPrompt $prompt) {
@@ -1934,7 +1994,7 @@ Reranking::assertNothingReranked();
 <a name="testing-files"></a>
 ### 檔案
 
-檔案操作可以透過呼叫 `Files` 類別的 `fake` 方法來進行模擬：
+檔案操作可以使用 `Files` 類別上的 `fake` 方法來模擬：
 
 ```php
 use Laravel\Ai\Files;
@@ -1942,7 +2002,7 @@ use Laravel\Ai\Files;
 Files::fake();
 ```
 
-一旦檔案操作被模擬，您就可以針對發生的上傳與刪除操作進行斷言：
+一旦檔案操作被模擬後，您可以針對發生的上傳與刪除操作進行斷言：
 
 ```php
 use Laravel\Ai\Contracts\Files\StorableFile;
@@ -1966,7 +2026,7 @@ Files::assertNotStored(fn (StorableFile $file) =>
 Files::assertNothingStored();
 ```
 
-若要針對檔案刪除進行斷言，您可以傳入檔案 ID：
+若要對檔案刪除進行斷言，您可以傳遞檔案 ID：
 
 ```php
 Files::assertDeleted('file-id');
@@ -1978,7 +2038,7 @@ Files::assertNothingDeleted();
 <a name="testing-vector-stores"></a>
 ### 向量儲存庫
 
-向量儲存庫操作可以透過呼叫 `Stores` 類別的 `fake` 方法來進行模擬。模擬儲存庫也會自動模擬 [檔案操作](#files)：
+向量儲存庫操作可以使用 `Stores` 類別上的 `fake` 方法來模擬。模擬儲存庫也會自動模擬 [檔案操作](#files)：
 
 ```php
 use Laravel\Ai\Stores;
@@ -1986,7 +2046,7 @@ use Laravel\Ai\Stores;
 Stores::fake();
 ```
 
-一旦儲存庫操作被模擬，您就可以針對建立或刪除的儲存庫進行斷言：
+一旦儲存庫操作被模擬後，您可以針對建立或刪除的儲存庫進行斷言：
 
 ```php
 use Laravel\Ai\Stores;
@@ -2006,7 +2066,7 @@ Stores::assertNotCreated('Other Store');
 Stores::assertNothingCreated();
 ```
 
-若要針對儲存庫刪除進行斷言，您可以提供儲存庫 ID：
+若要對儲存庫刪除進行斷言，您可以提供儲存庫 ID：
 
 ```php
 Stores::assertDeleted('store_id');
@@ -2014,7 +2074,7 @@ Stores::assertNotDeleted('other_store_id');
 Stores::assertNothingDeleted();
 ```
 
-若要斷言檔案是否被新增至儲存庫或從儲存庫中移除，請使用特定 `Store` 實例上的斷言方法：
+若要斷言檔案是否被新增至或從儲存庫中移除，請在特定的 `Store` 實例上使用斷言方法：
 
 ```php
 Stores::fake();
@@ -2033,7 +2093,7 @@ $store->assertNotAdded('other_file_id');
 $store->assertNotRemoved('other_file_id');
 ```
 
-如果檔案儲存在提供者的 [檔案儲存](#files) 中，且在同一次請求中被新增至向量儲存庫，您可能不知道該檔案的提供者 ID。在這種情況下，您可以將閉包傳遞給 `assertAdded` 方法，以針對新增檔案的內容進行斷言：
+如果檔案在同一個請求中被儲存至提供者的 [檔案儲存](#files) 並新增至向量儲存庫，您可能不知道該檔案的提供者 ID。在這種情況下，您可以將閉包傳遞給 `assertAdded` 方法，以針對新增檔案的內容進行斷言：
 
 ```php
 use Laravel\Ai\Contracts\Files\StorableFile;
@@ -2048,7 +2108,7 @@ $store->assertAdded(fn (StorableFile $file) => $file->content() === 'Hello, Worl
 <a name="events"></a>
 ## 事件
 
-Laravel AI SDK 會發送多種 [事件](/docs/{{version}}/events)，包括：
+Laravel AI SDK 會發出各種 [事件](/docs/{{version}}/events)，包括：
 
 - `AddingFileToStore`
 - `AgentPrompted`
@@ -2076,4 +2136,4 @@ Laravel AI SDK 會發送多種 [事件](/docs/{{version}}/events)，包括：
 - `ToolInvoked`
 - `TranscriptionGenerated`
 
-您可以監聽其中任何一個事件，以記錄或儲存 AI SDK 的使用資訊。
+您可以監聽這些事件中的任何一個，以記錄或儲存 AI SDK 的使用資訊。

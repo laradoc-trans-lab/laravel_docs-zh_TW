@@ -21,6 +21,7 @@
 <div class="content-list" markdown="1">
 
 - [快取 `serializable_classes` 設定](#cache-serializable_classes-configuration)
+- [使用 MySQL 或 MariaDB 的資料庫 `upsert`](#database-upsert-mariadb-mysql)
 
 </div>
 
@@ -30,17 +31,17 @@
 
 <div class="content-list" markdown="1">
 
-- [快取前綴與工作階段 Cookie 名稱](#cache-prefixes-and-session-cookie-names)
-- [集合模型序列化會還原預先載入的關聯](#collection-model-serialization-restores-eager-loaded-relations)
-- [`Container::call` 與可為 null 的類別預設值](#containercall-and-nullable-class-defaults)
+- [快取前綴與 Session Cookie 名稱](#cache-prefixes-and-session-cookie-names)
+- [集合模型序列化將恢復預先載入的關聯](#collection-model-serialization-restores-eager-loaded-relations)
+- [`Container::call` 與可為 Null 的類別預設值](#containercall-and-nullable-class-defaults)
 - [網域路由註冊優先順序](#domain-route-registration-precedence)
-- [`JobAttempted` 事件的異常酬載](#jobattempted-event-exception-payload)
+- [`JobAttempted` 事件的異常負載](#jobattempted-event-exception-payload)
 - [Manager `extend` 回呼綁定](#manager-extend-callback-binding)
 - [包含 `JOIN`、`ORDER BY` 與 `LIMIT` 的 MySQL `DELETE` 查詢](#mysql-delete-queries-with-join-order-by-and-limit)
 - [分頁 Bootstrap 視圖名稱](#pagination-bootstrap-view-names)
 - [多型樞紐表名稱生成](#polymorphic-pivot-table-name-generation)
 - [`QueueBusy` 事件屬性重新命名](#queuebusy-event-property-rename)
-- [測試之間重設 `Str` 工廠](#str-factories-reset-between-tests)
+- [`Str` 工廠在測試之間重設](#str-factories-reset-between-tests)
 
 </div>
 
@@ -51,21 +52,21 @@
 #### 預計升級時間：10 分鐘
 
 > [!NOTE]
-> 我們嘗試記錄每一個可能的重大變更。由於其中一些重大變更位於框架中較冷門的部分，因此只有一部分的變更實際上會影響您的應用程式。為了節省時間，您可以使用 [Shift](https://laravelshift.com)。Shift 是一個由社群維護的服務，可自動執行 Laravel 升級。
+> 我們嘗試記錄每一個可能的破壞性變更。由於某些破壞性變更位於框架中較少見的部分，因此只有一部分的變更實際上可能會影響您的應用程式。為了節省時間，您可以使用 [Shift](https://laravelshift.com)。Shift 是一個由社群維護的服務，可自動化 Laravel 升級。
 
 
 <a name="upgrading-using-ai"></a>
 ### 使用 AI 進行升級
 
-您可以使用 [Laravel Boost](https://github.com/laravel/boost) 來自動化您的升級。Boost 是一個官方的 MCP 伺服器，可為您的 AI 助手提供引導式升級提示 — 一旦安裝在任何 Laravel 12 應用程式中，在 Claude Code、Cursor、OpenCode、Gemini 或 VS Code 中使用 `/upgrade-laravel-v13` 斜線指令即可開始升級至 Laravel 13。此指令需要 Laravel Boost `^2.0`。
+您可以使用 [Laravel Boost](https://github.com/laravel/boost) 來自動化您的升級。Boost 是一個官方的 MCP 伺服器，可為您的 AI 助手提供引導式升級提示詞 — 一旦安裝在任何 Laravel 12 應用程式中，請在 Claude Code、Cursor、OpenCode、Gemini 或 VS Code 中使用 `/upgrade-laravel-v13` 斜線指令來開始升級至 Laravel 13。此指令需要 Laravel Boost `^2.0`。
 
 
 <a name="updating-dependencies"></a>
-### 更新相依套件
+### 更新依賴項目
 
 **影響可能性：高**
 
-您應該更新應用程式 `composer.json` 檔案中的以下相依套件：
+您應該更新應用程式 `composer.json` 檔案中的以下依賴項目：
 
 <div class="content-list" markdown="1">
 
@@ -81,15 +82,15 @@
 <a name="updating-the-laravel-installer"></a>
 ### 更新 Laravel 安裝程式
 
-如果您使用 Laravel 安裝程式 CLI 工具來建立新的 Laravel 應用程式，您應該更新安裝程式以相容於 Laravel 13.x。
+如果您使用 Laravel 安裝程式 CLI 工具來建立新的 Laravel 應用程式，您應該更新安裝程式以相容 Laravel 13.x。
 
-如果您是透過 `composer global require` 安裝 Laravel 安裝程式，可以使用 `composer global update` 來更新安裝程式：
+如果您是透過 `composer global require` 安裝 Laravel 安裝程式，您可以使用 `composer global update` 來更新安裝程式：
 
 ```shell
 composer global update laravel/installer
 ```
 
-或者，如果您使用的是 [Laravel Herd](https://herd.laravel.com) 內建的 Laravel 安裝程式副本，您應該將 Herd 安裝更新至最新版本。
+或者，如果您使用的是 [Laravel Herd](https://herd.laravel.com) 隨附的 Laravel 安裝程式副本，您應該將 Herd 安裝更新至最新版本。
 
 
 <a name="cache"></a>
@@ -101,11 +102,11 @@ composer global update laravel/installer
 
 **影響可能性：低**
 
-Laravel 預設的快取與 Redis 金鑰前綴現在使用連字號後綴。此外，預設的工作階段 Cookie 名稱現在對應用程式名稱使用 `Str::snake(...)`。
+Laravel 預設的快取和 Redis 鍵前綴現在使用連字號後綴。此外，預設的工作階段 Cookie 名稱現在對應用程式名稱使用 `Str::snake(...)`。
 
-在大多數應用程式中，此變更不會生效，因為應用程式層級的設定檔已經定義了這些值。這主要影響那些在對應的應用程式設定值不存在時，依賴框架層級後備設定的應用程式。
+在大多數應用程式中，此變更將不會生效，因為應用程式層級的設定檔已經定義了這些值。這主要影響在對應的應用程式設定值不存在時，依賴於框架層級後備設定的應用程式。
 
-如果您的應用程式依賴於這些產生的預設值，升級後快取金鑰與工作階段 Cookie 名稱可能會發生變化：
+如果您的應用程式依賴於這些生成的預設值，快取鍵和工作階段 Cookie 名稱在升級後可能會發生變化：
 
 ```php
 // Laravel <= 12.x
@@ -119,7 +120,7 @@ Str::slug((string) env('APP_NAME', 'laravel')).'-database-';
 Str::snake((string) env('APP_NAME', 'laravel')).'_session';
 ```
 
-若要保留先前的行為，請在您的環境中明確設定 `CACHE_PREFIX`、`REDIS_PREFIX` 與 `SESSION_COOKIE`。
+若要保留之前的行為，請在您的環境中明確設定 `CACHE_PREFIX`、`REDIS_PREFIX` 和 `SESSION_COOKIE`。
 
 
 <a name="store-and-repository-contracts-touch"></a>
@@ -127,7 +128,7 @@ Str::snake((string) env('APP_NAME', 'laravel')).'_session';
 
 **影響可能性：極低**
 
-快取契約現在包含一個 `touch` 方法用於延長項目的 TTL。如果您維護自定義的快取儲存實作，應新增此方法：
+快取契約現在包含一個 `touch` 方法用於延長項目的 TTL。如果您維護自定義的快取儲存實現，您應該添加此方法：
 
 ```php
 // Illuminate\Contracts\Cache\Store
@@ -140,7 +141,7 @@ public function touch($key, $seconds);
 
 **影響可能性：中**
 
-預設的應用程式 `cache` 設定現在包含一個設定為 `false` 的 `serializable_classes` 選項。這強化了快取反序列化的行為，以幫助在您的 `APP_KEY` 洩露時防止 PHP 反序列化 Gadget 鏈攻擊。如果您的應用程式有意將 PHP 物件儲存在快取中，您應該明確列出可被反序列化的類別：
+預設的應用程式 `cache` 設定現在包含一個設定為 `false` 的 `serializable_classes` 選項。這強化了快取反序列化行為，以幫助在應用程式的 `APP_KEY` 外洩時防止 PHP 反序列化 gadget chain 攻擊。如果您的應用程式刻意將 PHP 物件儲存在快取中，您應該明確列出可以被反序列化的類別：
 
 ```php
 'serializable_classes' => [
@@ -149,7 +150,7 @@ public function touch($key, $seconds);
 ],
 ```
 
-如果您的應用程式先前依賴於反序列化任意的快取物件，您需要將該用法遷移至明確的類別允許清單或非物件的快取負載（例如陣列）。
+如果您的應用程式之前依賴於反序列化任意的快取物件，您將需要將該用法遷移至明確的類別允許清單或非物件的快取負載（例如陣列）。
 
 
 <a name="container"></a>
@@ -161,7 +162,7 @@ public function touch($key, $seconds);
 
 **影響可能性：低**
 
-`Container::call` 現在在不存在綁定時會遵循可為 null 的類別參數預設值，這與 Laravel 12 引入的建構子注入行為一致：
+`Container::call` 現在在沒有綁定時會尊重可為 null 的類別參數預設值，這與 Laravel 12 引入的構造函數注入行為一致：
 
 ```php
 $container->call(function (?Carbon $date = null) {
@@ -172,7 +173,7 @@ $container->call(function (?Carbon $date = null) {
 // Laravel >= 13.x: null
 ```
 
-如果您的方法呼叫注入邏輯依賴於先前的行為，您可能需要對其進行更新。
+如果您的方法調用注入邏輯依賴於之前的行為，您可能需要對其進行更新。
 
 
 <a name="contracts"></a>
@@ -186,7 +187,7 @@ $container->call(function (?Carbon $date = null) {
 
 `Illuminate\Contracts\Bus\Dispatcher` 契約現在包含 `dispatchAfterResponse($command, $handler = null)` 方法。
 
-如果您維護自定義的 dispatcher 實作，請將此方法新增至您的類別中。
+如果您維護自定義的 dispatcher 實現，請將此方法添加到您的類別中。
 
 
 <a name="responsefactory-contract-eventstream"></a>
@@ -194,9 +195,9 @@ $container->call(function (?Carbon $date = null) {
 
 **影響可能性：極低**
 
-`Illuminate\Contracts\Routing\ResponseFactory` 契約現在包含 `eventStream` 簽署。
+`Illuminate\Contracts\Routing\ResponseFactory` 契約現在包含一個 `eventStream` 簽名。
 
-如果您維護此契約的自定義實作，應該新增此方法。
+如果您維護此契約的自定義實現，您應該添加此方法。
 
 
 <a name="mustverifyemail-contract-markemailasunverified"></a>
@@ -206,21 +207,31 @@ $container->call(function (?Carbon $date = null) {
 
 `Illuminate\Contracts\Auth\MustVerifyEmail` 契約現在包含 `markEmailAsUnverified()`。
 
-如果您提供此契約的自定義實作，請新增此方法以保持相容。
+如果您提供了此契約的自定義實現，請添加此方法以保持相容。
 
 
 <a name="database"></a>
 ### 資料庫
 
 
+<a name="database-upsert-mariadb-mysql"></a>
+#### 使用 MySQL 或 MariaDB 的資料庫 `upsert`
+
+**影響可能性：中**
+
+Laravel 現在會驗證呼叫者是否為 `uniqueBy` 提供了非空值，並將拋出 `InvalidArgumentException` 而非生成無效的 SQL。
+
+雖然 MariaDB 和 MySQL 資料庫驅動程式會忽略 `uniqueBy` 的值，並始終使用資料表的主鍵和唯一索引來偵測現有記錄，但驗證仍然適用。如果 `uniqueBy` 為空，將拋出 `InvalidArgumentException`。
+
+
 <a name="mysql-delete-queries-with-join-order-by-and-limit"></a>
-#### MySQL 包含 `JOIN`、`ORDER BY` 與 `LIMIT` 的 `DELETE` 查詢
+#### 包含 `JOIN`、`ORDER BY` 和 `LIMIT` 的 MySQL `DELETE` 查詢
 
 **影響可能性：低**
 
-Laravel 現在針對 MySQL 語法編譯完整的 `DELETE ... JOIN` 查詢，包括 `ORDER BY` 與 `LIMIT`。
+Laravel 現在針對 MySQL 語法編譯完整的 `DELETE ... JOIN` 查詢，包括 `ORDER BY` 和 `LIMIT`。
 
-在先前版本中，`ORDER BY` / `LIMIT` 子句在結合刪除 (joined deletes) 時可能會被靜默忽略。在 Laravel 13 中，這些子句被包含在產生的 SQL 中。因此，不支援此語法的資料庫引擎（例如標準的 MySQL / MariaDB 變體）現在可能會拋出 `QueryException` 而不是執行無限制的刪除。
+在之前的版本中，`ORDER BY` / `LIMIT` 子句在 joined deletes 中可能會被靜默忽略。在 Laravel 13 中，這些子句被包含在生成的 SQL 中。因此，不支援此語法的資料庫引擎（例如標準的 MySQL / MariaDB 變體）現在可能會拋出 `QueryException`，而不是執行無限制的刪除。
 
 <a name="eloquent"></a>
 ### Eloquent
@@ -231,9 +242,9 @@ Laravel 現在針對 MySQL 語法編譯完整的 `DELETE ... JOIN` 查詢，包�
 
 **影響可能性：極低**
 
-現在不允許在模型仍在啟動 (booting) 時建立新的模型實例，否則會拋出 `LogicException`。
+當模型仍在啟動 (booting) 時，現在不允許建立新的模型實例，否則會拋出 `LogicException`。
 
-這會影響到在模型 `boot` 方法或 trait 的 `boot*` 方法中實例化模型的程式碼：
+這會影響到在模型 `boot` 方法或 trait 的 `boot*` 方法內部實例化模型的程式碼：
 
 ```php
 protected static function boot()
@@ -245,7 +256,7 @@ protected static function boot()
 }
 ```
 
-請將此邏輯移至啟動週期之外，以避免巢狀啟動。
+請將此邏輯移出啟動週期，以避免巢狀啟動。
 
 
 <a name="polymorphic-pivot-table-name-generation"></a>
@@ -253,17 +264,17 @@ protected static function boot()
 
 **影響可能性：低**
 
-當使用自定義樞紐模型類別為多型樞紐模型推斷表名時，Laravel 現在會生成複數名稱。
+當使用自定義樞紐模型類別來推斷多型樞紐模型的資料表名稱時，Laravel 現在會生成複數名稱。
 
-如果您的應用程式依賴於先前多型樞紐表的單數推斷名稱且使用了自定義樞紐類別，您應該在樞紐模型上明確定義表名。
+如果您的應用程式依賴於先前多型樞紐表的單數推斷名稱，且使用了自定義樞紐類別，您應該在樞紐模型上明確定義資料表名稱。
 
 
 <a name="collection-model-serialization-restores-eager-loaded-relations"></a>
-#### 集合模型序列化將還原預先載入的關聯
+#### 集合模型序列化會恢復預先載入的關聯
 
 **影響可能性：低**
 
-當 Eloquent 模型集合被序列化並還原時（例如在佇列工作中），集合中的模型現在會還原其預先載入的關聯。
+當 Eloquent 模型集合被序列化並恢復時（例如在佇列作業中），集合中的模型現在會恢復其預先載入的關聯。
 
 如果您的程式碼依賴於反序列化後關聯不存在的情況，您可能需要調整該邏輯。
 
@@ -277,14 +288,14 @@ protected static function boot()
 
 **影響可能性：極低**
 
-HTTP 用戶端的回應方法現在在方法簽名中宣告其回呼參數：
+HTTP 用戶端回應方法現在在方法簽名中宣告了其回呼參數：
 
 ```php
 public function throw($callback = null);
 public function throwIf($condition, $callback = null);
 ```
 
-如果您在自定義回應類別中覆寫這些方法，請確保您的方法簽名是相容的。
+如果您在自定義回應類別中覆寫了這些方法，請確保您的方法簽名是相容的。
 
 
 <a name="notifications"></a>
@@ -292,7 +303,7 @@ public function throwIf($condition, $callback = null);
 
 
 <a name="default-password-reset-subject"></a>
-#### 預設的密碼重設主旨
+#### 預設密碼重設主旨
 
 **影響可能性：極低**
 
@@ -306,17 +317,17 @@ Reset Password Notification
 Reset your password
 ```
 
-如果您的測試、斷言或翻譯覆寫依賴於之前的預設字串，請相應地進行更新。
+如果您的測試、斷言或翻譯覆寫依賴於先前的預設字串，請相應地更新它們。
 
 
 <a name="queued-notifications-and-missing-models"></a>
-#### 佇列通知與缺失的模型
+#### 佇列通知與遺失的模型
 
 **影響可能性：極低**
 
-佇列通知現在會遵循定義在通知類別上的 `#[DeleteWhenMissingModels]` 屬性與 `$deleteWhenMissingModels` 屬性。
+佇列通知現在會遵循定義在通知類別上的 `#[DeleteWhenMissingModels]` 屬性和 `$deleteWhenMissingModels` 屬性。
 
-在之前的版本中，在您預期模型應被刪除的情況下，缺失的模型仍可能導致佇列通知工作失敗。
+在先前版本中，即使在您預期模型應被刪除的情況下，遺失的模型仍可能導致佇列通知作業失敗。
 
 
 <a name="queue"></a>
@@ -324,11 +335,11 @@ Reset your password
 
 
 <a name="jobattempted-event-exception-payload"></a>
-#### `JobAttempted` 事件的異常負載
+#### `JobAttempted` 事件的例外狀況酬載
 
 **影響可能性：低**
 
-`Illuminate\Queue\Events\JobAttempted` 事件現在透過 `$exception` 揭露異常物件（或 `null`），取代了之前的布林值 `$exceptionOccurred` 屬性：
+`Illuminate\Queue\Events\JobAttempted` 事件現在透過 `$exception` 揭露例外狀況物件（或 `null`），取代了先前的布林值 `$exceptionOccurred` 屬性：
 
 ```php
 // Laravel <= 12.x
@@ -338,7 +349,7 @@ $event->exceptionOccurred;
 $event->exception;
 ```
 
-如果您在監聽此事件，請相應地更新您的監聽器程式碼。
+如果您正在監聽此事件，請相應地更新您的監聽器程式碼。
 
 
 <a name="queuebusy-event-property-rename"></a>
@@ -346,7 +357,7 @@ $event->exception;
 
 **影響可能性：低**
 
-`Illuminate\Queue\Events\QueueBusy` 事件的 `$connection` 屬性已重新命名為 `$connectionName`，以與其他佇列事件保持一致。
+`Illuminate\Queue\Events\QueueBusy` 事件的屬性 `$connection` 已重新命名為 `$connectionName`，以與其他佇列事件保持一致。
 
 如果您的監聽器引用了 `$connection`，請將其更新為 `$connectionName`。
 
@@ -358,7 +369,7 @@ $event->exception;
 
 `Illuminate\Contracts\Queue\Queue` 契約現在包含了先前僅在 docblocks 中宣告的佇列大小檢查方法。
 
-如果您維護此契約的自定義佇列驅動實作，請新增以下方法的實作：
+如果您維護此契約的自定義佇列驅動實作，請為以下方法添加實作：
 
 <div class="content-list" markdown="1">
 
@@ -379,9 +390,9 @@ $event->exception;
 
 **影響可能性：低**
 
-在路由比對中，具有明確網域的路由現在優先於非網域路由。
+在路由匹配中，具有明確網域的路由現在優先於非網域路由。
 
-這使得全匹配子網域路由即使在非網域路由較早註冊時也能保持一致的行為。如果您的應用程式依賴於先前網域路由與非網域路由之間的註冊優先順序，請審查路由比對行為。
+這使得全匹配 (catch-all) 的子網域路由即使在非網域路由較早註冊時也能保持一致的行為。如果您的應用程式依賴於先前網域與非網域路由之間的註冊優先順序，請重新審視路由匹配行為。
 
 
 <a name="scheduling"></a>
@@ -393,9 +404,9 @@ $event->exception;
 
 **影響可能性：極低**
 
-透過 `ApplicationBuilder::withScheduling()` 註冊的排程現在會延遲直到 `Schedule` 被解析。
+透過 `ApplicationBuilder::withScheduling()` 註冊的排程現在會延遲直到 `Schedule` 被解析為止。
 
-如果您的應用程式依賴於啟動期間立即進行的排程註冊時機，您可能需要調整該邏輯。
+如果您的應用程式依賴於啟動期間立即註冊排程的時機，您可能需要調整該邏輯。
 
 
 <a name="security"></a>
@@ -403,13 +414,13 @@ $event->exception;
 
 
 <a name="request-forgery-protection"></a>
-#### 請求偽造保護
+#### 請求偽造防護
 
 **影響可能性：高**
 
-Laravel 的 CSRF 中介層已從 `VerifyCsrfToken` 重新命名為 `PreventRequestForgery`，並且現在包含使用 `Sec-Fetch-Site` 標頭的請求來源驗證。
+Laravel 的 CSRF 中介層已從 `VerifyCsrfToken` 重新命名為 `PreventRequestForgery`，且現在包含使用 `Sec-Fetch-Site` 標頭的請求來源驗證。
 
-`VerifyCsrfToken` 與 `ValidateCsrfToken` 仍作為已棄用的別名保留，但直接引用應更新為 `PreventRequestForgery`，特別是在測試或路由定義中排除中介層時：
+`VerifyCsrfToken` 和 `ValidateCsrfToken` 仍作為已棄用的別名保留，但直接引用應更新為 `PreventRequestForgery`，特別是在測試或路由定義中排除中介層時：
 
 ```php
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -422,7 +433,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 ->withoutMiddleware([PreventRequestForgery::class]);
 ```
 
-中介層配置 API 現在也提供了 `preventRequestForgery(...)`。
+中介層配置 API 現在也提供 `preventRequestForgery(...)`。
 
 
 <a name="support"></a>
@@ -436,17 +447,17 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 透過 manager `extend` 方法註冊的自定義驅動閉包現在會綁定到 manager 實例。
 
-如果您先前在這些回呼內部依賴另一個綁定物件（例如服務提供者實例）作為 `$this`，您應該使用 `use (...)` 將這些值移至閉包捕獲中。
+如果您先前在這些回呼內部依賴另一個綁定物件（例如服務提供者實例）作為 `$this`，您應該使用 `use (...)` 將這些值移至閉包擷取中。
 
 
 <a name="str-factories-reset-between-tests"></a>
-#### 測試之間重設 `Str` 工廠
+#### 測試之間的 `Str` 工廠重設
 
 **影響可能性：低**
 
-Laravel 現在會在測試清理 (teardown) 期間重設自定義 `Str` 工廠。
+Laravel 現在會在測試拆除 (teardown) 期間重設自定義的 `Str` 工廠。
 
-如果您的測試依賴於自定義 UUID / ULID / 隨機字串工廠在測試方法之間持續存在，您應該在每個相關測試或 setup 鉤子中設定它們。
+如果您的測試依賴於自定義 UUID / ULID / 隨機字串工廠在測試方法之間持久存在，您應該在每個相關測試或設定鉤子 (setup hook) 中設定它們。
 
 
 <a name="jsfrom-uses-unescaped-unicode-by-default"></a>
@@ -468,7 +479,7 @@ Laravel 現在會在測試清理 (teardown) 期間重設自定義 `Str` 工廠�
 
 **影響可能性：低**
 
-Bootstrap 3 預設的分頁內部視圖名稱現在已明確化：
+Bootstrap 3 預設的內部分頁視圖名稱現在已明確化：
 
 ```nothing
 // Laravel <= 12.x
@@ -485,4 +496,4 @@ pagination::simple-bootstrap-3
 <a name="miscellaneous"></a>
 ### 其他
 
-我們也鼓勵您查看 `laravel/laravel` [GitHub 儲存庫](https://github.com/laravel/laravel) 中的變更。雖然其中許多變更並非必要，但您可能希望讓這些檔案與您的應用程式保持同步。這些變更中的一部分會包含在本升級指南中，但其他變更（例如設定檔或註解的變更）則不會。您可以使用 [GitHub 比較工具](https://github.com/laravel/laravel/compare/12.x...13.x)輕鬆查看變更，並選擇對您而言重要的更新。
+我們也建議您查看 `laravel/laravel` [GitHub 儲存庫](https://github.com/laravel/laravel) 中的變更。雖然其中許多變更並非必要，但您可能希望將這些檔案與您的應用程式保持同步。部分變更已涵蓋在本升級指南中，但其他變更（例如設定檔或註解的變動）則未包含在內。您可以輕鬆地使用 [GitHub 比較工具](https://github.com/laravel/laravel/compare/12.x...13.x) 來查看變更並選擇對您重要的更新。
