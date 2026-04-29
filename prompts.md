@@ -3,51 +3,50 @@
 - [簡介](#introduction)
 - [安裝](#installation)
 - [可用的 Prompts](#available-prompts)
-    - [文字](#text)
-    - [文字區域](#textarea)
-    - [數字](#number)
-    - [密碼](#password)
-    - [確認](#confirm)
-    - [選擇](#select)
-    - [多選](#multiselect)
-    - [建議](#suggest)
-    - [搜尋](#search)
-    - [多重搜尋](#multisearch)
-    - [暫停](#pause)
-    - [自動完成](#autocomplete)
+    - [文字 (Text)](#text)
+    - [文字區塊 (Textarea)](#textarea)
+    - [數字 (Number)](#number)
+    - [密碼 (Password)](#password)
+    - [確認 (Confirm)](#confirm)
+    - [單選 (Select)](#select)
+    - [多選 (Multi-select)](#multiselect)
+    - [建議 (Suggest)](#suggest)
+    - [搜尋 (Search)](#search)
+    - [多重搜尋 (Multi-search)](#multisearch)
+    - [暫停 (Pause)](#pause)
+    - [自動完成 (Autocomplete)](#autocomplete)
 - [在驗證前轉換輸入](#transforming-input-before-validation)
-- [表單](#forms)
+- [表單 (Forms)](#forms)
 - [資訊訊息](#informational-messages)
-- [表格](#tables)
-- [載入動畫](#spin)
-- [進度條](#progress)
-- [任務](#task)
-- [串流](#stream)
+- [表格 (Tables)](#tables)
+- [旋轉指示器 (Spin)](#spin)
+- [進度條 (Progress Bar)](#progress)
+- [任務 (Task)](#task)
+- [串流 (Stream)](#stream)
 - [終端機標題](#terminal-title)
-- [清除終端機](#clear)
+- [清除終端機內容](#clear)
 - [終端機注意事項](#terminal-considerations)
-- [不支援的環境與回退機制](#fallbacks)
+- [不支援的環境與備案](#fallbacks)
 - [測試](#testing)
 
 <a name="introduction"></a>
 ## 簡介
 
-[Laravel Prompts](https://github.com/laravel/prompts) 是一個 PHP 套件，可用於在您的命令列應用程式中加入美觀且使用者友好的表單，並提供包括佔位文字與驗證在內等類似瀏覽器的功能。
+[Laravel Prompts](https://github.com/laravel/prompts) 是一個 PHP 套件，用於為您的命令列應用程式加入美觀且使用者友好的表單，並具備類似瀏覽器的功能，包括佔位字元文字與驗證。
 
 <img src="https://laravel.com/img/docs/prompts-example.png">
 
-Laravel Prompts 非常適合在您的 [Artisan 主控台命令](/docs/{{version}}/artisan#writing-commands) 中接收使用者輸入，但它也可以用於任何命令列 PHP 專案。
+Laravel Prompts 非常適合在您的 [Artisan 主控台指令](/docs/{{version}}/artisan#writing-commands)中接收使用者輸入，但它也可以用於任何命令列 PHP 專案。
 
 > [!NOTE]
-> Laravel Prompts 支援 macOS、Linux 以及搭載 WSL 的 Windows。欲了解更多資訊，請參閱我們的[不支援的環境與回退機制](#fallbacks)文件。
-
+> Laravel Prompts 支援 macOS、Linux 以及搭配 WSL 的 Windows。如需更多資訊，請參閱我們關於 [不支援的環境與備案](#fallbacks) 的文件。
 
 <a name="installation"></a>
 ## 安裝
 
 Laravel Prompts 已包含在最新版本的 Laravel 中。
 
-您也可以使用 Composer 套件管理工具將 Laravel Prompts 安裝到您的其他 PHP 專案中：
+您也可以使用 Composer 套件管理員將 Laravel Prompts 安裝到其他的 PHP 專案中：
 
 ```shell
 composer require laravel/prompts
@@ -58,9 +57,9 @@ composer require laravel/prompts
 
 
 <a name="text"></a>
-### 文字
+### 文字 (Text)
 
-`text` 函式會根據給定的問題提示使用者，接收其輸入，然後將其回傳：
+`text` 函式會向使用者顯示指定的提問，接收其輸入內容並回傳：
 
 ```php
 use function Laravel\Prompts\text;
@@ -68,7 +67,7 @@ use function Laravel\Prompts\text;
 $name = text('What is your name?');
 ```
 
-您也可以包含佔位文字 (placeholder text)、預設值以及資訊提示 (informational hint)：
+你也可以包含提示文字 (Placeholder)、預設值以及資訊提示 (Hint)：
 
 ```php
 $name = text(
@@ -83,7 +82,7 @@ $name = text(
 <a name="text-required"></a>
 #### 必填值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果你要求必須輸入值，可以傳遞 `required` 引數：
 
 ```php
 $name = text(
@@ -92,7 +91,7 @@ $name = text(
 );
 ```
 
-如果您想要自訂驗證訊息，也可以傳遞一個字串：
+如果你想要自訂驗證訊息，也可以傳遞一個字串：
 
 ```php
 $name = text(
@@ -105,7 +104,7 @@ $name = text(
 <a name="text-validation"></a>
 #### 額外驗證
 
-最後，如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+最後，如果你想要執行額外的驗證邏輯，可以傳遞一個閉包 (Closure) 給 `validate` 引數：
 
 ```php
 $name = text(
@@ -118,9 +117,9 @@ $name = text(
 );
 ```
 
-該閉包將接收已輸入的值，並在驗證通過時回傳 `null`，否則回傳錯誤訊息。
+此閉包將接收已輸入的值，並可回傳錯誤訊息，若驗證通過則回傳 `null`。
 
-或者，您也可以利用 Laravel [驗證器 (validator)](/docs/{{version}}/validation) 的強大功能。若要這樣做，請向 `validate` 引數提供一個包含屬性名稱與所需驗證規則的陣列：
+或者，你也可以利用 Laravel [驗證器 (Validator)](/docs/{{version}}/validation) 的強大功能。為此，請向 `validate` 引數提供一個包含屬性名稱及其驗證規則的陣列：
 
 ```php
 $name = text(
@@ -131,9 +130,9 @@ $name = text(
 
 
 <a name="textarea"></a>
-### 文字區域
+### 文字區塊 (Textarea)
 
-`textarea` 函式會根據給定的問題提示使用者，透過多行文字區域接收其輸入，然後將其回傳：
+`textarea` 函式會向使用者顯示指定的提問，透過多行文字區塊接收其輸入內容並回傳：
 
 ```php
 use function Laravel\Prompts\textarea;
@@ -141,7 +140,7 @@ use function Laravel\Prompts\textarea;
 $story = textarea('Tell me a story.');
 ```
 
-您也可以包含佔位文字、預設值以及資訊提示：
+你也可以包含提示文字、預設值以及資訊提示：
 
 ```php
 $story = textarea(
@@ -155,7 +154,7 @@ $story = textarea(
 <a name="textarea-required"></a>
 #### 必填值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果你要求必須輸入內容，可以傳遞 `required` 引數：
 
 ```php
 $story = textarea(
@@ -164,7 +163,7 @@ $story = textarea(
 );
 ```
 
-如果您想要自訂驗證訊息，也可以傳遞一個字串：
+如果你想要自訂驗證訊息，也可以傳遞一個字串：
 
 ```php
 $story = textarea(
@@ -177,7 +176,7 @@ $story = textarea(
 <a name="textarea-validation"></a>
 #### 額外驗證
 
-最後，如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+最後，如果你想要執行額外的驗證邏輯，可以傳遞一個閉包給 `validate` 引數：
 
 ```php
 $story = textarea(
@@ -190,9 +189,9 @@ $story = textarea(
 );
 ```
 
-該閉包將接收已輸入的值，並在驗證通過時回傳 `null`，否則回傳錯誤訊息。
+此閉包將接收已輸入的值，並可回傳錯誤訊息，若驗證通過則回傳 `null`。
 
-或者，您也可以利用 Laravel [驗證器 (validator)](/docs/{{version}}/validation) 的強大功能。若要這樣做，請向 `validate` 引數提供一個包含屬性名稱與所需驗證規則的陣列：
+或者，你也可以利用 Laravel [驗證器 (Validator)](/docs/{{version}}/validation) 的強大功能。為此，請向 `validate` 引數提供一個包含屬性名稱及其驗證規則的陣列：
 
 ```php
 $story = textarea(
@@ -203,9 +202,9 @@ $story = textarea(
 
 
 <a name="number"></a>
-### 數字
+### 數字 (Number)
 
-`number` 函式會根據給定的問題提示使用者，接收其數字輸入，然後將其回傳。`number` 函式允許使用者使用方向鍵的上、下鍵來調整數字：
+`number` 函式會向使用者顯示指定的提問，接收其數字輸入並回傳。`number` 函式允許使用者使用上下方向鍵來操作數字：
 
 ```php
 use function Laravel\Prompts\number;
@@ -213,7 +212,7 @@ use function Laravel\Prompts\number;
 $number = number('How many copies would you like?');
 ```
 
-您也可以包含佔位文字、預設值以及資訊提示：
+你也可以包含提示文字、預設值以及資訊提示：
 
 ```php
 $name = number(
@@ -228,7 +227,7 @@ $name = number(
 <a name="number-required"></a>
 #### 必填值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果你要求必須輸入數字，可以傳遞 `required` 引數：
 
 ```php
 $copies = number(
@@ -237,7 +236,7 @@ $copies = number(
 );
 ```
 
-如果您想要自訂驗證訊息，也可以傳遞一個字串：
+如果你想要自訂驗證訊息，也可以傳遞一個字串：
 
 ```php
 $copies = number(
@@ -250,7 +249,7 @@ $copies = number(
 <a name="number-validation"></a>
 #### 額外驗證
 
-最後，如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+最後，如果你想要執行額外的驗證邏輯，可以傳遞一個閉包給 `validate` 引數：
 
 ```php
 $copies = number(
@@ -263,9 +262,9 @@ $copies = number(
 );
 ```
 
-該閉包將接收已輸入的值，並在驗證通過時回傳 `null`，否則回傳錯誤訊息。
+此閉包將接收已輸入的值，並可回傳錯誤訊息，若驗證通過則回傳 `null`。
 
-或者，您也可以利用 Laravel [驗證器 (validator)](/docs/{{version}}/validation) 的強大功能。若要這樣做，請向 `validate` 引數提供一個包含屬性名稱與所需驗證規則的陣列：
+或者，你也可以利用 Laravel [驗證器 (Validator)](/docs/{{version}}/validation) 的強大功能。為此，請向 `validate` 引數提供一個包含屬性名稱及其驗證規則的陣列：
 
 ```php
 $copies = number(
@@ -276,9 +275,9 @@ $copies = number(
 
 
 <a name="password"></a>
-### 密碼
+### 密碼 (Password)
 
-`password` 函式與 `text` 函式類似，但使用者在主控台輸入時，其內容會被遮蔽。這在詢問密碼等敏感資訊時非常有用：
+`password` 函式與 `text` 函式類似，但在終端機輸入時會遮蔽使用者的輸入內容。這在要求輸入密碼等敏感資訊時非常有用：
 
 ```php
 use function Laravel\Prompts\password;
@@ -286,7 +285,7 @@ use function Laravel\Prompts\password;
 $password = password('What is your password?');
 ```
 
-您也可以包含佔位文字以及資訊提示：
+你也可以包含提示文字以及資訊提示：
 
 ```php
 $password = password(
@@ -300,7 +299,7 @@ $password = password(
 <a name="password-required"></a>
 #### 必填值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果你要求必須輸入內容，可以傳遞 `required` 引數：
 
 ```php
 $password = password(
@@ -309,7 +308,7 @@ $password = password(
 );
 ```
 
-如果您想要自訂驗證訊息，也可以傳遞一個字串：
+如果你想要自訂驗證訊息，也可以傳遞一個字串：
 
 ```php
 $password = password(
@@ -322,7 +321,7 @@ $password = password(
 <a name="password-validation"></a>
 #### 額外驗證
 
-最後，如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+最後，如果你想要執行額外的驗證邏輯，可以傳遞一個閉包給 `validate` 引數：
 
 ```php
 $password = password(
@@ -334,9 +333,9 @@ $password = password(
 );
 ```
 
-該閉包將接收已輸入的值，並在驗證通過時回傳 `null`，否則回傳錯誤訊息。
+此閉包將接收已輸入的值，並可回傳錯誤訊息，若驗證通過則回傳 `null`。
 
-或者，您也可以利用 Laravel [驗證器 (validator)](/docs/{{version}}/validation) 的強大功能。若要這樣做，請向 `validate` 引數提供一個包含屬性名稱與所需驗證規則的陣列：
+或者，你也可以利用 Laravel [驗證器 (Validator)](/docs/{{version}}/validation) 的強大功能。為此，請向 `validate` 引數提供一個包含屬性名稱及其驗證規則的陣列：
 
 ```php
 $password = password(
@@ -346,9 +345,9 @@ $password = password(
 ```
 
 <a name="confirm"></a>
-### 確認
+### 確認 (Confirm)
 
-如果您需要詢問使用者「是或否」的確認，可以使用 `confirm` 函式。使用者可以使用方向鍵或按下 `y` 或 `n` 來選擇其回應。此函式將回傳 `true` 或 `false`。
+如果您需要詢問使用者「是或否」的確認，可以使用 `confirm` 函數。使用者可以使用方向鍵或按下 `y` 或 `n` 來選擇他們的回應。此函數將回傳 `true` 或 `false`。
 
 ```php
 use function Laravel\Prompts\confirm;
@@ -356,7 +355,7 @@ use function Laravel\Prompts\confirm;
 $confirmed = confirm('Do you accept the terms?');
 ```
 
-您也可以包含預設值、自定義「是」與「否」標籤的用詞，以及資訊提示：
+您也可以包含預設值、自定義「是」與「否」標籤的文字，以及說明提示：
 
 ```php
 $confirmed = confirm(
@@ -370,7 +369,7 @@ $confirmed = confirm(
 
 
 <a name="confirm-required"></a>
-#### 要求選擇「是」
+#### 強制要求「是」
 
 如有必要，您可以透過傳遞 `required` 引數來要求使用者必須選擇「是」：
 
@@ -381,7 +380,7 @@ $confirmed = confirm(
 );
 ```
 
-如果您想要自定義驗證訊息，也可以傳遞一個字串：
+如果您想自定義驗證訊息，也可以傳遞一個字串：
 
 ```php
 $confirmed = confirm(
@@ -392,9 +391,9 @@ $confirmed = confirm(
 
 
 <a name="select"></a>
-### 選擇
+### 單選 (Select)
 
-如果您需要使用者從預定義的一組選項中進行選擇，可以使用 `select` 函式：
+如果您需要使用者從一組預定義的選項中進行選擇，可以使用 `select` 函數：
 
 ```php
 use function Laravel\Prompts\select;
@@ -405,7 +404,7 @@ $role = select(
 );
 ```
 
-您也可以指定預設選項和資訊提示：
+您也可以指定預設選項和說明提示：
 
 ```php
 $role = select(
@@ -416,7 +415,7 @@ $role = select(
 );
 ```
 
-您也可以將關聯陣列傳遞給 `options` 引數，以便回傳所選的鍵（key）而非其值（value）：
+您也可以將關聯陣列傳遞給 `options` 引數，以便讓函數回傳選取的鍵名 (Key) 而非其數值 (Value)：
 
 ```php
 $role = select(
@@ -430,7 +429,7 @@ $role = select(
 );
 ```
 
-列表在開始捲動前最多會顯示五個選項。您可以透過傳遞 `scroll` 引數來自定義此數量：
+列表在開始捲動之前最多會顯示五個選項。您可以透過傳遞 `scroll` 引數來調整此設定：
 
 ```php
 $role = select(
@@ -444,7 +443,7 @@ $role = select(
 <a name="select-info"></a>
 #### 次要資訊
 
-`info` 引數可用於顯示關於目前高亮選項的額外資訊。當提供一個閉包時，它將接收目前高亮選項的值，並應回傳一個字串或 `null`：
+`info` 引數可用於顯示目前標註選項的額外資訊。當提供閉包 (Closure) 時，它將接收目前標註選項的數值，並應回傳一個字串或 `null`：
 
 ```php
 $role = select(
@@ -463,7 +462,7 @@ $role = select(
 );
 ```
 
-如果資訊不依賴於高亮選項，您也可以將靜態字串傳遞給 `info` 引數：
+如果資訊不依賴於標註的選項，您也可以向 `info` 引數傳遞一個靜態字串：
 
 ```php
 $role = select(
@@ -477,7 +476,7 @@ $role = select(
 <a name="select-validation"></a>
 #### 額外驗證
 
-與其他 Prompt 函式不同，`select` 函式不接受 `required` 引數，因為使用者不可能不選擇任何內容。然而，如果您需要呈現某個選項但防止它被選擇，可以將閉包傳遞給 `validate` 引數：
+與其他 Prompt 函數不同，`select` 函數不接受 `required` 引數，因為不可能什麼都不選。但是，如果您需要呈現一個選項但要防止它被選取，可以將閉包傳遞給 `validate` 引數：
 
 ```php
 $role = select(
@@ -494,13 +493,13 @@ $role = select(
 );
 ```
 
-如果 `options` 引數是關聯陣列，則閉包將接收所選的鍵；否則，它將接收所選的值。該閉包可以回傳錯誤訊息，或者在驗證通過時回傳 `null`。
+如果 `options` 引數是一個關聯陣列，則閉包將接收選取的鍵名，否則它將接收選取的數值。閉包可以回傳錯誤訊息，如果驗證通過則回傳 `null`。
 
 
 <a name="multiselect"></a>
-### 多選
+### 多選 (Multi-select)
 
-如果您需要使用者能夠選擇多個選項，可以使用 `multiselect` 函式：
+如果您需要使用者能夠選擇多個選項，可以使用 `multiselect` 函數：
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -511,7 +510,7 @@ $permissions = multiselect(
 );
 ```
 
-您也可以指定預設選項和資訊提示：
+您也可以指定預設選項和說明提示：
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -524,7 +523,7 @@ $permissions = multiselect(
 );
 ```
 
-您也可以將關聯陣列傳遞給 `options` 引數，以回傳所選選項的鍵而非其值：
+您也可以將關聯陣列傳遞給 `options` 引數，以回傳所選選項的鍵名而非其數值：
 
 ```php
 $permissions = multiselect(
@@ -539,7 +538,7 @@ $permissions = multiselect(
 );
 ```
 
-列表在開始捲動前最多會顯示五個選項。您可以透過傳遞 `scroll` 引數來自定義此數量：
+列表在開始捲動之前最多會顯示五個選項。您可以透過傳遞 `scroll` 引數來調整此設定：
 
 ```php
 $categories = multiselect(
@@ -553,7 +552,7 @@ $categories = multiselect(
 <a name="multiselect-info"></a>
 #### 次要資訊
 
-`info` 引數可用於顯示關於目前高亮選項的額外資訊。當提供一個閉包時，它將接收目前高亮選項的值，並應回傳一個字串或 `null`：
+`info` 引數可用於顯示目前標註選項的額外資訊。當提供閉包時，它將接收目前標註選項的數值，並應回傳一個字串或 `null`：
 
 ```php
 $permissions = multiselect(
@@ -576,9 +575,9 @@ $permissions = multiselect(
 
 
 <a name="multiselect-required"></a>
-#### 要求輸入值
+#### 強制要求數值
 
-預設情況下，使用者可以選擇零個或多個選項。您可以傳遞 `required` 引數來強制要求選擇一個或多個選項：
+預設情況下，使用者可以選擇零個或多個選項。您可以傳遞 `required` 引數來強制要求選取一個或多個選項：
 
 ```php
 $categories = multiselect(
@@ -588,7 +587,7 @@ $categories = multiselect(
 );
 ```
 
-如果您想要自定義驗證訊息，可以為 `required` 引數提供一個字串：
+如果您想自定義驗證訊息，可以向 `required` 引數提供一個字串：
 
 ```php
 $categories = multiselect(
@@ -602,7 +601,7 @@ $categories = multiselect(
 <a name="multiselect-validation"></a>
 #### 額外驗證
 
-如果您需要呈現某個選項但防止它被選擇，可以將閉包傳遞給 `validate` 引數：
+如果您需要呈現一個選項但要防止它被選取，可以將閉包傳遞給 `validate` 引數：
 
 ```php
 $permissions = multiselect(
@@ -619,12 +618,12 @@ $permissions = multiselect(
 );
 ```
 
-如果 `options` 引數是關聯陣列，則閉包將接收所選的鍵；否則，它將接收所選的值。該閉包可以回傳錯誤訊息，或者在驗證通過時回傳 `null`。
+如果 `options` 引數是一個關聯陣列，則閉包將接收選取的鍵名，否則它將接收選取的數值。閉包可以回傳錯誤訊息，如果驗證通過則回傳 `null`。
 
 <a name="suggest"></a>
-### 建議
+### 建議 (Suggest)
 
-`suggest` 函式可用於為可能的選項提供自動完成。不論自動完成的提示為何，使用者仍然可以提供任何答案：
+`suggest` 函式可用於為可能的選項提供自動完成功能。使用者仍然可以提供任何答案，不受自動完成提示的限制：
 
 ```php
 use function Laravel\Prompts\suggest;
@@ -632,7 +631,7 @@ use function Laravel\Prompts\suggest;
 $name = suggest('What is your name?', ['Taylor', 'Dayle']);
 ```
 
-或者，您也可以將一個閉包作為 `suggest` 函式的第二個引數。每當使用者輸入一個字元時，該閉包就會被呼叫。此閉包應接收一個包含目前使用者輸入內容的字串參數，並回傳一個用於自動完成的選項陣列：
+或者，您可以將閉包作為 `suggest` 函式的第二個引數傳入。每當使用者輸入字元時，該閉包都會被呼叫。該閉包應接收一個包含目前使用者輸入內容的字串參數，並回傳一個用於自動完成的選項陣列：
 
 ```php
 $name = suggest(
@@ -642,7 +641,7 @@ $name = suggest(
 )
 ```
 
-您也可以包含預留位置文字、預設值以及資訊提示：
+您也可以包含佔位字元 (Placeholder)、預設值以及資訊提示 (Hint)：
 
 ```php
 $name = suggest(
@@ -654,11 +653,10 @@ $name = suggest(
 );
 ```
 
-
 <a name="suggest-info"></a>
 #### 次要資訊
 
-`info` 引數可用於顯示關於目前高亮選項的額外資訊。當提供閉包時，它將接收目前高亮選項的值，並應回傳一個字串或 `null`：
+`info` 引數可用於顯示目前所選選項的額外資訊。當提供閉包時，它將接收目前選中選項的值，並應回傳一個字串或 `null`：
 
 ```php
 $name = suggest(
@@ -672,11 +670,10 @@ $name = suggest(
 );
 ```
 
-
 <a name="suggest-required"></a>
-#### 必要值
+#### 必填值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果您要求必須輸入值，可以傳入 `required` 引數：
 
 ```php
 $name = suggest(
@@ -686,7 +683,7 @@ $name = suggest(
 );
 ```
 
-如果您想要自定義驗證訊息，也可以傳遞一個字串：
+如果您想自訂驗證訊息，也可以傳入一個字串：
 
 ```php
 $name = suggest(
@@ -696,11 +693,10 @@ $name = suggest(
 );
 ```
 
-
 <a name="suggest-validation"></a>
 #### 額外驗證
 
-最後，如果您想要執行額外的驗證邏輯，可以將一個閉包傳遞給 `validate` 引數：
+最後，如果您想執行額外的驗證邏輯，可以將閉包傳給 `validate` 引數：
 
 ```php
 $name = suggest(
@@ -714,9 +710,9 @@ $name = suggest(
 );
 ```
 
-該閉包將接收已輸入的值，並在驗證通過時回傳 `null`，或回傳錯誤訊息。
+該閉包將接收輸入的值，並可以回傳錯誤訊息，如果驗證通過則回傳 `null`。
 
-或者，您可以使用 Laravel [驗證器 (validator)](/docs/{{version}}/validation) 的強大功能。若要如此做，請向 `validate` 引數提供一個包含屬性名稱與所需驗證規則的陣列：
+或者，您也可以利用 Laravel [驗證器 (Validator)](/docs/{{version}}/validation) 的強大功能。若要這樣做，請為 `validate` 引數提供一個陣列，其中包含屬性名稱與所需的驗證規則：
 
 ```php
 $name = suggest(
@@ -726,11 +722,10 @@ $name = suggest(
 );
 ```
 
-
 <a name="search"></a>
-### 搜尋
+### 搜尋 (Search)
 
-如果您有大量選項供使用者選擇，`search` 函式允許使用者輸入搜尋查詢來篩選結果，然後再使用方向鍵選擇選項：
+如果您有許多選項供使用者選擇，`search` 函式允許使用者輸入搜尋查詢來篩選結果，然後再使用方向鍵選擇選項：
 
 ```php
 use function Laravel\Prompts\search;
@@ -743,9 +738,9 @@ $id = search(
 );
 ```
 
-該閉包將接收使用者目前為止輸入的文字，且必須回傳一個選項陣列。如果您回傳的是關聯陣列，則會回傳所選選項的鍵 (key)；否則將回傳其值 (value)。
+該閉包將接收目前使用者輸入的文字，且必須回傳一個選項陣列。如果您回傳的是關聯陣列，則會回傳所選選項的鍵 (Key)，否則會回傳其值 (Value)。
 
-當篩選陣列且您打算回傳值時，應使用 `array_values` 函式或 Collection 的 `values` 方法，以確保陣列不會變成關聯陣列：
+當篩選一個您打算回傳其值的陣列時，您應該使用 `array_values` 函式或集合 (Collection) 的 `values` 方法，以確保該陣列不會變成關聯陣列：
 
 ```php
 $names = collect(['Taylor', 'Abigail']);
@@ -759,7 +754,7 @@ $selected = search(
 );
 ```
 
-您也可以包含預留位置文字和資訊提示：
+您也可以包含佔位字元以及資訊提示：
 
 ```php
 $id = search(
@@ -772,7 +767,7 @@ $id = search(
 );
 ```
 
-列表開始捲動前會顯示最多五個選項。您可以透過傳遞 `scroll` 引數來自定義此設定：
+在列表開始捲動之前，最多會顯示五個選項。您可以透過傳入 `scroll` 引數來自訂此設定：
 
 ```php
 $id = search(
@@ -784,11 +779,10 @@ $id = search(
 );
 ```
 
-
 <a name="search-info"></a>
 #### 次要資訊
 
-`info` 引數可用於顯示關於目前高亮選項的額外資訊。當提供閉包時，它將接收目前高亮選項的值，並應回傳一個字串或 `null`：
+`info` 引數可用於顯示目前選中選項的額外資訊。當提供閉包時，它將接收目前選中選項的值，並應回傳一個字串或 `null`：
 
 ```php
 $id = search(
@@ -800,11 +794,10 @@ $id = search(
 );
 ```
 
-
 <a name="search-validation"></a>
 #### 額外驗證
 
-如果您想要執行額外的驗證邏輯，可以將一個閉包傳遞給 `validate` 引數：
+如果您想執行額外的驗證邏輯，可以將閉包傳給 `validate` 引數：
 
 ```php
 $id = search(
@@ -822,12 +815,12 @@ $id = search(
 );
 ```
 
-如果 `options` 閉包回傳關聯陣列，則該閉包將接收所選的鍵 (key)；否則，它將接收所選的值 (value)。該閉包可以在驗證通過時回傳 `null`，或回傳錯誤訊息。
+如果 `options` 閉包回傳的是關聯陣列，則該閉包將接收所選的鍵，否則它將接收所選的值。該閉包可以回傳錯誤訊息，或者在驗證通過時回傳 `null`。
 
 <a name="multisearch"></a>
-### 多重搜尋
+### 多重搜尋 (Multi-search)
 
-如果您有大量可搜尋的選項且需要使用者能夠選擇多個項目，`multisearch` 函式允許使用者輸入搜尋查詢來篩選結果，接著使用方向鍵和空白鍵來選擇選項：
+如果您有許多可供搜尋的選項，且需要讓使用者能夠選擇多個項目，`multisearch` 函式可讓使用者輸入搜尋查詢來過濾結果，接著再使用方向鍵與空白鍵來選取選項：
 
 ```php
 use function Laravel\Prompts\multisearch;
@@ -840,9 +833,9 @@ $ids = multisearch(
 );
 ```
 
-此閉包將接收使用者目前為止所輸入的文字，且必須回傳一個選項陣列。如果您回傳的是關聯陣列，則會回傳所選選項的鍵 (key)；否則，將回傳其值 (value)。
+閉包將會接收使用者目前輸入的文字，且必須回傳一個選項陣列。如果您回傳的是關聯陣列，則會回傳選取選項的「鍵 (Key)」，否則將回傳其「值 (Value)」。
 
-當您篩選一個打算回傳值的陣列時，應使用 `array_values` 函式或 Collection 的 `values` 方法，以確保陣列不會變成關聯陣列：
+當您過濾一個打算回傳「值」的陣列時，應使用 `array_values` 函式或集合的 `values` 方法，以確保該陣列不會變成關聯陣列：
 
 ```php
 $names = collect(['Taylor', 'Abigail']);
@@ -856,7 +849,7 @@ $selected = multisearch(
 );
 ```
 
-您也可以包含佔位文字和資訊提示：
+您也可以加入預留文字 (Placeholder) 與資訊提示 (Hint)：
 
 ```php
 $ids = multisearch(
@@ -869,7 +862,7 @@ $ids = multisearch(
 );
 ```
 
-在列表開始捲動前，最多會顯示五個選項。您可以透過提供 `scroll` 引數來自訂此設定：
+在列表開始捲動前，最多會顯示五個選項。您可以透過傳遞 `scroll` 引數來進行自定義：
 
 ```php
 $ids = multisearch(
@@ -883,9 +876,9 @@ $ids = multisearch(
 
 
 <a name="multisearch-info"></a>
-#### 次要資訊
+#### 輔助資訊
 
-`info` 引數可用於顯示關於目前高亮選項的附加資訊。當提供閉包時，它將接收目前高亮選項的值，並應回傳一個字串或 `null`：
+`info` 引數可用於顯示目前反白選項的額外資訊。當提供閉包時，它將接收目前反白選項的值，並應回傳一個字串或 `null`：
 
 ```php
 $ids = multisearch(
@@ -899,9 +892,9 @@ $ids = multisearch(
 
 
 <a name="multisearch-required"></a>
-#### 要求輸入值
+#### 強制填入值
 
-預設情況下，使用者可以選擇零個或多個選項。您可以傳遞 `required` 引數來強制要求選擇一個或多個選項：
+預設情況下，使用者可以選擇零個或多個選項。您可以傳遞 `required` 引數來強制要求至少選取一個以上的選項：
 
 ```php
 $ids = multisearch(
@@ -913,7 +906,7 @@ $ids = multisearch(
 );
 ```
 
-如果您想自訂驗證訊息，也可以向 `required` 引數提供一個字串：
+如果您想自定義驗證訊息，也可以向 `required` 引數傳遞一個字串：
 
 ```php
 $ids = multisearch(
@@ -929,7 +922,7 @@ $ids = multisearch(
 <a name="multisearch-validation"></a>
 #### 額外驗證
 
-如果您想執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
 
 ```php
 $ids = multisearch(
@@ -947,13 +940,13 @@ $ids = multisearch(
 );
 ```
 
-如果 `options` 閉包回傳的是關聯陣列，則閉包將接收所選的鍵；否則，它將接收所選的值。閉包可以回傳錯誤訊息，或者在驗證通過時回傳 `null`。
+如果 `options` 閉包回傳的是關聯陣列，則該閉包將接收選取的「鍵」；否則，它將接收選取的「值」。閉包可以回傳錯誤訊息，若驗證通過則回傳 `null`。
 
 
 <a name="pause"></a>
-### 暫停
+### 暫停 (Pause)
 
-`pause` 函式可用於向使用者顯示資訊文字，並等待他們按下 Enter / Return 鍵以確認繼續執行：
+`pause` 函式可用於向使用者顯示資訊文字，並等待他們按下 Enter / Return 鍵以確認繼續操作：
 
 ```php
 use function Laravel\Prompts\pause;
@@ -963,9 +956,9 @@ pause('Press ENTER to continue.');
 
 
 <a name="autocomplete"></a>
-### 自動完成
+### 自動完成 (Autocomplete)
 
-`autocomplete` 函式可用於為可能的選擇提供行內自動完成。當使用者輸入時，與其輸入匹配的建議將以幽靈文字 (ghost text) 形式出現，可以透過按下 `Tab` 或右方向鍵來接受：
+`autocomplete` 函式可用於為可能的選項提供行內自動完成。當使用者輸入時，符合輸入內容的建議將以虛擬文字 (Ghost text) 的形式出現，使用者可以按下 `Tab` 鍵或向右方向鍵來接受建議：
 
 ```php
 use function Laravel\Prompts\autocomplete;
@@ -976,7 +969,7 @@ $name = autocomplete(
 );
 ```
 
-您也可以包含佔位文字、預設值和資訊提示：
+您也可以加入預留文字、預設值以及資訊提示：
 
 ```php
 $name = autocomplete(
@@ -992,7 +985,7 @@ $name = autocomplete(
 <a name="autocomplete-closure"></a>
 #### 動態選項
 
-您也可以傳遞一個閉包，根據使用者的輸入動態生成選項。每當使用者輸入一個字元時，該閉包都會被呼叫，並應回傳一個用於自動完成的選項陣列：
+您也可以傳遞一個閉包，根據使用者的輸入動態產生選項。每當使用者輸入一個字元時，該閉包都會被呼叫，並應回傳一個用於自動完成的選項陣列：
 
 ```php
 $file = autocomplete(
@@ -1006,9 +999,9 @@ $file = autocomplete(
 
 
 <a name="autocomplete-required"></a>
-#### 要求輸入值
+#### 強制填入值
 
-如果您要求必須輸入值，可以傳遞 `required` 引數：
+如果您要求必須輸入內容，可以傳遞 `required` 引數：
 
 ```php
 $name = autocomplete(
@@ -1018,7 +1011,7 @@ $name = autocomplete(
 );
 ```
 
-如果您想自訂驗證訊息，也可以傳遞一個字串：
+如果您想自定義驗證訊息，也可以傳遞一個字串：
 
 ```php
 $name = autocomplete(
@@ -1032,7 +1025,7 @@ $name = autocomplete(
 <a name="autocomplete-validation"></a>
 #### 額外驗證
 
-最後，如果您想執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
+最後，如果您想要執行額外的驗證邏輯，可以將閉包傳遞給 `validate` 引數：
 
 ```php
 $name = autocomplete(
@@ -1046,12 +1039,12 @@ $name = autocomplete(
 );
 ```
 
-此閉包將接收已輸入的值，並可回傳錯誤訊息，或在驗證通過時回傳 `null`。
+該閉包將接收已輸入的值，並可以回傳錯誤訊息，若驗證通過則回傳 `null`。
 
 <a name="transforming-input-before-validation"></a>
 ## 在驗證前轉換輸入
 
-有時您可能希望在驗證執行之前先轉換 prompt 的輸入。例如，您可能希望移除提供字串中的空白字元。為了達成此目的，許多 prompt 函數提供了一個 `transform` 引數，它接受一個閉包：
+有時您可能希望在進行驗證之前先轉換提示輸入。例如，您可能想要移除輸入字串中的空白。為了實現這一點，許多提示函數都提供了一個 `transform` 參數，它接受一個閉包 (Closure)：
 
 ```php
 $name = text(
@@ -1065,11 +1058,10 @@ $name = text(
 );
 ```
 
-
 <a name="forms"></a>
-## 表單
+## 表單 (Forms)
 
-通常，您會有數個按順序顯示的 prompt，用以在執行其他操作前收集資訊。您可以使用 `form` 函數來建立一組讓使用者填寫的 prompt 組合：
+通常，您會有一連串按順序顯示的提示，用於在執行後續動作之前收集資訊。您可以使用 `form` 函數來建立一組供使用者填寫的提示：
 
 ```php
 use function Laravel\Prompts\form;
@@ -1081,7 +1073,7 @@ $responses = form()
     ->submit();
 ```
 
-`submit` 方法將返回一個以數字為索引的陣列，其中包含表單中所有 prompt 的回應。不過，您也可以透過 `name` 引數為每個 prompt 提供名稱。當提供了名稱時，即可透過該名稱來存取該具名 prompt 的回應：
+`submit` 方法將會回傳一個以數字索引的陣列，其中包含了表單提示的所有回應。然而，您也可以透過 `name` 參數為每個提示提供名稱。提供名稱後，即可透過該名稱存取特定提示的回應：
 
 ```php
 use App\Models\User;
@@ -1103,9 +1095,9 @@ User::create([
 ]);
 ```
 
-使用 `form` 函數的主要優點在於使用者可以使用 `CTRL + U` 返回表單中的上一個 prompt。這讓使用者能夠修正錯誤或更改選擇，而無需取消並重新開始整個表單。
+使用 `form` 函數的主要優點是使用者可以使用 `CTRL + U` 返回表單中的前一個提示。這讓使用者可以修正錯誤或更改選擇，而不需要取消並重頭開始整個表單。
 
-如果您需要對表單中的 prompt 進行更精細的控制，可以調用 `add` 方法，而不是直接調用 prompt 函數。`add` 方法會接收使用者之前提供的所有回應：
+如果您需要對表單中的提示進行更細緻的控制，可以調用 `add` 方法，而不是直接呼叫提示函數。`add` 方法會接收到使用者之前提供的所有回應：
 
 ```php
 use function Laravel\Prompts\form;
@@ -1122,11 +1114,10 @@ $responses = form()
 outro("Your name is {$responses['name']} and you are {$responses['age']} years old.");
 ```
 
-
 <a name="informational-messages"></a>
 ## 資訊訊息
 
-`note`、`info`、`warning`、`error` 和 `alert` 函數可用於顯示資訊訊息：
+您可以利用 `note`、`info`、`warning`、`error` 和 `alert` 函數來顯示資訊訊息：
 
 ```php
 use function Laravel\Prompts\info;
@@ -1134,11 +1125,10 @@ use function Laravel\Prompts\info;
 info('Package installed successfully.');
 ```
 
-
 <a name="tables"></a>
-## 表格
+## 表格 (Tables)
 
-`table` 函數可以輕鬆地顯示多行多列的數據。您只需要提供欄位名稱和表格的數據即可：
+`table` 函數可以輕鬆地顯示多列與多欄的資料。您只需要提供欄位名稱和表格資料即可：
 
 ```php
 use function Laravel\Prompts\table;
@@ -1149,11 +1139,10 @@ table(
 );
 ```
 
-
 <a name="spin"></a>
-## 載入動畫
+## 旋轉指示器 (Spin)
 
-`spin` 函數在執行指定的回呼 (callback) 時，會顯示一個載入動畫 (spinner) 以及一個可選的訊息。它用於指示正在進行的行程，並在完成時返回回呼的結果：
+`spin` 函數會在執行指定的閉包回呼時顯示一個旋轉指示器 (Spinner) 以及一個可選訊息。它用於指示正在進行中的行程 (Processes)，並在完成後回傳該回呼的結果：
 
 ```php
 use function Laravel\Prompts\spin;
@@ -1165,13 +1154,12 @@ $response = spin(
 ```
 
 > [!WARNING]
-> `spin` 函數需要 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 擴充功能來驅動載入動畫。當此擴充功能不可用時，將會顯示靜態版本的載入動畫。
-
+> `spin` 函數需要 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 擴充功能來呈現旋轉動畫。如果該擴充功能不可用，則會改為顯示靜態版本的旋轉圖示。
 
 <a name="progress"></a>
-## 進度條
+## 進度條 (Progress Bar)
 
-對於執行時間較長的任務，顯示一個進度條來告知使用者任務的完成進度會非常有幫助。使用 `progress` 函數，Laravel 會顯示一個進度條，並在對給定的可迭代 (iterable) 值進行每次迭代時推進進度：
+對於執行時間較長的任務，顯示一個告知使用者任務完成度的進度條會很有幫助。透過 `progress` 函數，Laravel 會顯示一個進度條，並在對給定的可反覆運算 (Iterable) 值進行每次迭代時推進其進度：
 
 ```php
 use function Laravel\Prompts\progress;
@@ -1183,9 +1171,9 @@ $users = progress(
 );
 ```
 
-`progress` 函數的作用類似於 map 函數，將返回一個包含每次回呼迭代回傳值的陣列。
+`progress` 函數的作用類似於 map 函數，並會回傳一個包含每次回呼迭代後之回傳值的陣列。
 
-回呼還可以接收 `Laravel\Prompts\Progress` 實例，讓您在每次迭代時修改標籤 (label) 和提示 (hint)：
+回呼也可以接受 `Laravel\Prompts\Progress` 實例，讓您可以在每次迭代中修改標籤 (Label) 和提示 (Hint)：
 
 ```php
 $users = progress(
@@ -1202,7 +1190,7 @@ $users = progress(
 );
 ```
 
-有時，您可能需要對進度條的推進方式進行更多手動控制。首先，定義行程將要迭代的總步驟數。然後，在處理每個項目後，透過 `advance` 方法推進進度條：
+有時，您可能需要更手動地控制進度條的推進方式。首先，定義該行程將迭代的總步驟數。接著，在處理完每個項目後，透過 `advance` 方法來推進進度條：
 
 ```php
 $progress = progress(label: 'Updating users', steps: 10);
@@ -1221,9 +1209,9 @@ $progress->finish();
 ```
 
 <a name="task"></a>
-## 任務
+## 任務 (Task)
 
-`task` 函數會在執行指定的回呼函數 (callback) 時，顯示一個帶有標籤的任務、載入動畫以及一個可滾動的即時輸出區域。它非常適合用來封裝耗時較長的行程（例如安裝依賴項目或部署腳本），以提供執行狀況的即時可視化：
+`task` 函式在執行給定的回呼 (Callback) 時，會顯示一個帶有旋轉指示器與滾動即時輸出區域的有標籤任務。它非常適合用來包裹耗時較長的程序，例如依賴安裝或佈署腳本，讓使用者能即時瞭解當前的進度：
 
 ```php
 use function Laravel\Prompts\task;
@@ -1236,16 +1224,15 @@ task(
 );
 ```
 
-該回呼函數會接收到一個 `Logger` 實例，您可以使用它在任務的輸出區域中顯示紀錄行、狀態訊息以及串流文字。
+回呼會接收一個 `Logger` 實例，您可以使用它在任務的輸出區域顯示日誌行、狀態訊息和串流文字。
 
 > [!WARNING]
-> `task` 函數需要 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 擴展才能讓載入動畫產生動畫效果。當此擴展不可用時，將會顯示靜態版本的任務。
-
+> `task` 函式需要 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 擴充功能才能讓旋轉指示器動起來。當此擴充功能不可用時，將改為顯示靜態版本的任務圖示。
 
 <a name="task-logging"></a>
-#### 紀錄行
+#### 記錄日誌行 (Logging Lines)
 
-`line` 方法會將單行紀錄寫入任務的滾動輸出區域：
+`line` 方法可將單行日誌寫入任務的滾動輸出區域：
 
 ```php
 task(
@@ -1259,11 +1246,10 @@ task(
 );
 ```
 
-
 <a name="task-status-messages"></a>
 #### 狀態訊息
 
-您可以使用 `success`、`warning` 和 `error` 方法來顯示狀態訊息。這些訊息會以穩定且高亮的格式顯示在滾動紀錄區域上方：
+您可以使用 `success`、`warning` 與 `error` 方法來顯示狀態訊息。這些訊息會以醒目且固定的方式出現在滾動日誌區域的上方：
 
 ```php
 task(
@@ -1284,11 +1270,10 @@ task(
 );
 ```
 
-
 <a name="task-label"></a>
 #### 更新標籤
 
-`label` 方法允許您在任務執行期間更新其標籤：
+`label` 方法允許您在任務執行期間更新其標籤內容：
 
 ```php
 task(
@@ -1304,11 +1289,40 @@ task(
 );
 ```
 
+<a name="task-sub-label"></a>
+#### 顯示子標籤 (Sub-Label)
+
+`subLabel` 方法會在任務的主標籤下方顯示一行較暗的文字，這對於傳達當前正在進行的步驟等臨時狀態非常有用。傳入空字串即可清除子標籤：
+
+```php
+task(
+    label: 'Deploying',
+    callback: function ($logger) {
+        $logger->subLabel('Building assets...');
+        // ...
+        $logger->subLabel('Running migrations...');
+        // ...
+        $logger->subLabel('');
+    }
+);
+```
+
+您也可以透過 `subLabel` 引數提供初始的子標籤：
+
+```php
+task(
+    label: 'Deploying',
+    callback: function ($logger) {
+        // ...
+    },
+    subLabel: 'Preparing...'
+);
+```
 
 <a name="task-streaming"></a>
 #### 串流文字
 
-對於會逐步產生輸出的行程（例如 AI 產生的回應），`partial` 方法允許您逐字或逐塊地串流文字。一旦串流完成，請呼叫 `commitPartial` 來完成輸出：
+對於會增量產生輸出的程序（例如 AI 生成的內容），`partial` 方法允許您逐字或逐塊地串流顯示文字。串流結束後，請呼叫 `commitPartial` 來完成最終的輸出：
 
 ```php
 task(
@@ -1323,11 +1337,10 @@ task(
 );
 ```
 
-
 <a name="task-limit"></a>
-#### 自定義輸出限制
+#### 自訂輸出限制
 
-預設情況下，任務會顯示最多 10 行的滾動輸出。您可以使用 `limit` 引數來自定義此限制：
+預設情況下，任務最多顯示 10 行滾動輸出。您可以透過 `limit` 引數來自訂此限制：
 
 ```php
 task(
@@ -1339,11 +1352,27 @@ task(
 );
 ```
 
+<a name="task-keep-summary"></a>
+#### 保留摘要
+
+預設情況下，任務的回呼結束後會擦除輸出內容。如果您希望在任務完成後將狀態訊息保留在螢幕上，可以傳入 `keepSummary` 引數：
+
+```php
+task(
+    label: 'Deploying',
+    callback: function ($logger) {
+        $logger->success('Assets built');
+        // ...
+        $logger->success('Migrations complete');
+    },
+    keepSummary: true,
+);
+```
 
 <a name="stream"></a>
-## 串流
+## 串流 (Stream)
 
-`stream` 函數會顯示串流進入終端機的文字，非常適合用來顯示 AI 產生的內容或任何逐步到達的文字：
+`stream` 函式可在終端機中顯示串流文字，非常適合顯示 AI 生成的內容或任何增量到達的文字：
 
 ```php
 use function Laravel\Prompts\stream;
@@ -1358,13 +1387,12 @@ foreach ($words as $word) {
 $stream->close();
 ```
 
-`append` 方法將文字新增至串流中，並以漸顯效果呈現。當所有內容都串流完畢後，呼叫 `close` 方法來完成輸出並恢復游標。
-
+`append` 方法會將文字加入串流，並以漸進淡入的效果呈現。當所有內容都串流完畢時，請呼叫 `close` 方法來完成輸出並恢復游標位置。
 
 <a name="terminal-title"></a>
 ## 終端機標題
 
-`title` 函數會更新使用者終端機視窗或分頁的標題：
+`title` 函式會更新使用者終端機視窗或分頁的標題：
 
 ```php
 use function Laravel\Prompts\title;
@@ -1372,17 +1400,16 @@ use function Laravel\Prompts\title;
 title('Installing Dependencies');
 ```
 
-若要將終端機標題重設為預設值，請傳遞一個空字串：
+若要將終端機標題重設回預設值，請傳入一個空字串：
 
 ```php
 title('');
 ```
 
-
 <a name="clear"></a>
-## 清除終端機
+## 清除終端機內容
 
-`clear` 函數可用於清除使用者的終端機：
+`clear` 函式可用來清除使用者終端機的內容：
 
 ```php
 use function Laravel\Prompts\clear;
@@ -1390,38 +1417,33 @@ use function Laravel\Prompts\clear;
 clear();
 ```
 
-
 <a name="terminal-considerations"></a>
 ## 終端機注意事項
-
 
 <a name="terminal-width"></a>
 #### 終端機寬度
 
-如果任何標籤、選項或驗證訊息的長度超過使用者終端機的「欄位 (columns)」數量，它將會被自動截斷以適應寬度。如果您的使用者可能會使用較窄的終端機，請考慮縮短這些字串的長度。為了支援 80 個字元的終端機，通常建議的安全最大長度為 74 個字元。
-
+如果任何標籤、選項或驗證訊息的長度超過使用者終端機的「欄位 (Columns)」數，內容將會被自動截斷以符合寬度。如果您的使用者可能會使用較窄的終端機，請考慮縮短這些字串的長度。通常安全的最高長度為 74 個字元，以支援 80 字元寬的終端機。
 
 <a name="terminal-height"></a>
 #### 終端機高度
 
-對於任何接受 `scroll` 引數的 prompt，配置的值將會自動減少，以適應使用者終端機的高度，包括留給驗證訊息的空間。
-
+對於任何接受 `scroll` 引數的 Prompt，設定的值會自動根據使用者終端機的高度進行縮減，並為驗證訊息保留空間。
 
 <a name="fallbacks"></a>
-## 不支援的環境與回退機制
+## 不支援的環境與備案
 
-Laravel Prompts 支援 macOS、Linux 以及搭配 WSL 的 Windows。由於 Windows 版本 PHP 的限制，目前無法在 WSL 以外的 Windows 環境中使用 Laravel Prompts。
+Laravel Prompts 支援 macOS、Linux 以及支援 WSL 的 Windows。由於 PHP 的 Windows 版本限制，目前無法在 WSL 之外的 Windows 環境中使用 Laravel Prompts。
 
-因此，Laravel Prompts 支援回退 (falling back) 到替代實作，例如 [Symfony Console Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html)。
+因此，Laravel Prompts 支援備案至替代實作，例如 [Symfony Console Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html)。
 
 > [!NOTE]
-> 當在 Laravel 框架中使用 Laravel Prompts 時，每個 prompt 的回退機制都已經為您配置好了，並會在不支援的環境中自動啟用。
-
+> 在 Laravel 框架中使用 Laravel Prompts 時，已為您配置好每個 Prompt 的備案方案，並會在不支援的環境中自動啟用。
 
 <a name="fallback-conditions"></a>
-#### 回退條件
+#### 備案條件
 
-如果您沒有使用 Laravel，或者需要自定義何時使用回退行為，您可以將布林值傳遞給 `Prompt` 類別的 `fallbackWhen` 靜態方法：
+如果您不是使用 Laravel，或者需要自定義何時使用備案行為，您可以將布林值傳遞給 `Prompt` 類別上的 `fallbackWhen` 靜態方法：
 
 ```php
 use Laravel\Prompts\Prompt;
@@ -1431,11 +1453,10 @@ Prompt::fallbackWhen(
 );
 ```
 
-
 <a name="fallback-behavior"></a>
-#### 回退行為
+#### 備案行為
 
-如果您沒有使用 Laravel，或者需要自定義回退行為，您可以將閉包 (closure) 傳遞給每個 prompt 類別的 `fallbackUsing` 靜態方法：
+如果您不是使用 Laravel，或者需要自定義備案行為，您可以將閉包傳遞給每個 Prompt 類別上的 `fallbackUsing` 靜態方法：
 
 ```php
 use Laravel\Prompts\TextPrompt;
@@ -1467,12 +1488,12 @@ TextPrompt::fallbackUsing(function (TextPrompt $prompt) use ($input, $output) {
 });
 ```
 
-回退機制必須為每個 prompt 類別單獨配置。閉包將會接收到該 prompt 類別的一個實例，且必須回傳適合該 prompt 的類型。
+必須為每個 Prompt 類別個別配置備案。閉包將接收該 Prompt 類別的一個實例，並且必須回傳該 Prompt 對應的合適類型。
 
 <a name="testing"></a>
 ## 測試
 
-Laravel 提供了多種方法來測試您的指令是否顯示了預期的 Prompt 訊息：
+Laravel 提供多種方法來測試您的指令是否顯示了預期的 Prompt 訊息：
 
 ```php tab=Pest
 test('report generation', function () {
