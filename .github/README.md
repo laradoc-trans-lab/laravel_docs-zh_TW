@@ -1,7 +1,7 @@
 # 📖 Laravel 文件繁體中文翻譯（非官方）
 
 ⚠️ **免責聲明**  
-本文件庫為社群自動翻譯版本，使用 AI（目前主要是 gemini-2.5-flash ）自動翻譯官方 Laravel 文件。  
+本文件庫為社群自動翻譯版本，使用 AI（目前主要是 gemini-3.x-flash ）自動翻譯官方 Laravel 文件。  
 翻譯內容可能不完全正確或與官方文件不同，本人/團隊不對任何因使用本翻譯而產生的問題負責。
 
 若您對原始文件沒興趣，可以造訪 [Laradoc](https://laradoc.pigo.idv.tw) ，這是使用 VitePress 將原始文件生成的靜態網站。
@@ -21,7 +21,7 @@ git checkout -b 12.x origin/12.x
 
 ## 主要說明
 
-- 分支 `main` 並不存在任何檔案，請切換分支版本，例如 `12.x` 才會有翻譯檔。
+- 分支 `main` 並不存在任何檔案，請切換分支版本，例如 `13.x` 才會有翻譯檔。
 - 本 repo 的翻譯內容**僅供參考**，請以官方 Laravel 文件為準。  
 - 官方原始 `readme.md` 與 `license.md` 不會進行翻譯，且保留在根目錄。 
 - 檔案命名與結構完全沒變，理論上以 [VitePress](https://vitepress.dev/) 或 [jigsaw](https://jigsaw.tighten.com) 可以建置自己的文件靜態網站。
