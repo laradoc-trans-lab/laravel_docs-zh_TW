@@ -6,7 +6,7 @@
 <a name="introduction"></a>
 ## 簡介
 
-Laravel 包含多種用於操作字串值的函式。雖然框架本身就使用了其中許多函式，但如果您覺得方便，也可以在自己的應用程式中使用它們。
+Laravel 包含許多用於處理字串值的函式。其中許多函式皆由框架本身使用；不過，若您覺得方便，也可以自由地在自己的應用程式中使用它們。
 
 <a name="available-methods"></a>
 ## 可用方法
@@ -48,6 +48,7 @@ Laravel 包含多種用於操作字串值的函式。雖然框架本身就使用
 [Str::chopEnd](#method-str-chop-end)
 [Str::contains](#method-str-contains)
 [Str::containsAll](#method-str-contains-all)
+[Str::counted](#method-str-counted)
 [Str::doesntContain](#method-str-doesnt-contain)
 [Str::doesntEndWith](#method-str-doesnt-end-with)
 [Str::doesntStartWith](#method-str-doesnt-start-with)
@@ -152,6 +153,7 @@ Laravel 包含多種用於操作字串值的函式。雖然框架本身就使用
 [chopEnd](#method-fluent-str-chop-end)
 [contains](#method-fluent-str-contains)
 [containsAll](#method-fluent-str-contains-all)
+[counted](#method-fluent-str-counted)
 [decrypt](#method-fluent-str-decrypt)
 [deduplicate](#method-fluent-str-deduplicate)
 [dirname](#method-fluent-str-dirname)
@@ -262,7 +264,7 @@ Laravel 包含多種用於操作字串值的函式。雖然框架本身就使用
 <a name="method-__"></a>
 #### `__()` {.collection-method}
 
-`__` 函式使用您的 [語言檔案](/docs/{{version}}/localization) 翻譯指定的翻譯字串或翻譯金鑰：
+`__` 函數會使用您的[語言檔](/docs/{{version}}/localization)來翻譯給定的翻譯字串或翻譯金鑰：
 
 ```php
 echo __('Welcome to our application');
@@ -270,13 +272,13 @@ echo __('Welcome to our application');
 echo __('messages.welcome');
 ```
 
-如果指定的翻譯字串或金鑰不存在，`__` 函式將回傳給定的值。因此，使用上述範例，如果該翻譯金鑰不存在，`__` 函式將回傳 `messages.welcome`。
+若指定的翻譯字串或金鑰不存在，`__` 函數將會傳回給定的值。因此，延續上面的範例，若該翻譯金鑰不存在，`__` 函數將會傳回 `messages.welcome`。
 
 
 <a name="method-class-basename"></a>
 #### `class_basename()` {.collection-method}
 
-`class_basename` 函式會回傳指定類別的名稱，並移除該類別的命名空間：
+`class_basename` 函數會傳回給定類別的名稱，並移除其命名空間（Namespace）：
 
 ```php
 $class = class_basename('Foo\Bar\Baz');
@@ -288,7 +290,7 @@ $class = class_basename('Foo\Bar\Baz');
 <a name="method-e"></a>
 #### `e()` {.collection-method}
 
-`e` 函式會執行 PHP 的 `htmlspecialchars` 函式，且 `double_encode` 選項預設設定為 `true`：
+`e` 函數會執行 PHP 的 `htmlspecialchars` 函數，且預設將 `double_encode` 選項設定為 `true`：
 
 ```php
 echo e('<html>foo</html>');
@@ -300,7 +302,7 @@ echo e('<html>foo</html>');
 <a name="method-preg-replace-array"></a>
 #### `preg_replace_array()` {.collection-method}
 
-`preg_replace_array` 函式會使用陣列按順序替換字串中給定的模式：
+`preg_replace_array` 函數會使用陣列依序替換字串中符合給定模式（Pattern）的內容：
 
 ```php
 $string = 'The event will take place between :start and :end';
@@ -314,7 +316,7 @@ $replaced = preg_replace_array('/:[a-z_]+/', ['8:30', '9:00'], $string);
 <a name="method-str-after"></a>
 #### `Str::after()` {.collection-method}
 
-`Str::after` 方法會回傳字串中給定值之後的所有內容。如果該值不存在於字串中，則會回傳整個字串：
+`Str::after` 方法會傳回字串中指定值之後的所有內容。若字串中不存在該值，則會傳回整個字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -328,7 +330,7 @@ $slice = Str::after('This is my name', 'This is');
 <a name="method-str-after-last"></a>
 #### `Str::afterLast()` {.collection-method}
 
-`Str::afterLast` 方法會回傳字串中最後一次出現給定值之後的所有內容。如果該值不存在於字串中，則會回傳整個字串：
+`Str::afterLast` 方法會傳回字串中最後一次出現指定值之後的所有內容。若字串中不存在該值，則會傳回整個字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -342,7 +344,7 @@ $slice = Str::afterLast('App\Http\Controllers\Controller', '\\');
 <a name="method-str-apa"></a>
 #### `Str::apa()` {.collection-method}
 
-`Str::apa` 方法會根據 [APA 指南](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case) 將給定字串轉換為標題大小寫 (title case)：
+`Str::apa` 方法會遵循 [APA 指南](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)將給定的字串轉換為標題大小寫（Title Case）：
 
 ```php
 use Illuminate\Support\Str;
@@ -356,7 +358,7 @@ $title = Str::apa('Creating A Project');
 <a name="method-str-ascii"></a>
 #### `Str::ascii()` {.collection-method}
 
-`Str::ascii` 方法會嘗試將字串轉寫為 ASCII 值：
+`Str::ascii` 方法會嘗試將字串音譯（Transliterate）轉換為 ASCII 值：
 
 ```php
 use Illuminate\Support\Str;
@@ -370,7 +372,7 @@ $slice = Str::ascii('û');
 <a name="method-str-before"></a>
 #### `Str::before()` {.collection-method}
 
-`Str::before` 方法會回傳字串中給定值之前的所有內容：
+`Str::before` 方法會傳回字串中指定值之前的所有內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -384,7 +386,7 @@ $slice = Str::before('This is my name', 'my name');
 <a name="method-str-before-last"></a>
 #### `Str::beforeLast()` {.collection-method}
 
-`Str::beforeLast` 方法會回傳字串中最後一次出現給定值之前的所有內容：
+`Str::beforeLast` 方法會傳回字串中最後一次出現指定值之前的所有內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -398,7 +400,7 @@ $slice = Str::beforeLast('This is my name', 'is');
 <a name="method-str-between"></a>
 #### `Str::between()` {.collection-method}
 
-`Str::between` 方法會回傳兩個值之間的部分字串：
+`Str::between` 方法會傳回字串中介於兩個值之間的部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -412,7 +414,7 @@ $slice = Str::between('This is my name', 'This', 'name');
 <a name="method-str-between-first"></a>
 #### `Str::betweenFirst()` {.collection-method}
 
-`Str::betweenFirst` 方法會回傳兩個值之間最小可能的部分字串：
+`Str::betweenFirst` 方法會傳回字串中介於兩個值之間最小可能的部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -426,7 +428,7 @@ $slice = Str::betweenFirst('[a] bc [d]', '[', ']');
 <a name="method-camel-case"></a>
 #### `Str::camel()` {.collection-method}
 
-`Str::camel` 方法會將給定字串轉換為 `camelCase`：
+`Str::camel` 方法會將給定的字串轉換為 `camelCase`：
 
 ```php
 use Illuminate\Support\Str;
@@ -440,7 +442,7 @@ $converted = Str::camel('foo_bar');
 <a name="method-char-at"></a>
 #### `Str::charAt()` {.collection-method}
 
-`Str::charAt` 方法會回傳指定索引處的字元。如果索引超出範圍，則回傳 `false`：
+`Str::charAt` 方法會傳回指定索引處的字元。若索引超出範圍，則傳回 `false`：
 
 ```php
 use Illuminate\Support\Str;
@@ -454,7 +456,7 @@ $character = Str::charAt('This is my name.', 6);
 <a name="method-str-chop-start"></a>
 #### `Str::chopStart()` {.collection-method}
 
-`Str::chopStart` 方法僅在給定值出現在字串開頭時，才會移除該值第一次出現的部分：
+`Str::chopStart` 方法僅在指定值出現在字串開頭時，才會移除該值的第一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -464,7 +466,7 @@ $url = Str::chopStart('https://laravel.com', 'https://');
 // 'laravel.com'
 ```
 
-您也可以將陣列作為第二個引數。如果字串以陣列中的任何值開頭，則該值將從字串中移除：
+您也可以傳入一個陣列作為第二個引數。若字串以陣列中的任何值開頭，該值將會從字串中移除：
 
 ```php
 use Illuminate\Support\Str;
@@ -478,7 +480,7 @@ $url = Str::chopStart('http://laravel.com', ['https://', 'http://']);
 <a name="method-str-chop-end"></a>
 #### `Str::chopEnd()` {.collection-method}
 
-`Str::chopEnd` 方法僅在給定值出現在字串末尾時，才會移除該值最後一次出現的部分：
+`Str::chopEnd` 方法僅在指定值出現在字串結尾時，才會移除該值的最後一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -488,7 +490,7 @@ $url = Str::chopEnd('app/Models/Photograph.php', '.php');
 // 'app/Models/Photograph'
 ```
 
-您也可以將陣列作為第二個引數。如果字串以陣列中的任何值結尾，則該值將從字串中移除：
+您也可以傳入一個陣列作為第二個引數。若字串以陣列中的任何值結尾，該值將會從字串中移除：
 
 ```php
 use Illuminate\Support\Str;
@@ -502,7 +504,7 @@ $url = Str::chopEnd('laravel.com/index.php', ['/index.html', '/index.php']);
 <a name="method-str-contains"></a>
 #### `Str::contains()` {.collection-method}
 
-`Str::contains` 方法會判斷給定字串是否包含給定值。預設情況下，此方法區分大小寫：
+`Str::contains` 方法用來判斷給定的字串是否包含指定的值。預設情況下，此方法會區分大小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -512,7 +514,7 @@ $contains = Str::contains('This is my name', 'my');
 // true
 ```
 
-您也可以傳遞一個值陣列，以判斷給定字串是否包含陣列中的任何值：
+您也可以傳入值的陣列，來判斷給定的字串是否包含陣列中的任何一個值：
 
 ```php
 use Illuminate\Support\Str;
@@ -522,7 +524,7 @@ $contains = Str::contains('This is my name', ['my', 'foo']);
 // true
 ```
 
-您可以將 `ignoreCase` 引數設定為 `true` 以禁用大小寫區分：
+您可以將 `ignoreCase` 引數設定為 `true` 來停用大小寫檢查：
 
 ```php
 use Illuminate\Support\Str;
@@ -536,7 +538,7 @@ $contains = Str::contains('This is my name', 'MY', ignoreCase: true);
 <a name="method-str-contains-all"></a>
 #### `Str::containsAll()` {.collection-method}
 
-`Str::containsAll` 方法會判斷給定字串是否包含給定陣列中的所有值：
+`Str::containsAll` 方法用來判斷給定的字串是否包含指定陣列中的所有值：
 
 ```php
 use Illuminate\Support\Str;
@@ -546,7 +548,7 @@ $containsAll = Str::containsAll('This is my name', ['my', 'name']);
 // true
 ```
 
-您可以將 `ignoreCase` 引數設定為 `true` 以禁用大小寫區分：
+您可以將 `ignoreCase` 引數設定為 `true` 來停用大小寫檢查：
 
 ```php
 use Illuminate\Support\Str;
@@ -560,7 +562,7 @@ $containsAll = Str::containsAll('This is my name', ['MY', 'NAME'], ignoreCase: t
 <a name="method-str-doesnt-contain"></a>
 #### `Str::doesntContain()` {.collection-method}
 
-`Str::doesntContain` 方法會判斷給定字串是否不包含給定值。預設情況下，此方法區分大小寫：
+`Str::doesntContain` 方法用來判斷給定的字串是否不包含指定的值。預設情況下，此方法會區分大小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -570,7 +572,7 @@ $doesntContain = Str::doesntContain('This is name', 'my');
 // true
 ```
 
-您也可以傳遞一個值陣列，以判斷給定字串是否不包含陣列中的任何值：
+您也可以傳入值的陣列，來判斷給定的字串是否不包含陣列中的任何一個值：
 
 ```php
 use Illuminate\Support\Str;
@@ -580,7 +582,7 @@ $doesntContain = Str::doesntContain('This is name', ['my', 'framework']);
 // true
 ```
 
-您可以將 `ignoreCase` 引數設定為 `true` 以禁用大小寫區分：
+您可以將 `ignoreCase` 引數設定為 `true` 來停用大小寫檢查：
 
 ```php
 use Illuminate\Support\Str;
@@ -593,7 +595,7 @@ $doesntContain = Str::doesntContain('This is name', 'MY', ignoreCase: true);
 <a name="method-deduplicate"></a>
 #### `Str::deduplicate()` {.collection-method}
 
-`Str::deduplicate` 方法會將給定字串中連續出現的相同字元替換為單一字元。預設情況下，此方法會移除連續重複的空格：
+`Str::deduplicate` 方法會將指定字串中連續出現的重複字元替換為單一字元。預設情況下，該方法會去重空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -603,7 +605,7 @@ $result = Str::deduplicate('The   Laravel   Framework');
 // The Laravel Framework
 ```
 
-您可以透過將不同的字元作為方法的第二個引數傳入，來指定要移除重複的字元：
+您可以透過傳入第二個引數至該方法，來指定要去重的不同字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -617,7 +619,7 @@ $result = Str::deduplicate('The---Laravel---Framework', '-');
 <a name="method-str-doesnt-end-with"></a>
 #### `Str::doesntEndWith()` {.collection-method}
 
-`Str::doesntEndWith` 方法會判斷給定字串是否**不**以給定的值結尾：
+`Str::doesntEndWith` 方法用於判斷指定的字串是否不以給定的值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -627,7 +629,7 @@ $result = Str::doesntEndWith('This is my name', 'dog');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定字串是否不以陣列中的任何值結尾：
+您也可以傳入一個包含多個值的陣列，來判斷指定的字串是否不以陣列中的任何一個值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -645,7 +647,7 @@ $result = Str::doesntEndWith('This is my name', ['name', 'foo']);
 <a name="method-str-doesnt-start-with"></a>
 #### `Str::doesntStartWith()` {.collection-method}
 
-`Str::doesntStartWith` 方法會判斷給定字串是否**不**以給定的值開頭：
+`Str::doesntStartWith` 方法用於判斷指定的字串是否不以給定的值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -655,7 +657,7 @@ $result = Str::doesntStartWith('This is my name', 'That');
 // true
 ```
 
-如果傳入了可能值的陣列，只要字串不以陣列中的任何值開頭，`doesntStartWith` 方法就會回傳 `true`：
+若傳入一個包含可能值的陣列，當字串不以任何給定的值開頭時，`doesntStartWith` 方法將回傳 `true`：
 
 ```php
 $result = Str::doesntStartWith('This is my name', ['What', 'That', 'There']);
@@ -667,7 +669,7 @@ $result = Str::doesntStartWith('This is my name', ['What', 'That', 'There']);
 <a name="method-ends-with"></a>
 #### `Str::endsWith()` {.collection-method}
 
-`Str::endsWith` 方法會判斷給定字串是否以給定的值結尾：
+`Str::endsWith` 方法用於判斷指定的字串是否以給定的值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -677,7 +679,7 @@ $result = Str::endsWith('This is my name', 'name');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定字串是否以陣列中的任何值結尾：
+您也可以傳入一個包含多個值的陣列，來判斷指定的字串是否以陣列中的任何一個值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -695,7 +697,7 @@ $result = Str::endsWith('This is my name', ['this', 'foo']);
 <a name="method-excerpt"></a>
 #### `Str::excerpt()` {.collection-method}
 
-`Str::excerpt` 方法會從給定字串中提取出一段與指定短語匹配的第一個實例的摘錄：
+`Str::excerpt` 方法會從給定的字串中，擷取與該字串中首次出現的片語相匹配的摘要片段：
 
 ```php
 use Illuminate\Support\Str;
@@ -707,9 +709,9 @@ $excerpt = Str::excerpt('This is my name', 'my', [
 // '...is my na...'
 ```
 
-`radius` 選項（預設值為 `100`）允許您定義截斷字串兩側應顯示的字元數量。
+`radius` 選項的預設值為 `100`，允許您定義截斷字串兩側應顯示的字元數量。
 
-此外，您可以使用 `omission` 選項來定義要前綴和後綴在截斷字串上的字串：
+此外，您還可以使用 `omission` 選項來定義要在截斷字串的前後附加的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -726,7 +728,7 @@ $excerpt = Str::excerpt('This is my name', 'name', [
 <a name="method-str-finish"></a>
 #### `Str::finish()` {.collection-method}
 
-`Str::finish` 方法會在字串尚未以給定值結尾時，在末尾添加該值的單一實例：
+如果字串尚未以給定的值結尾，`Str::finish` 方法會將該值的單一實例新增至字串末尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -744,7 +746,7 @@ $adjusted = Str::finish('this/string/', '/');
 <a name="method-str-from-base64"></a>
 #### `Str::fromBase64()` {.collection-method}
 
-`Str::fromBase64` 方法會對給定的 Base64 字串進行解碼：
+`Str::fromBase64` 方法會將給定的 Base64 字串進行解碼：
 
 ```php
 use Illuminate\Support\Str;
@@ -758,7 +760,7 @@ $decoded = Str::fromBase64('TGFyYXZlbA==');
 <a name="method-str-headline"></a>
 #### `Str::headline()` {.collection-method}
 
-`Str::headline` 方法會將以大小寫、連字號或底線分隔的字串轉換為以空格分隔且每個單字首字母大寫的字串：
+`Str::headline` 方法會將由大小寫、連字號或底線分隔的字串轉換為以空格分隔的字串，並將每個單字的第一個字母轉為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -776,7 +778,7 @@ $headline = Str::headline('EmailNotificationSent');
 <a name="method-str-initials"></a>
 #### `Str::initials()` {.collection-method}
 
-`Str::initials` 方法會回傳給定字串的首字母，並可選擇是否將其大寫：
+`Str::initials` 方法會回傳指定字串的首字母縮寫，並可選擇性地將其轉換為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -794,7 +796,7 @@ $initials = Str::initials('taylor otwell', capitalize: true);
 <a name="method-str-inline-markdown"></a>
 #### `Str::inlineMarkdown()` {.collection-method}
 
-`Str::inlineMarkdown` 方法使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為行內 HTML。然而，與 `markdown` 方法不同的是，它不會將所有生成的 HTML 包裝在區塊級元素中：
+`Str::inlineMarkdown` 方法使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為行內 HTML。然而，與 `markdown` 方法不同的是，它不會將所有產生的 HTML 包裹在區塊級元素 (block-level element) 中：
 
 ```php
 use Illuminate\Support\Str;
@@ -807,7 +809,7 @@ $html = Str::inlineMarkdown('**Laravel**');
 
 #### Markdown 安全性
 
-預設情況下，Markdown 支援原始 HTML，這在處理原始使用者輸入時會導致跨網站指令碼 (XSS) 漏洞。根據 [CommonMark 安全文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義或移除原始 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許部分原始 HTML，應將編譯後的 Markdown 透過 HTML Purifier 進行清理：
+預設情況下，Markdown 支援原始 HTML，當與未經處理的使用者輸入一起使用時，將暴露跨網站指令碼 (XSS) 漏洞。根據 [CommonMark 安全性文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義 (escape) 或剝離 (strip) 原始 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許某些原始 HTML，應該將編譯後的 Markdown 傳送至 HTML 清理工具 (HTML Purifier)：
 
 ```php
 use Illuminate\Support\Str;
@@ -824,7 +826,7 @@ Str::inlineMarkdown('Inject: <script>alert("Hello XSS!");</script>', [
 <a name="method-str-is"></a>
 #### `Str::is()` {.collection-method}
 
-`Str::is` 方法會判斷給定字串是否匹配給定的模式。星號可用作萬用字元：
+`Str::is` 方法用於判斷給定的字串是否符合指定的樣式。星號 (*) 可以作為萬用字元使用：
 
 ```php
 use Illuminate\Support\Str;
@@ -838,7 +840,7 @@ $matches = Str::is('baz*', 'foobar');
 // false
 ```
 
-您可以將 `ignoreCase` 引數設置為 `true` 以禁用大小寫區分：
+您可以透過將 `ignoreCase` 引數設定為 `true` 來不區分大小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -852,7 +854,7 @@ $matches = Str::is('*.jpg', 'photo.JPG', ignoreCase: true);
 <a name="method-str-is-ascii"></a>
 #### `Str::isAscii()` {.collection-method}
 
-`Str::isAscii` 方法會判斷給定字串是否為 7 位元 ASCII：
+`Str::isAscii` 方法用於判斷給定的字串是否為 7 位元的 ASCII：
 
 ```php
 use Illuminate\Support\Str;
@@ -870,7 +872,7 @@ $isAscii = Str::isAscii('ü');
 <a name="method-str-is-json"></a>
 #### `Str::isJson()` {.collection-method}
 
-`Str::isJson` 方法會判斷給定字串是否為有效的 JSON：
+`Str::isJson` 方法用於判斷給定的字串是否為有效的 JSON：
 
 ```php
 use Illuminate\Support\Str;
@@ -892,7 +894,7 @@ $result = Str::isJson('{first: "John", last: "Doe"}');
 <a name="method-str-is-url"></a>
 #### `Str::isUrl()` {.collection-method}
 
-`Str::isUrl` 方法會判斷給定字串是否為有效的 URL：
+`Str::isUrl` 方法用於判斷給定的字串是否為有效的 URL：
 
 ```php
 use Illuminate\Support\Str;
@@ -906,7 +908,7 @@ $isUrl = Str::isUrl('laravel');
 // false
 ```
 
-`isUrl` 方法將廣泛的協定視為有效。然而，您可以透過向 `isUrl` 方法提供協定列表，來指定哪些協定應被視為有效：
+`isUrl` 方法會將廣泛的通訊協定視為有效。不過，您可以透過向 `isUrl` 方法傳入允許的協定陣列來指定被視為有效的通訊協定：
 
 ```php
 $isUrl = Str::isUrl('http://example.com', ['http', 'https']);
@@ -916,7 +918,7 @@ $isUrl = Str::isUrl('http://example.com', ['http', 'https']);
 <a name="method-str-is-ulid"></a>
 #### `Str::isUlid()` {.collection-method}
 
-`Str::isUlid` 方法會判斷給定字串是否為有效的 ULID：
+`Str::isUlid` 方法用於判斷給定的字串是否為有效的 ULID：
 
 ```php
 use Illuminate\Support\Str;
@@ -933,7 +935,7 @@ $isUlid = Str::isUlid('laravel');
 <a name="method-str-is-uuid"></a>
 #### `Str::isUuid()` {.collection-method}
 
-`Str::isUuid` 方法會判斷給定的字串是否為有效的 UUID：
+`Str::isUuid` 方法用來判斷給定的字串是否為有效的 UUID：
 
 ```php
 use Illuminate\Support\Str;
@@ -947,7 +949,7 @@ $isUuid = Str::isUuid('laravel');
 // false
 ```
 
-您也可以透過版本 (1, 3, 4, 5, 6, 7 或 8) 來驗證給定的 UUID 是否符合特定的 UUID 規範：
+您也可以驗證給定的 UUID 是否符合特定版本的 UUID 規格（1、3、4、5、6、7 或 8）：
 
 ```php
 use Illuminate\Support\Str;
@@ -965,7 +967,7 @@ $isUuid = Str::isUuid('a0a2a2d2-0b87-4a18-83f2-2529882be2de', version: 1);
 <a name="method-kebab-case"></a>
 #### `Str::kebab()` {.collection-method}
 
-`Str::kebab` 方法會將給定的字串轉換為 `kebab-case`：
+`Str::kebab` 方法將給定的字串轉換為 `kebab-case`：
 
 ```php
 use Illuminate\Support\Str;
@@ -979,7 +981,7 @@ $converted = Str::kebab('fooBar');
 <a name="method-str-lcfirst"></a>
 #### `Str::lcfirst()` {.collection-method}
 
-`Str::lcfirst` 方法會回傳將第一個字元轉換為小寫的字串：
+`Str::lcfirst` 方法將給定字串的第一個字元轉為小寫並傳回：
 
 ```php
 use Illuminate\Support\Str;
@@ -993,7 +995,7 @@ $string = Str::lcfirst('Foo Bar');
 <a name="method-str-length"></a>
 #### `Str::length()` {.collection-method}
 
-`Str::length` 方法會回傳給定字串的長度：
+`Str::length` 方法傳回給定字串的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -1007,7 +1009,7 @@ $length = Str::length('Laravel');
 <a name="method-str-limit"></a>
 #### `Str::limit()` {.collection-method}
 
-`Str::limit` 方法會將給定字串截斷至指定的長度：
+`Str::limit` 方法將給定的字串截斷至指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -1017,7 +1019,7 @@ $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20);
 // The quick brown fox...
 ```
 
-您可以傳遞第三個引數給此方法，以更改附加在截斷字串末尾的字串：
+您可以傳遞第三個引數給此方法，以變更要附加在截斷字串末端的字串：
 
 ```php
 $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (...)');
@@ -1025,7 +1027,7 @@ $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (..
 // The quick brown fox (...)
 ```
 
-如果您希望在截斷字串時保留完整的單字，可以使用 `preserveWords` 參數。當此參數為 `true` 時，字串將被截斷至最近的完整單字邊界：
+如果您想在截斷字串時保留完整的單字，可以使用 `preserveWords` 引數。當此引數為 `true` 時，字串將會被截斷至最接近的完整單字邊界：
 
 ```php
 $truncated = Str::limit('The quick brown fox', 12, preserveWords: true);
@@ -1037,7 +1039,7 @@ $truncated = Str::limit('The quick brown fox', 12, preserveWords: true);
 <a name="method-str-lower"></a>
 #### `Str::lower()` {.collection-method}
 
-`Str::lower` 方法會將給定字串轉換為小寫：
+`Str::lower` 方法將給定的字串轉換為小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -1051,7 +1053,7 @@ $converted = Str::lower('LARAVEL');
 <a name="method-str-markdown"></a>
 #### `Str::markdown()` {.collection-method}
 
-`Str::markdown` 方法會使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為 HTML：
+`Str::markdown` 方法使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為 HTML：
 
 ```php
 use Illuminate\Support\Str;
@@ -1070,7 +1072,7 @@ $html = Str::markdown('# Taylor <b>Otwell</b>', [
 
 #### Markdown 安全性
 
-預設情況下，Markdown 支援原始 HTML，當與原始的使用者輸入一起使用時，會暴露於跨網站指令碼 (XSS) 漏洞中。根據 [CommonMark 安全文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來跳脫 (escape) 或移除 (strip) 原始 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許部分原始 HTML，應將編譯後的 Markdown 透過 HTML Purifier 進行清理：
+預設情況下，Markdown 支援原生 HTML，當與未經處理的使用者輸入一起使用時，這會暴露跨網站指令碼 (XSS) 漏洞。根據 [CommonMark 安全性文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義 (escape) 或剝離 (strip) 原生 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許某些原生 HTML，您應該將編譯後的 Markdown 通過 HTML 淨化器 (HTML Purifier)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1087,7 +1089,7 @@ Str::markdown('Inject: <script>alert("Hello XSS!");</script>', [
 <a name="method-str-mask"></a>
 #### `Str::mask()` {.collection-method}
 
-`Str::mask` 方法會使用重複的字元遮蔽字串的一部分，可用於模糊化字串片段，例如電子郵件地址和電話號碼：
+`Str::mask` 方法用重複的字元遮蔽字串的一部分，可用於隱藏電子郵件地址和電話號碼等字串片段：
 
 ```php
 use Illuminate\Support\Str;
@@ -1097,7 +1099,7 @@ $string = Str::mask('taylor@example.com', '*', 3);
 // tay***************
 ```
 
-如果需要，您可以傳遞負數作為 `mask` 方法的第三個引數，這會指示該方法從字串末尾的指定距離開始遮蔽：
+如果需要，您可以傳遞一個負數作為 `mask` 方法的第三個引數，這會指示該方法從字串末端指定的距離開始進行遮蔽：
 
 ```php
 $string = Str::mask('taylor@example.com', '*', -15, 3);
@@ -1109,7 +1111,7 @@ $string = Str::mask('taylor@example.com', '*', -15, 3);
 <a name="method-str-match"></a>
 #### `Str::match()` {.collection-method}
 
-`Str::match` 方法會回傳與給定正規表示式模式匹配的字串部分：
+`Str::match` 方法將傳回字串中符合給定正規表示式模式的部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -1127,7 +1129,7 @@ $result = Str::match('/foo (.*)/', 'foo bar');
 <a name="method-str-match-all"></a>
 #### `Str::matchAll()` {.collection-method}
 
-`Str::matchAll` 方法會回傳一個集合 (collection)，其中包含所有與給定正規表示式模式匹配的字串部分：
+`Str::matchAll` 方法將傳回一個集合，其中包含字串中符合給定正規表示式模式的所有部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -1137,7 +1139,7 @@ $result = Str::matchAll('/bar/', 'bar foo bar');
 // collect(['bar', 'bar'])
 ```
 
-如果您在表示式中指定了匹配群組，Laravel 將回傳第一個匹配群組之所有匹配項的集合：
+如果您在運算式中指定了比對分組 (matching group)，Laravel 將傳回第一個比對分組之比對結果的集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -1147,13 +1149,13 @@ $result = Str::matchAll('/f(\w*)/', 'bar fun bar fly');
 // collect(['un', 'ly']);
 ```
 
-如果沒有找到匹配項，將回傳一個空集合。
+若未找到任何符合項目，將傳回一個空的集合。
 
 
 <a name="method-str-is-match"></a>
 #### `Str::isMatch()` {.collection-method}
 
-`Str::isMatch` 方法若字串與給定的正規表示式匹配，則回傳 `true`：
+如果字串符合給定的正規表示式，`Str::isMatch` 方法將傳回 `true`：
 
 ```php
 use Illuminate\Support\Str;
@@ -1171,7 +1173,7 @@ $result = Str::isMatch('/foo (.*)/', 'laravel');
 <a name="method-str-ordered-uuid"></a>
 #### `Str::orderedUuid()` {.collection-method}
 
-`Str::orderedUuid` 方法會產生一個「時間戳記優先」的 UUID，可以高效地儲存在索引資料庫欄位中。使用此方法產生的每個 UUID 都會排序在先前使用此方法產生的 UUID 之後：
+`Str::orderedUuid` 方法會生成一個「時間戳記優先 (timestamp first)」的 UUID，可以高效地儲存於已建立索引的資料庫欄位中。使用此方法生成的每個 UUID 都會排序於先前使用該方法生成的 UUID 之後：
 
 ```php
 use Illuminate\Support\Str;
@@ -1183,7 +1185,7 @@ return (string) Str::orderedUuid();
 <a name="method-str-padboth"></a>
 #### `Str::padBoth()` {.collection-method}
 
-`Str::padBoth` 方法封裝了 PHP 的 `str_pad` 函式，在字串的兩側填充另一個字串，直到最終字串達到所需的長度：
+`Str::padBoth` 方法封裝了 PHP 的 `str_pad` 函式，會用另一個字串填補字串的兩側，直到最終字串達到指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -1201,7 +1203,7 @@ $padded = Str::padBoth('James', 10);
 <a name="method-str-padleft"></a>
 #### `Str::padLeft()` {.collection-method}
 
-`Str::padLeft` 方法封裝了 PHP 的 `str_pad` 函式，在字串的左側填充另一個字串，直到最終字串達到所需的長度：
+`Str::padLeft` 方法封裝了 PHP 的 `str_pad` 函式，會用另一個字串填補字串的左側，直到最終字串達到指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -1219,7 +1221,7 @@ $padded = Str::padLeft('James', 10);
 <a name="method-str-padright"></a>
 #### `Str::padRight()` {.collection-method}
 
-`Str::padRight` 方法封裝了 PHP 的 `str_pad` 函式，在字串的右側填充另一個字串，直到最終字串達到所需的長度：
+`Str::padRight` 方法封裝了 PHP 的 `str_pad` 函式，會用另一個字串填補字串的右側，直到最終字串達到指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -1237,7 +1239,7 @@ $padded = Str::padRight('James', 10);
 <a name="method-str-password"></a>
 #### `Str::password()` {.collection-method}
 
-`Str::password` 方法可用於產生一個指定長度的安全隨機密碼。密碼將由字母、數字、符號和空白組合而成。預設情況下，密碼長度為 32 個字元：
+`Str::password` 方法可用於生成指定長度的安全隨機密碼。密碼將由字母、數字、符號和空格組合而成。預設情況下，密碼長度為 32 個字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -1251,10 +1253,28 @@ $password = Str::password(12);
 // 'qwuar>#V|i]N'
 ```
 
+
+<a name="method-str-counted"></a>
+#### `Str::counted()` {.collection-method}
+
+`Str::counted` 方法會根據給定的數量將單數形式的單字字串轉換為單數或複數形式，並在結果前加上格式化後的數量：
+
+```php
+use Illuminate\Support\Str;
+
+$label = Str::counted('order', 1);
+
+// 1 order
+
+$label = Str::counted('order', 1000);
+
+// 1,000 orders
+```
+
 <a name="method-str-plural"></a>
 #### `Str::plural()` {.collection-method}
 
-`Str::plural` 方法將單數單字字串轉換為其複數形式。此函數支援 [Laravel 複數化工具所支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
+`Str::plural` 方法將單字字串轉換為其複數形式。此函式支援 [Laravel 複數化工具 (Pluralizer) 支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1268,7 +1288,7 @@ $plural = Str::plural('child');
 // children
 ```
 
-您可以向函數提供一個整數作為第二個引數，以獲取字串的單數或複數形式：
+您可以提供一個整數作為函式的第二個引數，以取得字串的單數或複數形式：
 
 ```php
 use Illuminate\Support\Str;
@@ -1282,7 +1302,7 @@ $singular = Str::plural('child', 1);
 // child
 ```
 
-您可以提供 `prependCount` 引數，以便在複數化字串的前面加上格式化後的 `$count`：
+可傳入 `prependCount` 引數，以在複數化字串前加上格式化後的 `$count`：
 
 ```php
 use Illuminate\Support\Str;
@@ -1296,7 +1316,7 @@ $label = Str::plural('car', 1000, prependCount: true);
 <a name="method-str-plural-studly"></a>
 #### `Str::pluralStudly()` {.collection-method}
 
-`Str::pluralStudly` 方法將格式為 StudlyCase 的單數單字字串轉換為其複數形式。此函數支援 [Laravel 複數化工具所支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
+`Str::pluralStudly` 方法將以 StudlyCaps (大駝峰) 格式命名的單字字串轉換為其複數形式。此函式支援 [Laravel 複數化工具 (Pluralizer) 支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1310,7 +1330,7 @@ $plural = Str::pluralStudly('UserFeedback');
 // UserFeedback
 ```
 
-您可以向函數提供一個整數作為第二個引數，以獲取字串的單數或複數形式：
+您可以提供一個整數作為函式的第二個引數，以取得字串的單數或複數形式：
 
 ```php
 use Illuminate\Support\Str;
@@ -1328,7 +1348,7 @@ $singular = Str::pluralStudly('VerifiedHuman', 1);
 <a name="method-str-position"></a>
 #### `Str::position()` {.collection-method}
 
-`Str::position` 方法會回傳字串中子字串首次出現的位置。如果給定的字串中不存在該子字串，則會回傳 `false`：
+`Str::position` 方法傳回子字串在字串中第一次出現的位置。若該子字串不存在於給定的字串中，則傳回 `false`：
 
 ```php
 use Illuminate\Support\Str;
@@ -1346,7 +1366,7 @@ $position = Str::position('Hello, World!', 'W');
 <a name="method-str-random"></a>
 #### `Str::random()` {.collection-method}
 
-`Str::random` 方法會生成指定長度的隨機字串。此函數使用 PHP 的 `random_bytes` 函數：
+`Str::random` 方法會產生指定長度的隨機字串。此函式使用 PHP 的 `random_bytes` 函式：
 
 ```php
 use Illuminate\Support\Str;
@@ -1354,7 +1374,7 @@ use Illuminate\Support\Str;
 $random = Str::random(40);
 ```
 
-在測試期間，偽造 `Str::random` 方法回傳的值可能會很有用。若要實現此功能，您可以使用 `createRandomStringsUsing` 方法：
+在測試期間，「偽造 (Fake)」`Str::random` 方法傳回的值可能很有用。若要達成此目的，您可以使用 `createRandomStringsUsing` 方法：
 
 ```php
 Str::createRandomStringsUsing(function () {
@@ -1362,7 +1382,7 @@ Str::createRandomStringsUsing(function () {
 });
 ```
 
-若要指示 `random` 方法恢復正常生成隨機字串，您可以調用 `createRandomStringsNormally` 方法：
+若要指示 `random` 方法恢復正常產生隨機字串，您可以呼叫 `createRandomStringsNormally` 方法：
 
 ```php
 Str::createRandomStringsNormally();
@@ -1372,7 +1392,7 @@ Str::createRandomStringsNormally();
 <a name="method-str-remove"></a>
 #### `Str::remove()` {.collection-method}
 
-`Str::remove` 方法會從字串中移除指定的值或值陣列：
+`Str::remove` 方法從字串中移除給定的值或值陣列：
 
 ```php
 use Illuminate\Support\Str;
@@ -1384,13 +1404,13 @@ $removed = Str::remove('e', $string);
 // Ptr Pipr pickd a pck of pickld ppprs.
 ```
 
-您也可以將 `false` 作為第三個引數傳遞給 `remove` 方法，以便在移除字串時忽略大小寫。
+您也可以將 `false` 作為第三個引數傳入 `remove` 方法，以在移除字串時忽略大小寫。
 
 
 <a name="method-str-repeat"></a>
 #### `Str::repeat()` {.collection-method}
 
-`Str::repeat` 方法會重複指定的字串：
+`Str::repeat` 方法重複給定的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -1406,7 +1426,7 @@ $repeat = Str::repeat($string, 5);
 <a name="method-str-replace"></a>
 #### `Str::replace()` {.collection-method}
 
-`Str::replace` 方法會替換字串中的指定字串：
+`Str::replace` 方法會替換字串中給定的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -1418,7 +1438,7 @@ $replaced = Str::replace('11.x', '12.x', $string);
 // Laravel 12.x
 ```
 
-`replace` 方法還接受一個 `caseSensitive` 引數。預設情況下，`replace` 方法區分大小寫：
+`replace` 方法也接受 `caseSensitive` 引數。預設情況下，`replace` 方法會區分大小寫：
 
 ```php
 $replaced = Str::replace(
@@ -1435,7 +1455,7 @@ $replaced = Str::replace(
 <a name="method-str-replace-array"></a>
 #### `Str::replaceArray()` {.collection-method}
 
-`Str::replaceArray` 方法會使用陣列依序替換字串中的指定值：
+`Str::replaceArray` 方法使用陣列按順序替換字串中給定的值：
 
 ```php
 use Illuminate\Support\Str;
@@ -1451,7 +1471,7 @@ $replaced = Str::replaceArray('?', ['8:30', '9:00'], $string);
 <a name="method-str-replace-first"></a>
 #### `Str::replaceFirst()` {.collection-method}
 
-`Str::replaceFirst` 方法會替換字串中首次出現的指定值：
+`Str::replaceFirst` 方法替換字串中第一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -1465,7 +1485,7 @@ $replaced = Str::replaceFirst('the', 'a', 'the quick brown fox jumps over the la
 <a name="method-str-replace-last"></a>
 #### `Str::replaceLast()` {.collection-method}
 
-`Str::replaceLast` 方法會替換字串中最後一次出現的指定值：
+`Str::replaceLast` 方法替換字串中最後一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -1479,7 +1499,7 @@ $replaced = Str::replaceLast('the', 'a', 'the quick brown fox jumps over the laz
 <a name="method-str-replace-matches"></a>
 #### `Str::replaceMatches()` {.collection-method}
 
-`Str::replaceMatches` 方法會將字串中所有符合模式的部分替換為給定的替換字串：
+`Str::replaceMatches` 方法將符合模式的所有字串部分替換為給定的替換字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -1493,7 +1513,7 @@ $replaced = Str::replaceMatches(
 // '15015551000'
 ```
 
-`replaceMatches` 方法還接受一個閉包，該閉包將在字串中每個符合給定模式的部分被調用，允許您在閉包中執行替換邏輯並回傳替換後的值：
+`replaceMatches` 方法也接受一個閉包 (Closure)，該閉包將傳入符合給定模式的每個字串部分並被呼叫，讓您可以在閉包內執行替換邏輯並傳回替換後的值：
 
 ```php
 use Illuminate\Support\Str;
@@ -1509,7 +1529,7 @@ $replaced = Str::replaceMatches('/\d/', function (array $matches) {
 <a name="method-str-replace-start"></a>
 #### `Str::replaceStart()` {.collection-method}
 
-`Str::replaceStart` 方法僅當指定值出現在字串開頭時，才會替換首次出現的值：
+`Str::replaceStart` 方法僅在給定值出現在字串開頭時，才替換該值的第一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -1527,7 +1547,7 @@ $replaced = Str::replaceStart('World', 'Laravel', 'Hello World');
 <a name="method-str-replace-end"></a>
 #### `Str::replaceEnd()` {.collection-method}
 
-`Str::replaceEnd` 方法僅當指定值出現在字串結尾時，才會替換最後一次出現的值：
+`Str::replaceEnd` 方法僅在給定值出現在字串結尾時，才替換該值的最後一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -1545,7 +1565,7 @@ $replaced = Str::replaceEnd('Hello', 'Laravel', 'Hello World');
 <a name="method-str-reverse"></a>
 #### `Str::reverse()` {.collection-method}
 
-`Str::reverse` 方法會反轉指定的字串：
+`Str::reverse` 方法會反轉給定的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -1559,7 +1579,7 @@ $reversed = Str::reverse('Hello World');
 <a name="method-str-singular"></a>
 #### `Str::singular()` {.collection-method}
 
-`Str::singular` 方法將字串轉換為其單數形式。此函數支援 [Laravel 複數化工具所支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
+`Str::singular` 方法將字串轉換為其單數形式。此函式支援 [Laravel 複數化工具 (Pluralizer) 支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1577,7 +1597,7 @@ $singular = Str::singular('children');
 <a name="method-str-slug"></a>
 #### `Str::slug()` {.collection-method}
 
-`Str::slug` 方法會從給定字串生成一個適合 URL 的 「slug」：
+`Str::slug` 方法從給定的字串產生適合 URL 的「代稱 (Slug)」：
 
 ```php
 use Illuminate\Support\Str;
@@ -1591,7 +1611,7 @@ $slug = Str::slug('Laravel 5 Framework', '-');
 <a name="method-snake-case"></a>
 #### `Str::snake()` {.collection-method}
 
-`Str::snake` 方法將給定字串轉換為 `snake_case`：
+`Str::snake` 方法將給定的字串轉換為 `snake_case`：
 
 ```php
 use Illuminate\Support\Str;
@@ -1622,7 +1642,7 @@ $string = Str::squish('    laravel    framework    ');
 <a name="method-str-start"></a>
 #### `Str::start()` {.collection-method}
 
-`Str::start` 方法如果發現字串尚未以此值開頭，則會將給定的值新增至字串開頭：
+`Str::start` 方法會在字串未以指定值開頭時，將該值的單個實例新增至字串的開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -1640,7 +1660,7 @@ $adjusted = Str::start('/this/string', '/');
 <a name="method-starts-with"></a>
 #### `Str::startsWith()` {.collection-method}
 
-`Str::startsWith` 方法會判斷給定的字串是否以此值開頭：
+`Str::startsWith` 方法用於判斷給定的字串是否以指定的值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -1650,7 +1670,7 @@ $result = Str::startsWith('This is my name', 'This');
 // true
 ```
 
-如果傳入一個可能的數值陣列，只要字串是以陣列中任何一個值開頭，`startsWith` 方法就會回傳 `true`：
+若傳入包含多個可能值的陣列，當字串以陣列中的任何一個值開頭時，`startsWith` 方法將會回傳 `true`：
 
 ```php
 $result = Str::startsWith('This is my name', ['This', 'That', 'There']);
@@ -1676,7 +1696,7 @@ $converted = Str::studly('foo_bar');
 <a name="method-str-substr"></a>
 #### `Str::substr()` {.collection-method}
 
-`Str::substr` 方法會回傳根據起始位置和長度參數指定的部分字串：
+`Str::substr` 方法會回傳由開始位置與長度參數所指定的字串部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -1690,7 +1710,7 @@ $converted = Str::substr('The Laravel Framework', 4, 7);
 <a name="method-str-substrcount"></a>
 #### `Str::substrCount()` {.collection-method}
 
-`Str::substrCount` 方法會回傳給定值在字串中出現的次數：
+`Str::substrCount` 方法會回傳指定值在給定字串中出現的次數：
 
 ```php
 use Illuminate\Support\Str;
@@ -1704,7 +1724,7 @@ $count = Str::substrCount('If you like ice cream, you will like snow cones.', 'l
 <a name="method-str-substrreplace"></a>
 #### `Str::substrReplace()` {.collection-method}
 
-`Str::substrReplace` 方法會替換字串中的某一部分文字，從第三個引數指定的位置開始，並替換第四個引數指定數量的字元。若將 `0` 傳入該方法的第四個引數，則會在指定位置插入字串，而不會替換任何現有的字元：
+`Str::substrReplace` 方法會替換字串中某個部分的文字，替換位置由第三個引數指定，並替換由第四個引數指定的字元數量。傳入 `0` 給該方法的第四個引數將會在指定位置插入字串，而不會替換字串中的任何現有字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -1720,7 +1740,7 @@ $result = Str::substrReplace('1300', ':', 2, 0);
 <a name="method-str-swap"></a>
 #### `Str::swap()` {.collection-method}
 
-`Str::swap` 方法會使用 PHP 的 `strtr` 函式替換給定字串中的多個值：
+`Str::swap` 方法使用 PHP 的 `strtr` 函式來替換給定字串中的多個值：
 
 ```php
 use Illuminate\Support\Str;
@@ -1737,7 +1757,7 @@ $string = Str::swap([
 <a name="method-take"></a>
 #### `Str::take()` {.collection-method}
 
-`Str::take` 方法會從字串開頭回傳指定數量的字元：
+`Str::take` 方法會從字串開頭擷取指定數量的字元並回傳：
 
 ```php
 use Illuminate\Support\Str;
@@ -1765,7 +1785,7 @@ $converted = Str::title('a nice title uses the correct case');
 <a name="method-str-to-base64"></a>
 #### `Str::toBase64()` {.collection-method}
 
-`Str::toBase64` 方法會將給定的字串轉換為 Base64：
+`Str::toBase64` 方法會將給定的字串轉換為 Base64 編碼：
 
 ```php
 use Illuminate\Support\Str;
@@ -1779,7 +1799,7 @@ $base64 = Str::toBase64('Laravel');
 <a name="method-str-transliterate"></a>
 #### `Str::transliterate()` {.collection-method}
 
-`Str::transliterate` 方法會嘗試將給定的字串轉換為最接近的 ASCII 表示形式：
+`Str::transliterate` 方法會嘗試將給定的字串轉換為最接近的 ASCII 表示法：
 
 ```php
 use Illuminate\Support\Str;
@@ -1793,7 +1813,7 @@ $email = Str::transliterate('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ');
 <a name="method-str-trim"></a>
 #### `Str::trim()` {.collection-method}
 
-`Str::trim` 方法會從給定字串的開頭和結尾去除空白字元（或其他字元）。與 PHP 原生的 `trim` 函式不同，`Str::trim` 方法還會移除 Unicode 空白字元：
+`Str::trim` 方法會清除給定字串開頭和結尾的空白字元（或其他字元）。與 PHP 原生的 `trim` 函式不同，`Str::trim` 方法還會移除 Unicode 的空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -1807,7 +1827,7 @@ $string = Str::trim(' foo bar ');
 <a name="method-str-ltrim"></a>
 #### `Str::ltrim()` {.collection-method}
 
-`Str::ltrim` 方法會從給定字串的開頭去除空白字元（或其他字元）。與 PHP 原生的 `ltrim` 函式不同，`Str::ltrim` 方法還會移除 Unicode 空白字元：
+`Str::ltrim` 方法會清除給定字串開頭的空白字元（或其他字元）。與 PHP 原生的 `ltrim` 函式不同，`Str::ltrim` 方法還會移除 Unicode 的空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -1821,7 +1841,7 @@ $string = Str::ltrim('  foo bar  ');
 <a name="method-str-rtrim"></a>
 #### `Str::rtrim()` {.collection-method}
 
-`Str::rtrim` 方法會從給定字串的結尾去除空白字元（或其他字元）。與 PHP 原生的 `rtrim` 函式不同，`Str::rtrim` 方法還會移除 Unicode 空白字元：
+`Str::rtrim` 方法會清除給定字串結尾的空白字元（或其他字元）。與 PHP 原生的 `rtrim` 函式不同，`Str::rtrim` 方法還會移除 Unicode 的空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -1835,7 +1855,7 @@ $string = Str::rtrim('  foo bar  ');
 <a name="method-str-ucfirst"></a>
 #### `Str::ucfirst()` {.collection-method}
 
-`Str::ucfirst` 方法會回傳首字母大寫的給定字串：
+`Str::ucfirst` 方法會回傳將首字元轉為大寫後的給定字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -1849,7 +1869,7 @@ $string = Str::ucfirst('foo bar');
 <a name="method-str-ucsplit"></a>
 #### `Str::ucsplit()` {.collection-method}
 
-`Str::ucsplit` 方法會根據大寫字元將給定的字串分割成陣列：
+`Str::ucsplit` 方法會根據大寫字元將給定的字串分割為陣列：
 
 ```php
 use Illuminate\Support\Str;
@@ -1863,7 +1883,7 @@ $segments = Str::ucsplit('FooBar');
 <a name="method-str-ucwords"></a>
 #### `Str::ucwords()` {.collection-method}
 
-`Str::ucwords` 方法會將給定字串中每個單字的首字母轉換為大寫：
+`Str::ucwords` 方法會將給定字串中每個單字的首字元轉換為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -1891,7 +1911,7 @@ $string = Str::upper('laravel');
 <a name="method-str-ulid"></a>
 #### `Str::ulid()` {.collection-method}
 
-`Str::ulid` 方法會生成一個 ULID，這是一種精簡且按時間排序的唯一識別碼：
+`Str::ulid` 方法會產生一個 ULID，這是一種精簡且按時間排序的唯一識別碼：
 
 ```php
 use Illuminate\Support\Str;
@@ -1901,7 +1921,7 @@ return (string) Str::ulid();
 // 01gd6r360bp37zj17nxb55yv40
 ```
 
-如果您想取得一個代表給定 ULID 建立日期與時間的 `Illuminate\Support\Carbon` 日期實例，可以使用 Laravel 的 Carbon 整合所提供的 `createFromId` 方法：
+若您想要取得代表給定 ULID 建立日期與時間的 `Illuminate\Support\Carbon` 日期實例，您可以使用 Laravel 的 Carbon 整合功能所提供的 `createFromId` 方法：
 
 ```php
 use Illuminate\Support\Carbon;
@@ -1910,7 +1930,7 @@ use Illuminate\Support\Str;
 $date = Carbon::createFromId((string) Str::ulid());
 ```
 
-在測試期間，模擬 (fake) `Str::ulid` 方法回傳的值可能會很有用。若要實現此功能，您可以使用 `createUlidsUsing` 方法：
+在測試期間，模擬 `Str::ulid` 方法回傳的值會很有用。為此，您可以使用 `createUlidsUsing` 方法：
 
 ```php
 use Symfony\Component\Uid\Ulid;
@@ -1920,7 +1940,7 @@ Str::createUlidsUsing(function () {
 });
 ```
 
-若要指示 `ulid` 方法恢復正常生成 ULID，可以呼叫 `createUlidsNormally` 方法：
+若要指示 `ulid` 方法恢復正常產生 ULID，您可以呼叫 `createUlidsNormally` 方法：
 
 ```php
 Str::createUlidsNormally();
@@ -1947,7 +1967,7 @@ Str::unwrap('{framework: "Laravel"}', '{', '}');
 <a name="method-str-uuid"></a>
 #### `Str::uuid()` {.collection-method}
 
-`Str::uuid` 方法會產生一個 UUID (版本 4)：
+`Str::uuid` 方法會生成一個 UUID (version 4)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1955,7 +1975,7 @@ use Illuminate\Support\Str;
 return (string) Str::uuid();
 ```
 
-在測試期間，模擬 (fake) `Str::uuid` 方法回傳的值可能會很有用。若要達成此目的，您可以使用 `createUuidsUsing` 方法：
+在測試期間，「偽造 (fake)」`Str::uuid` 方法傳回的值可能會很有用。若要達到此目的，您可以使用 `createUuidsUsing` 方法：
 
 ```php
 use Ramsey\Uuid\Uuid;
@@ -1965,7 +1985,7 @@ Str::createUuidsUsing(function () {
 });
 ```
 
-若要指示 `uuid` 方法恢復正常產生 UUID，您可以呼叫 `createUuidsNormally` 方法：
+若要指示 `uuid` 方法恢復正常生成 UUID，您可以呼叫 `createUuidsNormally` 方法：
 
 ```php
 Str::createUuidsNormally();
@@ -1975,7 +1995,7 @@ Str::createUuidsNormally();
 <a name="method-str-uuid7"></a>
 #### `Str::uuid7()` {.collection-method}
 
-`Str::uuid7` 方法會產生一個 UUID (版本 7)：
+`Str::uuid7` 方法會生成一個 UUID (version 7)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1983,7 +2003,7 @@ use Illuminate\Support\Str;
 return (string) Str::uuid7();
 ```
 
-您可以傳入一個 `DateTimeInterface` 作為選用參數，用來產生有序的 UUID：
+可以傳入 `DateTimeInterface` 作為選擇性參數，該參數將用於生成有序的 UUID：
 
 ```php
 return (string) Str::uuid7(time: now());
@@ -1993,7 +2013,7 @@ return (string) Str::uuid7(time: now());
 <a name="method-str-word-count"></a>
 #### `Str::wordCount()` {.collection-method}
 
-`Str::wordCount` 方法會回傳字串中所包含的單字數量：
+`Str::wordCount` 方法傳回字串所包含的單字數量：
 
 ```php
 use Illuminate\Support\Str;
@@ -2005,7 +2025,7 @@ Str::wordCount('Hello, world!'); // 2
 <a name="method-str-word-wrap"></a>
 #### `Str::wordWrap()` {.collection-method}
 
-`Str::wordWrap` 方法會將字串折行至指定的字元數量：
+`Str::wordWrap` 方法將字串換行至指定的字元數：
 
 ```php
 use Illuminate\Support\Str;
@@ -2025,7 +2045,7 @@ dog.
 <a name="method-str-words"></a>
 #### `Str::words()` {.collection-method}
 
-`Str::words` 方法會限制字串中的單字數量。您可以使用第三個引數傳入額外的字串，以指定在截斷的字串末端附加的內容：
+`Str::words` 方法限制字串中的單字數量。您可以透過此方法的第三個引數傳入額外字串，以指定要附加在截斷字串末尾的內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -2039,7 +2059,7 @@ return Str::words('Perfectly balanced, as all things should be.', 3, ' >>>');
 <a name="method-str-wrap"></a>
 #### `Str::wrap()` {.collection-method}
 
-`Str::wrap` 方法會使用額外的字串或一對字串來包裹給定的字串：
+`Str::wrap` 方法使用額外的字串或一對字串包覆給定的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2057,7 +2077,7 @@ Str::wrap('is', before: 'This ', after: ' Laravel!');
 <a name="method-str"></a>
 #### `str()` {.collection-method}
 
-`str` 函式會回傳給定字串的一個新 `Illuminate\Support\Stringable` 實例。此函式等同於 `Str::of` 方法：
+`str` 函式會傳回給定字串的新 `Illuminate\Support\Stringable` 實例。此函式等同於 `Str::of` 方法：
 
 ```php
 $string = str('Taylor')->append(' Otwell');
@@ -2065,7 +2085,7 @@ $string = str('Taylor')->append(' Otwell');
 // 'Taylor Otwell'
 ```
 
-如果沒有提供任何引數給 `str` 函式，該函式將回傳一個 `Illuminate\Support\Str` 實例：
+如果未向 `str` 函式提供任何引數，該函式將傳回 `Illuminate\Support\Str` 的實例：
 
 ```php
 $snake = str()->snake('FooBar');
@@ -2077,36 +2097,36 @@ $snake = str()->snake('FooBar');
 <a name="method-trans"></a>
 #### `trans()` {.collection-method}
 
-`trans` 函式會使用您的 [語言檔案](/docs/{{version}}/localization) 來翻譯給定的翻譯鍵 (translation key)：
+`trans` 函式使用您的[語言檔](/docs/{{version}}/localization)翻譯給定的翻譯鍵：
 
 ```php
 echo trans('messages.welcome');
 ```
 
-如果指定的翻譯鍵不存在，`trans` 函式將回傳該鍵值。因此，在上述範例中，如果翻譯鍵不存在，`trans` 函式將回傳 `messages.welcome`。
+如果指定的翻譯鍵不存在，`trans` 函式將傳回給定的翻譯鍵。因此，使用上述範例，如果該翻譯鍵不存在，`trans` 函式將傳回 `messages.welcome`。
 
 
 <a name="method-trans-choice"></a>
 #### `trans_choice()` {.collection-method}
 
-`trans_choice` 函式會針對給定的翻譯鍵進行具有語法變格 (inflection) 的翻譯：
+`trans_choice` 函式會翻譯給定的翻譯鍵並支援單複數轉換 (inflection)：
 
 ```php
 echo trans_choice('messages.notifications', $unreadCount);
 ```
 
-如果指定的翻譯鍵不存在，`trans_choice` 函式將回傳該鍵值。因此，在上述範例中，如果翻譯鍵不存在，`trans_choice` 函式將回傳 `messages.notifications`。
+如果指定的翻譯鍵不存在，`trans_choice` 函式將傳回給定的翻譯鍵。因此，使用上述範例，如果該翻譯鍵不存在，`trans_choice` 函式將傳回 `messages.notifications`。
 
 <a name="fluent-strings"></a>
-## Fluent 字串
+## 流暢字串 (Fluent Strings)
 
-Fluent 字串提供了一個更流暢的物件導向介面來處理字串值，讓您可以使用比傳統字串操作更具可讀性的語法，將多個字串操作串接在一起。
+流暢字串 (Fluent strings) 為處理字串值提供了一個更加流暢、物件導向的介面，與傳統的字串操作相比，它允許您使用更具可讀性的語法將多個字串操作鏈結 (chain) 在一起。
 
 
 <a name="method-fluent-str-after"></a>
 #### `after` {.collection-method}
 
-`after` 方法會回傳字串中指定值之後的所有內容。如果該值不存在於字串中，則會回傳整個字串：
+`after` 方法會傳回字串中指定值之後的所有內容。若該值不存在於字串中，則會傳回整個字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2120,7 +2140,7 @@ $slice = Str::of('This is my name')->after('This is');
 <a name="method-fluent-str-after-last"></a>
 #### `afterLast` {.collection-method}
 
-`afterLast` 方法會回傳字串中最後一次出現指定值之後的所有內容。如果該值不存在於字串中，則會回傳整個字串：
+`afterLast` 方法會傳回字串中最後一次出現指定值之後的所有內容。若該值不存在於字串中，則會傳回整個字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2134,7 +2154,7 @@ $slice = Str::of('App\Http\Controllers\Controller')->afterLast('\\');
 <a name="method-fluent-str-apa"></a>
 #### `apa` {.collection-method}
 
-`apa` 方法會根據 [APA 指南](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case) 將給定的字串轉換為標題大小寫 (title case)：
+`apa` 方法會遵循 [APA 指南](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)將給定的字串轉換為標題大小寫 (Title Case)：
 
 ```php
 use Illuminate\Support\Str;
@@ -2148,7 +2168,7 @@ $converted = Str::of('a nice title uses the correct case')->apa();
 <a name="method-fluent-str-append"></a>
 #### `append` {.collection-method}
 
-`append` 方法會將給定的值附加到字串末端：
+`append` 方法會將給定的值附加到字串末尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2162,7 +2182,7 @@ $string = Str::of('Taylor')->append(' Otwell');
 <a name="method-fluent-str-ascii"></a>
 #### `ascii` {.collection-method}
 
-`ascii` 方法會嘗試將字串轉寫為 ASCII 值：
+`ascii` 方法將嘗試將字串音譯 (transliterate) 為 ASCII 值：
 
 ```php
 use Illuminate\Support\Str;
@@ -2176,7 +2196,7 @@ $string = Str::of('ü')->ascii();
 <a name="method-fluent-str-basename"></a>
 #### `basename` {.collection-method}
 
-`basename` 方法會回傳給定字串的尾端名稱元件：
+`basename` 方法會傳回給定字串末尾的名稱部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2186,7 +2206,7 @@ $string = Str::of('/foo/bar/baz')->basename();
 // 'baz'
 ```
 
-如果需要，您可以提供一個「副檔名」，該副檔名將從尾端元件中被移除：
+如有需要，您也可以提供一個「副檔名」，該副檔名將會從末尾部分中移除：
 
 ```php
 use Illuminate\Support\Str;
@@ -2200,7 +2220,7 @@ $string = Str::of('/foo/bar/baz.jpg')->basename('.jpg');
 <a name="method-fluent-str-before"></a>
 #### `before` {.collection-method}
 
-`before` 方法會回傳字串中指定值之前的所有內容：
+`before` 方法會傳回字串中指定值之前的所有內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -2214,7 +2234,7 @@ $slice = Str::of('This is my name')->before('my name');
 <a name="method-fluent-str-before-last"></a>
 #### `beforeLast` {.collection-method}
 
-`beforeLast` 方法會回傳字串中最後一次出現指定值之前的所有內容：
+`beforeLast` 方法會傳回字串中最後一次出現指定值之前的所有內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -2228,7 +2248,7 @@ $slice = Str::of('This is my name')->beforeLast('is');
 <a name="method-fluent-str-between"></a>
 #### `between` {.collection-method}
 
-`between` 方法會回傳位於兩個值之間的字串部分：
+`between` 方法會傳回字串中位於兩個值之間的部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2242,7 +2262,7 @@ $converted = Str::of('This is my name')->between('This', 'name');
 <a name="method-fluent-str-between-first"></a>
 #### `betweenFirst` {.collection-method}
 
-`betweenFirst` 方法會回傳位於兩個值之間最小可能的字串部分：
+`betweenFirst` 方法會傳回字串中位於兩個值之間最短可能的部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2270,7 +2290,7 @@ $converted = Str::of('foo_bar')->camel();
 <a name="method-fluent-str-char-at"></a>
 #### `charAt` {.collection-method}
 
-`charAt` 方法會回傳指定索引處的字元。如果索引超出範圍，則會回傳 `false`：
+`charAt` 方法會傳回指定索引處的字元。若索引超出範圍，則傳回 `false`：
 
 ```php
 use Illuminate\Support\Str;
@@ -2284,7 +2304,7 @@ $character = Str::of('This is my name.')->charAt(6);
 <a name="method-fluent-str-class-basename"></a>
 #### `classBasename` {.collection-method}
 
-`classBasename` 方法會回傳給定類別的類別名稱，並移除其命名空間：
+`classBasename` 方法會傳回指定類別的類別名稱，並移除該類別的命名空間 (Namespace)：
 
 ```php
 use Illuminate\Support\Str;
@@ -2298,7 +2318,7 @@ $class = Str::of('Foo\Bar\Baz')->classBasename();
 <a name="method-fluent-str-chop-start"></a>
 #### `chopStart` {.collection-method}
 
-`chopStart` 方法僅在給定值出現在字串開頭時，才會移除該值第一次出現的部分：
+`chopStart` 方法僅會在給定值出現在字串開頭時，移除該值的第一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -2308,7 +2328,7 @@ $url = Str::of('https://laravel.com')->chopStart('https://');
 // 'laravel.com'
 ```
 
-您也可以傳遞一個陣列。如果字串以陣列中的任何值開頭，則該值將從字串中被移除：
+您也可以傳入一個陣列。若字串以陣列中的任何一個值開頭，則該值將會從字串中移除：
 
 ```php
 use Illuminate\Support\Str;
@@ -2322,7 +2342,7 @@ $url = Str::of('http://laravel.com')->chopStart(['https://', 'http://']);
 <a name="method-fluent-str-chop-end"></a>
 #### `chopEnd` {.collection-method}
 
-`chopEnd` 方法僅在給定值出現在字串末端時，才會移除該值最後一次出現的部分：
+`chopEnd` 方法僅會在給定值出現在字串結尾時，移除該值的最後一次出現：
 
 ```php
 use Illuminate\Support\Str;
@@ -2332,7 +2352,7 @@ $url = Str::of('https://laravel.com')->chopEnd('.com');
 // 'https://laravel'
 ```
 
-您也可以傳遞一個陣列。如果字串以陣列中的任何值結尾，則該值將從字串中被移除：
+您也可以傳入一個陣列。若字串以陣列中的任何一個值結尾，則該值將會從字串中移除：
 
 ```php
 use Illuminate\Support\Str;
@@ -2346,7 +2366,7 @@ $url = Str::of('http://laravel.com')->chopEnd(['.com', '.io']);
 <a name="method-fluent-str-contains"></a>
 #### `contains` {.collection-method}
 
-`contains` 方法會判斷給定的字串是否包含指定的值。預設情況下，此方法區分大小寫：
+`contains` 方法用於確認給定的字串是否包含指定的值。預設情況下，此方法區分大小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -2356,7 +2376,7 @@ $contains = Str::of('This is my name')->contains('my');
 // true
 ```
 
-您也可以傳遞一個值陣列，以判斷給定字串是否包含陣列中的任何值：
+您也可以傳入一個包含多個值的陣列，以確認給定的字串是否包含該陣列中的任何一個值：
 
 ```php
 use Illuminate\Support\Str;
@@ -2366,7 +2386,7 @@ $contains = Str::of('This is my name')->contains(['my', 'foo']);
 // true
 ```
 
-您可以將 `ignoreCase` 引數設置為 `true` 來禁用大小寫區分：
+您可以將 `ignoreCase` 參數設定為 `true` 來停用大小寫區分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2380,7 +2400,7 @@ $contains = Str::of('This is my name')->contains('MY', ignoreCase: true);
 <a name="method-fluent-str-contains-all"></a>
 #### `containsAll` {.collection-method}
 
-`containsAll` 方法會判斷給定的字串是否包含給定陣列中的所有值：
+`containsAll` 方法用於確認給定的字串是否包含指定陣列中的所有值：
 
 ```php
 use Illuminate\Support\Str;
@@ -2390,7 +2410,7 @@ $containsAll = Str::of('This is my name')->containsAll(['my', 'name']);
 // true
 ```
 
-您可以將 `ignoreCase` 引數設置為 `true` 來禁用大小寫區分：
+您可以將 `ignoreCase` 參數設定為 `true` 來停用大小寫區分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2404,7 +2424,7 @@ $containsAll = Str::of('This is my name')->containsAll(['MY', 'NAME'], ignoreCas
 <a name="method-fluent-str-decrypt"></a>
 #### `decrypt` {.collection-method}
 
-`decrypt` 方法會 [解密](/docs/{{version}}/encryption) 已加密的字串：
+`decrypt` 方法用於[解密](/docs/{{version}}/encryption)已加密的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2420,7 +2440,7 @@ $decrypted = $encrypted->decrypt();
 <a name="method-fluent-str-deduplicate"></a>
 #### `deduplicate` {.collection-method}
 
-`deduplicate` 方法會將給定字串中連續出現的相同字元替換為單個該字元。預設情況下，此方法會對空格進行去重：
+`deduplicate` 方法會將給定字串中連續出現的字元替換為單個該字元。預設情況下，此方法會去重空格：
 
 ```php
 use Illuminate\Support\Str;
@@ -2430,7 +2450,7 @@ $result = Str::of('The   Laravel   Framework')->deduplicate();
 // The Laravel Framework
 ```
 
-您可以透過將不同的字元作為方法的第二個引數傳遞，來指定要去重的字元：
+您可以透過向該方法傳入第二個引數來指定要進行去重的不同字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -2444,7 +2464,7 @@ $result = Str::of('The---Laravel---Framework')->deduplicate('-');
 <a name="method-fluent-str-dirname"></a>
 #### `dirname` {.collection-method}
 
-`dirname` 方法會回傳給定字串的父目錄部分：
+`dirname` 方法會傳回給定字串的父目錄部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -2454,7 +2474,7 @@ $string = Str::of('/foo/bar/baz')->dirname();
 // '/foo/bar'
 ```
 
-如果需要，您可以指定要從字串中移除多少層目錄：
+如果有需要，您可以指定希望從字串中裁剪多少層目錄層級：
 
 ```php
 use Illuminate\Support\Str;
@@ -2467,7 +2487,7 @@ $string = Str::of('/foo/bar/baz')->dirname(2);
 <a name="method-fluent-str-doesnt-contain"></a>
 #### `doesntContain()` {.collection-method}
 
-`doesntContain` 方法會判斷給定的字串是否不包含給定的值。此方法是 [contains](#method-fluent-str-contains) 方法的相反操作。預設情況下，此方法會區分大小寫：
+`doesntContain` 方法用於判斷給定字串是否不包含給定的數值。此方法是 [contains](#method-fluent-str-contains) 方法的反向操作。預設情況下，此方法區分大小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -2477,7 +2497,7 @@ $doesntContain = Str::of('This is name')->doesntContain('my');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定的字串是否不包含陣列中的任何值：
+您也可以傳入一個陣列，以判斷給定字串是否不包含該陣列中的任何數值：
 
 ```php
 use Illuminate\Support\Str;
@@ -2487,7 +2507,7 @@ $doesntContain = Str::of('This is name')->doesntContain(['my', 'framework']);
 // true
 ```
 
-您可以將 `ignoreCase` 參數設定為 `true` 來禁用大小寫區分：
+您可以將 `ignoreCase` 參數設定為 `true` 來停用大小寫敏感度：
 
 ```php
 use Illuminate\Support\Str;
@@ -2501,7 +2521,7 @@ $doesntContain = Str::of('This is my name')->doesntContain('MY', ignoreCase: tru
 <a name="method-fluent-str-doesnt-end-with"></a>
 #### `doesntEndWith` {.collection-method}
 
-`doesntEndWith` 方法會判斷給定的字串是否不以給定的值結尾：
+`doesntEndWith` 方法用於判斷給定字串是否不以給定數值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2511,7 +2531,7 @@ $result = Str::of('This is my name')->doesntEndWith('dog');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定的字串是否不以陣列中的任何值結尾：
+您也可以傳入一個陣列，以判斷給定字串是否不以該陣列中的任何數值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2529,7 +2549,7 @@ $result = Str::of('This is my name')->doesntEndWith(['name', 'foo']);
 <a name="method-fluent-str-doesnt-start-with"></a>
 #### `doesntStartWith` {.collection-method}
 
-`doesntStartWith` 方法會判斷給定的字串是否不以給定的值開頭：
+`doesntStartWith` 方法用於判斷給定字串是否不以給定數值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -2539,7 +2559,7 @@ $result = Str::of('This is my name')->doesntStartWith('That');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定的字串是否不以陣列中的任何值開頭：
+您也可以傳入一個陣列，以判斷給定字串是否不以該陣列中的任何數值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -2553,7 +2573,7 @@ $result = Str::of('This is my name')->doesntStartWith(['What', 'That', 'There'])
 <a name="method-fluent-str-encrypt"></a>
 #### `encrypt` {.collection-method}
 
-`encrypt` 方法會將字串進行 [加密](/docs/{{version}}/encryption)：
+`encrypt` 方法用於[加密](/docs/{{version}}/encryption)字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2561,13 +2581,13 @@ use Illuminate\Support\Str;
 $encrypted = Str::of('secret')->encrypt();
 ```
 
-關於 `encrypt` 的相反操作，請參閱 [decrypt](#method-fluent-str-decrypt) 方法。
+關於 `encrypt` 的反向操作，請參閱 [decrypt](#method-fluent-str-decrypt) 方法。
 
 
 <a name="method-fluent-str-ends-with"></a>
 #### `endsWith` {.collection-method}
 
-`endsWith` 方法會判斷給定的字串是否以給定的值結尾：
+`endsWith` 方法用於判斷給定字串是否以給定數值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2577,7 +2597,7 @@ $result = Str::of('This is my name')->endsWith('name');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定的字串是否以陣列中的任何值結尾：
+您也可以傳入一個陣列，以判斷給定字串是否以該陣列中的任何數值結尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2595,7 +2615,7 @@ $result = Str::of('This is my name')->endsWith(['this', 'foo']);
 <a name="method-fluent-str-exactly"></a>
 #### `exactly` {.collection-method}
 
-`exactly` 方法會判斷給定的字串是否與另一個字串完全匹配：
+`exactly` 方法用於判斷給定字串是否完全比對符合另一個字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2609,7 +2629,7 @@ $result = Str::of('Laravel')->exactly('Laravel');
 <a name="method-fluent-str-excerpt"></a>
 #### `excerpt` {.collection-method}
 
-`excerpt` 方法會從字串中擷取一段摘要，該摘要匹配字串中首次出現的短語：
+`excerpt` 方法會從字串中擷取符合第一個出現之片語的摘要內容：
 
 ```php
 use Illuminate\Support\Str;
@@ -2621,9 +2641,9 @@ $excerpt = Str::of('This is my name')->excerpt('my', [
 // '...is my na...'
 ```
 
-`radius` 選項（預設值為 `100`）允許您定義截斷後的字串兩側應顯示的字元數。
+`radius` 選項預設為 `100`，允許您定義要在裁切字串兩側保留的字元數。
 
-此外，您可以使用 `omission` 選項來更改在截斷字串前後添加的字串：
+此外，您可以使用 `omission` 選項來更改附加在裁切字串前後的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2640,7 +2660,7 @@ $excerpt = Str::of('This is my name')->excerpt('name', [
 <a name="method-fluent-str-explode"></a>
 #### `explode` {.collection-method}
 
-`explode` 方法會根據給定的分隔符號將字串分割，並回傳一個包含分割後各部分的集合(collection)：
+`explode` 方法使用給定的分隔符號拆分字串，並傳回包含拆分後各部分的集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -2654,7 +2674,7 @@ $collection = Str::of('foo bar baz')->explode(' ');
 <a name="method-fluent-str-finish"></a>
 #### `finish` {.collection-method}
 
-`finish` 方法如果字串還沒以給定的值結尾，則在字串末尾加上一個該值的實例：
+`finish` 方法會在字串未以給定數值結尾時，將該數值的單一實例附加到字串末尾：
 
 ```php
 use Illuminate\Support\Str;
@@ -2672,7 +2692,7 @@ $adjusted = Str::of('this/string/')->finish('/');
 <a name="method-fluent-str-from-base64"></a>
 #### `fromBase64` {.collection-method}
 
-`fromBase64` 方法會對給定的 Base64 字串進行解碼：
+`fromBase64` 方法用於解碼給定的 Base64 字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2686,7 +2706,7 @@ $decoded = Str::of('TGFyYXZlbA==')->fromBase64();
 <a name="method-fluent-str-hash"></a>
 #### `hash` {.collection-method}
 
-`hash` 方法使用給定的 [演算法](https://www.php.net/manual/en/function.hash-algos.php) 對字串進行雜湊(hash)：
+`hash` 方法使用給定的[演算法](https://www.php.net/manual/en/function.hash-algos.php)對字串進行雜湊處裡：
 
 ```php
 use Illuminate\Support\Str;
@@ -2700,7 +2720,7 @@ $hashed = Str::of('secret')->hash(algorithm: 'sha256');
 <a name="method-fluent-str-headline"></a>
 #### `headline` {.collection-method}
 
-`headline` 方法會將以大小寫、連字號或底線分隔的字串轉換為以空格分隔的字串，且每個單字的首字母大寫：
+`headline` 方法會將以大小寫、連字號或底線分隔的字串轉換為以空格分隔的字串，且每個單字的第一個字母均為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -2732,7 +2752,7 @@ $initials = Str::of('Taylor Otwell')->initials()->upper();
 <a name="method-fluent-str-inline-markdown"></a>
 #### `inlineMarkdown` {.collection-method}
 
-`inlineMarkdown` 方法使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為行內 HTML。然而，與 `markdown` 方法不同的是，它不會將所有產生的 HTML 包裝在區塊級元素中：
+`inlineMarkdown` 方法使用 [CommonMark](https://commonmark.thephpleague.com/) 將 GitHub 風格的 Markdown 轉換為行內 HTML。然而，與 `markdown` 方法不同的是，它不會將所有產生的 HTML 包裹在區塊級元素 (block-level element) 中：
 
 ```php
 use Illuminate\Support\Str;
@@ -2745,7 +2765,7 @@ $html = Str::of('**Laravel**')->inlineMarkdown();
 
 #### Markdown 安全性
 
-預設情況下，Markdown 支援原始 HTML，這在處理原始使用者輸入時會導致跨網站指令碼 (XSS) 漏洞。根據 [CommonMark 安全性文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義或移除原始 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許部分原始 HTML，則應該將編譯後的 Markdown 通過 HTML Purifier 進行處理：
+預設情況下，Markdown 支援原生 HTML，當與未經處理的使用者輸入一起使用時，將暴露跨網站指令碼 (XSS) 漏洞。根據 [CommonMark 安全性文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義或去除原生 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許某些原生 HTML，您應該將編譯後的 Markdown 傳入 HTML 清理器 (HTML Purifier)：
 
 ```php
 use Illuminate\Support\Str;
@@ -2762,7 +2782,7 @@ Str::of('Inject: <script>alert("Hello XSS!");</script>')->inlineMarkdown([
 <a name="method-fluent-str-is"></a>
 #### `is` {.collection-method}
 
-`is` 方法會判斷給定的字串是否匹配給定的模式。星號可作為萬用字元：
+`is` 方法用於判斷給定字串是否符合指定的模式。星號可作為萬用字元使用：
 
 ```php
 use Illuminate\Support\Str;
@@ -2780,7 +2800,7 @@ $matches = Str::of('foobar')->is('baz*');
 <a name="method-fluent-str-is-ascii"></a>
 #### `isAscii` {.collection-method}
 
-`isAscii` 方法會判斷給定的字串是否為 ASCII 字串：
+`isAscii` 方法用於判斷給定字串是否為 ASCII 字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2798,7 +2818,7 @@ $result = Str::of('ü')->isAscii();
 <a name="method-fluent-str-is-empty"></a>
 #### `isEmpty` {.collection-method}
 
-`isEmpty` 方法會判斷給定的字串是否為空：
+`isEmpty` 方法用於判斷給定字串是否為空：
 
 ```php
 use Illuminate\Support\Str;
@@ -2887,7 +2907,7 @@ $result = Str::of('Taylor')->isUrl();
 // false
 ```
 
-`isUrl` 方法將廣泛的協定視為有效。然而，您可以透過將協定傳遞給 `isUrl` 方法來指定哪些協定應被視為有效：
+`isUrl` 方法將廣泛的協定視為有效。不過，您可以透過傳入協定至 `isUrl` 方法來指定哪些協定應被視為有效：
 
 ```php
 $result = Str::of('http://example.com')->isUrl(['http', 'https']);
@@ -2911,7 +2931,7 @@ $result = Str::of('Taylor')->isUuid();
 // false
 ```
 
-您也可以根據版本（1, 3, 4, 5, 6, 7 或 8）來驗證給定的 UUID 是否符合 UUID 規範：
+您也可以驗證給定的 UUID 是否符合特定版本的 UUID 規範（1、3、4、5、6、7 或 8）：
 
 ```php
 use Illuminate\Support\Str;
@@ -2943,7 +2963,7 @@ $converted = Str::of('fooBar')->kebab();
 <a name="method-fluent-str-lcfirst"></a>
 #### `lcfirst` {.collection-method}
 
-`lcfirst` 方法回傳將第一個字元轉換為小寫的給定字串：
+`lcfirst` 方法將給定字串的第一個字元轉換為小寫後回傳：
 
 ```php
 use Illuminate\Support\Str;
@@ -2971,7 +2991,7 @@ $length = Str::of('Laravel')->length();
 <a name="method-fluent-str-limit"></a>
 #### `limit` {.collection-method}
 
-`limit` 方法將給定字串截斷至指定的長度：
+`limit` 方法將給定的字串截斷為指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -2981,7 +3001,7 @@ $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20);
 // The quick brown fox...
 ```
 
-您也可以傳遞第二個引數來更改附加在截斷字串末尾的字串：
+您也可以傳入第二個引數來變更要附加在截斷字串末尾的字串：
 
 ```php
 $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20, ' (...)');
@@ -2989,7 +3009,7 @@ $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20, '
 // The quick brown fox (...)
 ```
 
-如果您希望在截斷字串時保留完整的單詞，可以使用 `preserveWords` 引數。當此引數為 `true` 時，字串將被截斷至最近的完整單詞邊界：
+若您想在截斷字串時保留完整的單字，可以使用 `preserveWords` 引數。當此引數為 `true` 時，字串將被截斷至最近的完整單字邊界：
 
 ```php
 $truncated = Str::of('The quick brown fox')->limit(12, preserveWords: true);
@@ -3001,7 +3021,7 @@ $truncated = Str::of('The quick brown fox')->limit(12, preserveWords: true);
 <a name="method-fluent-str-lower"></a>
 #### `lower` {.collection-method}
 
-`lower` 方法將給定字串轉換為小寫：
+`lower` 方法將給定的字串轉換為小寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -3034,7 +3054,7 @@ $html = Str::of('# Taylor <b>Otwell</b>')->markdown([
 
 #### Markdown 安全性
 
-預設情況下，Markdown 支援原始 HTML，當使用原始使用者輸入時，這將導致跨站腳本攻擊 (XSS) 漏洞。根據 [CommonMark 安全文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來跳脫 (escape) 或移除原始 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許部分原始 HTML，則應該將編譯後的 Markdown 透過 HTML Purifier 進行清理：
+預設情況下，Markdown 支援原生 HTML，當與原始使用者輸入一起使用時，將會暴露跨網站指令碼 (XSS) 的安全漏洞。根據 [CommonMark 安全性說明文件](https://commonmark.thephpleague.com/security/)，您可以使用 `html_input` 選項來轉義或剝除原生 HTML，並使用 `allow_unsafe_links` 選項來指定是否允許不安全的連結。如果您需要允許某些原生 HTML，您應該將編譯後的 Markdown 送交 HTML 淨化器 (HTML Purifier) 處理：
 
 ```php
 use Illuminate\Support\Str;
@@ -3051,7 +3071,7 @@ Str::of('Inject: <script>alert("Hello XSS!");</script>')->markdown([
 <a name="method-fluent-str-mask"></a>
 #### `mask` {.collection-method}
 
-`mask` 方法使用重複的字元遮蓋字串的一部分，可用於混淆電子郵件地址和電話號碼等字串片段：
+`mask` 方法使用重複的字元遮蔽字串的一部分，可用於混淆 Email 地址和電話號碼等字串片段：
 
 ```php
 use Illuminate\Support\Str;
@@ -3061,7 +3081,7 @@ $string = Str::of('taylor@example.com')->mask('*', 3);
 // tay***************
 ```
 
-如果需要，您可以將負數作為 `mask` 方法的第三或第四個引數，這將指示該方法從字串末尾的給定距離開始遮蓋：
+如有需要，您可以為 `mask` 方法的第三或第四個引數傳入負數，這將指示該方法從距離字串末尾指定的長度開始遮蔽：
 
 ```php
 $string = Str::of('taylor@example.com')->mask('*', -15, 3);
@@ -3077,7 +3097,7 @@ $string = Str::of('taylor@example.com')->mask('*', 4, -4);
 <a name="method-fluent-str-match"></a>
 #### `match` {.collection-method}
 
-`match` 方法將回傳字串中符合給定正規表達式 (regular expression) 模式的部分：
+`match` 方法將回傳符合給定正則表示式模式的字串部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -3095,7 +3115,7 @@ $result = Str::of('foo bar')->match('/foo (.*)/');
 <a name="method-fluent-str-match-all"></a>
 #### `matchAll` {.collection-method}
 
-`matchAll` 方法將回傳一個包含字串中所有符合給定正規表達式模式部分的集合 (collection)：
+`matchAll` 方法將回傳一個包含符合給定正則表示式模式的字串部分的集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -3105,7 +3125,7 @@ $result = Str::of('bar foo bar')->matchAll('/bar/');
 // collect(['bar', 'bar'])
 ```
 
-如果您在表達式中指定了匹配群組 (matching group)，Laravel 將回傳第一個匹配群組所有匹配項的集合：
+如果您在表示式中指定了匹配分組，Laravel 將回傳第一個匹配分組的匹配項集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -3115,13 +3135,13 @@ $result = Str::of('bar fun bar fly')->matchAll('/f(\w*)/');
 // collect(['un', 'ly']);
 ```
 
-如果未找到任何匹配項，將回傳一個空集合。
+若未找到任何符合項，將回傳一個空集合。
 
 
 <a name="method-fluent-str-is-match"></a>
 #### `isMatch` {.collection-method}
 
-`isMatch` 方法如果字串符合給定的正規表達式，將回傳 `true`：
+如果字串符合給定的正則表示式，`isMatch` 方法將回傳 `true`：
 
 ```php
 use Illuminate\Support\Str;
@@ -3154,7 +3174,7 @@ $padded = Str::of('Laravel')->newLine()->append('Framework');
 <a name="method-fluent-str-padboth"></a>
 #### `padBoth` {.collection-method}
 
-`padBoth` 方法包裝了 PHP 的 `str_pad` 函數，在字串的兩側填充另一個字串，直到最終字串達到所需的長度：
+`padBoth` 方法封裝了 PHP 的 `str_pad` 函式，使用另一個字串填補字串的兩側，直到最終字串達到所需的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -3172,7 +3192,7 @@ $padded = Str::of('James')->padBoth(10);
 <a name="method-fluent-str-padleft"></a>
 #### `padLeft` {.collection-method}
 
-`padLeft` 方法包裝了 PHP 的 `str_pad` 函數，在字串的左側填充另一個字串，直到最終字串達到所需的長度：
+`padLeft` 方法封裝了 PHP 的 `str_pad` 函式，使用另一個字串填補字串的左側，直到最終字串達到所需的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -3189,7 +3209,7 @@ $padded = Str::of('James')->padLeft(10);
 <a name="method-fluent-str-padright"></a>
 #### `padRight` {.collection-method}
 
-`padRight` 方法封裝了 PHP 的 `str_pad` 函數，它會在字串的右側填充另一個字串，直到最終字串達到所需的長度：
+`padRight` 方法封裝了 PHP 的 `str_pad` 函式，在字串右側填補另一個字串，直到最終字串達到指定的長度：
 
 ```php
 use Illuminate\Support\Str;
@@ -3207,7 +3227,7 @@ $padded = Str::of('James')->padRight(10);
 <a name="method-fluent-str-pipe"></a>
 #### `pipe` {.collection-method}
 
-`pipe` 方法允許您透過將目前的字串值傳遞給指定的可呼叫對象 (callable) 來轉換字串：
+`pipe` 方法允許您將字串的當前值傳遞給給定的 Callable 以轉換該字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -3225,10 +3245,28 @@ $closure = Str::of('foo')->pipe(function (Stringable $str) {
 ```
 
 
+<a name="method-fluent-str-counted"></a>
+#### `counted` {.collection-method}
+
+`counted` 方法根據給定的數量將單數形式的單字字串轉換為單數或複數形式，並在結果前面加上格式化後的數量：
+
+```php
+use Illuminate\Support\Str;
+
+$label = Str::of('order')->counted(1);
+
+// 1 order
+
+$label = Str::of('order')->counted(1000);
+
+// 1,000 orders
+```
+
+
 <a name="method-fluent-str-plural"></a>
 #### `plural` {.collection-method}
 
-`plural` 方法將單數字串轉換為其複數形式。此函數支援 [Laravel pluralizer 支援的所有語言](/docs/{{version}}/localization#pluralization-language)：
+`plural` 方法將單數形式的單字字串轉換為其複數形式。此函式支援 [Laravel 複數化器支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
 
 ```php
 use Illuminate\Support\Str;
@@ -3242,7 +3280,7 @@ $plural = Str::of('child')->plural();
 // children
 ```
 
-您可以向函數提供一個整數引數，以取得該字串的單數或複數形式：
+您可以傳入一個整數引數給此函式，以取得該字串的單數或複數形式：
 
 ```php
 use Illuminate\Support\Str;
@@ -3256,7 +3294,7 @@ $plural = Str::of('child')->plural(1);
 // child
 ```
 
-您可以提供 `prependCount` 引數，以便在複數化後的字串前加上格式化後的 `$count`：
+您可以提供 `prependCount` 引數，在複數化的字串前加上格式化後的 `$count`：
 
 ```php
 use Illuminate\Support\Str;
@@ -3270,7 +3308,7 @@ $label = Str::of('car')->plural(1000, prependCount: true);
 <a name="method-fluent-str-position"></a>
 #### `position` {.collection-method}
 
-`position` 方法回傳子字串在字串中首次出現的位置。如果子字串不存在於給定字串中，則回傳 `false`：
+`position` 方法傳回子字串在字串中第一次出現的位置。如果字串中不存在該子字串，則傳回 `false`：
 
 ```php
 use Illuminate\Support\Str;
@@ -3302,7 +3340,7 @@ $string = Str::of('Framework')->prepend('Laravel ');
 <a name="method-fluent-str-remove"></a>
 #### `remove` {.collection-method}
 
-`remove` 方法從字串中移除指定的值或值陣列：
+`remove` 方法從字串中移除給定的值或值陣列：
 
 ```php
 use Illuminate\Support\Str;
@@ -3312,7 +3350,7 @@ $string = Str::of('Arkansas is quite beautiful!')->remove('quite ');
 // Arkansas is beautiful!
 ```
 
-您也可以傳遞 `false` 作為第二個參數，以便在移除字串時忽略大小寫。
+您還可以傳入 `false` 作為第二個參數，以在移除字串時忽略大小寫。
 
 
 <a name="method-fluent-str-repeat"></a>
@@ -3332,7 +3370,7 @@ $repeated = Str::of('a')->repeat(5);
 <a name="method-fluent-str-replace"></a>
 #### `replace` {.collection-method}
 
-`replace` 方法替換字串中的指定字串：
+`replace` 方法替換字串中給定的字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -3342,7 +3380,7 @@ $replaced = Str::of('Laravel 6.x')->replace('6.x', '7.x');
 // Laravel 7.x
 ```
 
-`replace` 方法也接受一個 `caseSensitive` 引數。預設情況下，`replace` 方法區分大小寫：
+`replace` 方法還接受一個 `caseSensitive` 引數。預設情況下，`replace` 方法區分大小寫：
 
 ```php
 $replaced = Str::of('macOS 13.x')->replace(
@@ -3354,7 +3392,7 @@ $replaced = Str::of('macOS 13.x')->replace(
 <a name="method-fluent-str-replace-array"></a>
 #### `replaceArray` {.collection-method}
 
-`replaceArray` 方法使用陣列按順序替換字串中的指定值：
+`replaceArray` 方法使用陣列按順序替換字串中給定的值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3370,7 +3408,7 @@ $replaced = Str::of($string)->replaceArray('?', ['8:30', '9:00']);
 <a name="method-fluent-str-replace-first"></a>
 #### `replaceFirst` {.collection-method}
 
-`replaceFirst` 方法替換字串中首次出現的指定值：
+`replaceFirst` 方法替換字串中第一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3384,7 +3422,7 @@ $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceFirst
 <a name="method-fluent-str-replace-last"></a>
 #### `replaceLast` {.collection-method}
 
-`replaceLast` 方法替換字串中最後一次出現的指定值：
+`replaceLast` 方法替換字串中最後一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3408,7 +3446,7 @@ $replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '')
 // '15015551000'
 ```
 
-`replaceMatches` 方法也接受一個閉包 (closure)，該閉包會在每個符合給定模式的字串部分被呼叫，允許您在閉包內執行替換邏輯並回傳替換後的值：
+`replaceMatches` 方法還接受一個閉包，該閉包將針對符合給定模式的每個字串部分進行呼叫，允許您在閉包內執行替換邏輯並傳回替換後的值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3424,7 +3462,7 @@ $replaced = Str::of('123')->replaceMatches('/\d/', function (array $matches) {
 <a name="method-fluent-str-replace-start"></a>
 #### `replaceStart` {.collection-method}
 
-`replaceStart` 方法僅在值出現在字串開頭時，替換首次出現的指定值：
+`replaceStart` 方法僅在值出現在字串開頭時，替換第一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3442,7 +3480,7 @@ $replaced = Str::of('Hello World')->replaceStart('World', 'Laravel');
 <a name="method-fluent-str-replace-end"></a>
 #### `replaceEnd` {.collection-method}
 
-`replaceEnd` 方法僅在值出現在字串結尾時，替換最後一次出現的指定值：
+`replaceEnd` 方法僅在值出現在字串末尾時，替換最後一次出現的給定值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3460,7 +3498,7 @@ $replaced = Str::of('Hello World')->replaceEnd('Hello', 'Laravel');
 <a name="method-fluent-str-scan"></a>
 #### `scan` {.collection-method}
 
-`scan` 方法根據 [`sscanf` PHP 函數](https://www.php.net/manual/en/function.sscanf.php) 支援的格式，將字串輸入解析為集合 (collection)：
+`scan` 方法根據 [`sscanf` PHP 函式](https://www.php.net/manual/en/function.sscanf.php)支援的格式將字串的輸入解析為集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -3474,7 +3512,7 @@ $collection = Str::of('filename.jpg')->scan('%[^.].%s');
 <a name="method-fluent-str-singular"></a>
 #### `singular` {.collection-method}
 
-`singular` 方法將字串轉換為其單數形式。此函數支援 [Laravel pluralizer 支援的所有語言](/docs/{{version}}/localization#pluralization-language)：
+`singular` 方法將字串轉換為其單數形式。此函式支援 [Laravel 複數化器支援的任何語言](/docs/{{version}}/localization#pluralization-language)：
 
 ```php
 use Illuminate\Support\Str;
@@ -3492,7 +3530,7 @@ $singular = Str::of('children')->singular();
 <a name="method-fluent-str-slug"></a>
 #### `slug` {.collection-method}
 
-`slug` 方法從給定字串生成一個對 URL 友好的 \"slug\"：
+`slug` 方法從給定的字串產生 URL 友善的 "slug"：
 
 ```php
 use Illuminate\Support\Str;
@@ -3506,7 +3544,7 @@ $slug = Str::of('Laravel Framework')->slug('-');
 <a name="method-fluent-str-snake"></a>
 #### `snake` {.collection-method}
 
-`snake` 方法將給定字串轉換為 `snake_case`：
+`snake` 方法將給定的字串轉換為 `snake_case`：
 
 ```php
 use Illuminate\Support\Str;
@@ -3520,7 +3558,7 @@ $converted = Str::of('fooBar')->snake();
 <a name="method-fluent-str-split"></a>
 #### `split` {.collection-method}
 
-`split` 方法使用正規表達式將字串分割為集合 (collection)：
+`split` 方法使用正則表達式將字串分割為集合：
 
 ```php
 use Illuminate\Support\Str;
@@ -3530,11 +3568,10 @@ $segments = Str::of('one, two, three')->split('/[\s,]+/');
 // collect(["one", "two", "three"])
 ```
 
-
 <a name="method-fluent-str-squish"></a>
 #### `squish` {.collection-method}
 
-`squish` 方法移除字串中所有多餘的空白，包括單字之間的多餘空白：
+`squish` 方法會移除字串中所有多餘的空白字元，包括單字之間多餘的空白：
 
 ```php
 use Illuminate\Support\Str;
@@ -3544,10 +3581,11 @@ $string = Str::of('    laravel    framework    ')->squish();
 // laravel framework
 ```
 
+
 <a name="method-fluent-str-start"></a>
 #### `start` {.collection-method}
 
-`start` 方法會在字串尚未以指定值開頭時，在字串開頭加上該值：
+`start` 方法如果字串尚未以給定的值開頭，則會在字串開頭加上單一實例的該值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3565,7 +3603,7 @@ $adjusted = Str::of('/this/string')->start('/');
 <a name="method-fluent-str-starts-with"></a>
 #### `startsWith` {.collection-method}
 
-`startsWith` 方法用於判斷給定的字串是否以指定值開頭：
+`startsWith` 方法用於判斷給定的字串是否以給定的值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -3575,7 +3613,7 @@ $result = Str::of('This is my name')->startsWith('This');
 // true
 ```
 
-您也可以傳入一個值陣列，以判斷給定的字串是否以陣列中的任何一個值開頭：
+您也可以傳入一個包含多個值的陣列，來判斷該字串是否以陣列中的任何一個值開頭：
 
 ```php
 use Illuminate\Support\Str;
@@ -3589,7 +3627,7 @@ $result = Str::of('This is my name')->startsWith(['This', 'That']);
 <a name="method-fluent-str-strip-tags"></a>
 #### `stripTags` {.collection-method}
 
-`stripTags` 方法會移除字串中所有的 HTML 和 PHP 標籤：
+`stripTags` 方法會移除字串中的所有 HTML 與 PHP 標籤：
 
 ```php
 use Illuminate\Support\Str;
@@ -3607,7 +3645,7 @@ $result = Str::of('<a href="https://laravel.com">Taylor <b>Otwell</b></a>')->str
 <a name="method-fluent-str-studly"></a>
 #### `studly` {.collection-method}
 
-`studly` 方法會將給定的字串轉換為 `StudlyCase`：
+`studly` 方法會將給定的字串轉為 `StudlyCase`：
 
 ```php
 use Illuminate\Support\Str;
@@ -3621,7 +3659,7 @@ $converted = Str::of('foo_bar')->studly();
 <a name="method-fluent-str-substr"></a>
 #### `substr` {.collection-method}
 
-`substr` 方法會根據指定的起始位置和長度參數，回傳字串的一部分：
+`substr` 方法會回傳由給定的開始位置與長度參數所指定的字串部分：
 
 ```php
 use Illuminate\Support\Str;
@@ -3639,7 +3677,7 @@ $string = Str::of('Laravel Framework')->substr(8, 5);
 <a name="method-fluent-str-substrreplace"></a>
 #### `substrReplace` {.collection-method}
 
-`substrReplace` 方法會替換字串中某一部分的文字，替換的起始位置由第二個引數指定，替換的字元數由第三個引數指定。若將 `0` 傳入該方法的第三個引數，則會在指定位置插入字串，而不會替換掉任何現有的字元：
+`substrReplace` 方法會替換字串中某一部分的文字，從第二個引數指定的位置開始，並替換第三個引數所指定的字元數量。傳入 `0` 給該方法的第三個引數，可以在不替換字串中任何現有字元的情況下，將字串插入至指定位置：
 
 ```php
 use Illuminate\Support\Str;
@@ -3657,7 +3695,7 @@ $string = Str::of('The Framework')->substrReplace(' Laravel', 3, 0);
 <a name="method-fluent-str-swap"></a>
 #### `swap` {.collection-method}
 
-`swap` 方法會使用 PHP 的 `strtr` 函式來替換字串中的多個值：
+`swap` 方法使用 PHP 的 `strtr` 函式替換字串中的多個值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3689,7 +3727,7 @@ $taken = Str::of('Build something amazing!')->take(5);
 <a name="method-fluent-str-tap"></a>
 #### `tap` {.collection-method}
 
-`tap` 方法會將字串傳遞給指定的閉包，讓您可以檢查並與字串互動，且不會影響到字串本身。無論閉包回傳什麼，`tap` 方法最終都會回傳原始字串：
+`tap` 方法會將字串傳入給定的閉包，允許您在不影響字串本身的情況下檢查字串並與之互動。無論閉包回傳什麼，`tap` 方法都會回傳原始字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -3709,7 +3747,7 @@ $string = Str::of('Laravel')
 <a name="method-fluent-str-test"></a>
 #### `test` {.collection-method}
 
-`test` 方法用於判斷字串是否符合給定的正規表示式模式：
+`test` 方法用於判斷字串是否符合給定的正規表示式樣式：
 
 ```php
 use Illuminate\Support\Str;
@@ -3737,7 +3775,7 @@ $converted = Str::of('a nice title uses the correct case')->title();
 <a name="method-fluent-str-to-base64"></a>
 #### `toBase64` {.collection-method}
 
-`toBase64` 方法會將給定的字串轉換為 Base64 編碼：
+`toBase64` 方法會將給定的字串轉換為 Base64 格式：
 
 ```php
 use Illuminate\Support\Str;
@@ -3751,7 +3789,7 @@ $base64 = Str::of('Laravel')->toBase64();
 <a name="method-fluent-str-to-html-string"></a>
 #### `toHtmlString` {.collection-method}
 
-`toHtmlString` 方法會將給定的字串轉換為 `Illuminate\Support\HtmlString` 實例，這樣在 Blade 模板中渲染時將不會被轉義：
+`toHtmlString` 方法會將給定的字串轉換為 `Illuminate\Support\HtmlString` 的實例，該實例在 Blade 模板中渲染時不會被跳脫：
 
 ```php
 use Illuminate\Support\Str;
@@ -3763,7 +3801,7 @@ $htmlString = Str::of('Nuno Maduro')->toHtmlString();
 <a name="method-fluent-str-to-uri"></a>
 #### `toUri` {.collection-method}
 
-`toUri` 方法會將給定的字串轉換為 [Illuminate\Support\Uri](/docs/{{version}}/helpers#uri) 實例：
+`toUri` 方法會將給定的字串轉換為 [Illuminate\Support\Uri](/docs/{{version}}/helpers#uri) 的實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -3789,7 +3827,7 @@ $email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate(
 <a name="method-fluent-str-trim"></a>
 #### `trim` {.collection-method}
 
-`trim` 方法會修剪給定的字串。與 PHP 原生的 `trim` 函式不同，Laravel 的 `trim` 方法還會移除 Unicode 空白字元：
+`trim` 方法會修剪給定的字串。與 PHP 原生的 `trim` 函式不同，Laravel 的 `trim` 方法也會移除 Unicode 空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -3807,7 +3845,7 @@ $string = Str::of('/Laravel/')->trim('/');
 <a name="method-fluent-str-ltrim"></a>
 #### `ltrim` {.collection-method}
 
-`ltrim` 方法會修剪字串的左側。與 PHP 原生的 `ltrim` 函式不同，Laravel 的 `ltrim` 方法還會移除 Unicode 空白字元：
+`ltrim` 方法會修剪字串左側的空白。與 PHP 原生的 `ltrim` 函式不同，Laravel 的 `ltrim` 方法也會移除 Unicode 空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -3825,7 +3863,7 @@ $string = Str::of('/Laravel/')->ltrim('/');
 <a name="method-fluent-str-rtrim"></a>
 #### `rtrim` {.collection-method}
 
-`rtrim` 方法會修剪給定字串的右側。與 PHP 原生的 `rtrim` 函式不同，Laravel 的 `rtrim` 方法還會移除 Unicode 空白字元：
+`rtrim` 方法會修剪給定字串右側的空白。與 PHP 原生的 `rtrim` 函式不同，Laravel 的 `rtrim` 方法也會移除 Unicode 空白字元：
 
 ```php
 use Illuminate\Support\Str;
@@ -3843,7 +3881,7 @@ $string = Str::of('/Laravel/')->rtrim('/');
 <a name="method-fluent-str-ucfirst"></a>
 #### `ucfirst` {.collection-method}
 
-`ucfirst` 方法會回傳將第一個字元大寫後的字串：
+`ucfirst` 方法會回傳第一個字元轉為大寫後的給定字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -3857,7 +3895,7 @@ $string = Str::of('foo bar')->ucfirst();
 <a name="method-fluent-str-ucsplit"></a>
 #### `ucsplit` {.collection-method}
 
-`ucsplit` 方法會根據大寫字元將給定的字串分割成一個集合：
+`ucsplit` 方法會依據大寫字元將給定的字串拆分成 Collection：
 
 ```php
 use Illuminate\Support\Str;
@@ -3871,7 +3909,7 @@ $string = Str::of('Foo Bar')->ucsplit();
 <a name="method-fluent-str-ucwords"></a>
 #### `ucwords` {.collection-method}
 
-`ucwords` 方法會將給定字串中每個單字的第一個字元轉換為大寫：
+`ucwords` 方法會將給定字串中每個單字的第一個字元轉為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -3899,11 +3937,10 @@ Str::of('{framework: "Laravel"}')->unwrap('{', '}');
 // framework: "Laravel"
 ```
 
-
 <a name="method-fluent-str-upper"></a>
 #### `upper` {.collection-method}
 
-`upper` 方法會將給定的字串轉換為大寫：
+`upper` 方法將給定的字串轉換為大寫：
 
 ```php
 use Illuminate\Support\Str;
@@ -3913,10 +3950,11 @@ $adjusted = Str::of('laravel')->upper();
 // LARAVEL
 ```
 
+
 <a name="method-fluent-str-when"></a>
 #### `when` {.collection-method}
 
-`when` 方法會在給定的條件為 `true` 時執行指定的閉包。該閉包將接收流暢字串實例：
+`when` 方法會在給定條件為 `true` 時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -3930,13 +3968,13 @@ $string = Str::of('Taylor')
 // 'Taylor Otwell'
 ```
 
-如果有需要，您可以將另一個閉包作為 `when` 方法的第三個參數傳入。當條件參數評估為 `false` 時，將執行此閉包。
+若有需要，您可以傳遞另一個閉包作為 `when` 方法的第三個參數。如果條件參數評估為 `false`，則會執行此閉包。
 
 
 <a name="method-fluent-str-when-contains"></a>
 #### `whenContains` {.collection-method}
 
-`whenContains` 方法會在字串包含給定值時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenContains` 方法會在字串包含給定值時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -3950,9 +3988,9 @@ $string = Str::of('tony stark')
 // 'Tony Stark'
 ```
 
-如果有需要，您可以將另一個閉包作為第三個參數傳入。當字串不包含給定值時，將執行此閉包。
+若有需要，您可以傳遞另一個閉包作為第三個參數。如果字串不包含給定值，則會呼叫該閉包。
 
-您也可以傳入一個值陣列，以判斷給定的字串是否包含陣列中的任何一個值：
+您也可以傳遞一個值陣列，以判斷給定字串是否包含該陣列中的任何值：
 
 ```php
 use Illuminate\Support\Str;
@@ -3970,7 +4008,7 @@ $string = Str::of('tony stark')
 <a name="method-fluent-str-when-contains-all"></a>
 #### `whenContainsAll` {.collection-method}
 
-`whenContainsAll` 方法會在字串包含所有給定的子字串時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenContainsAll` 方法會在字串包含所有給定子字串時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -3984,13 +4022,13 @@ $string = Str::of('tony stark')
 // 'Tony Stark'
 ```
 
-如果有需要，您可以將另一個閉包作為第三個參數傳入。當條件參數評估為 `false` 時，將執行此閉包。
+若有需要，您可以傳遞另一個閉包作為第三個參數。如果條件參數評估為 `false`，則會呼叫該閉包。
 
 
 <a name="method-fluent-str-when-doesnt-end-with"></a>
 #### `whenDoesntEndWith` {.collection-method}
 
-`whenDoesntEndWith` 方法會在字串不以給定的子字串結尾時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenDoesntEndWith` 方法會在字串不以給定子字串結尾時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4007,7 +4045,7 @@ $string = Str::of('disney world')->whenDoesntEndWith('land', function (Stringabl
 <a name="method-fluent-str-when-doesnt-start-with"></a>
 #### `whenDoesntStartWith` {.collection-method}
 
-`whenDoesntStartWith` 方法會在字串不以給定的子字串開頭時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenDoesntStartWith` 方法會在字串不以給定子字串開頭時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4024,7 +4062,7 @@ $string = Str::of('disney world')->whenDoesntStartWith('sea', function (Stringab
 <a name="method-fluent-str-when-empty"></a>
 #### `whenEmpty` {.collection-method}
 
-`whenEmpty` 方法會在字串為空時執行指定的閉包。如果閉包回傳了一個值，該值也將由 `whenEmpty` 方法回傳。如果閉包沒有回傳值，則會回傳流暢字串實例：
+`whenEmpty` 方法會在字串為空時呼叫給定的閉包。如果閉包回傳一個值，該值也會由 `whenEmpty` 方法回傳。如果閉包沒有回傳值，則會回傳該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4041,7 +4079,7 @@ $string = Str::of('  ')->trim()->whenEmpty(function (Stringable $string) {
 <a name="method-fluent-str-when-not-empty"></a>
 #### `whenNotEmpty` {.collection-method}
 
-`whenNotEmpty` 方法會在字串不為空時執行指定的閉包。如果閉包回傳了一個值，該值也將由 `whenNotEmpty` 方法回傳。如果閉包沒有回傳值，則會回傳流暢字串實例：
+`whenNotEmpty` 方法會在字串不為空時呼叫給定的閉包。如果閉包回傳一個值，該值也會由 `whenNotEmpty` 方法回傳。如果閉包沒有回傳值，則會回傳該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4058,7 +4096,7 @@ $string = Str::of('Framework')->whenNotEmpty(function (Stringable $string) {
 <a name="method-fluent-str-when-starts-with"></a>
 #### `whenStartsWith` {.collection-method}
 
-`whenStartsWith` 方法會在字串以給定的子字串開頭時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenStartsWith` 方法會在字串以給定子字串開頭時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4075,7 +4113,7 @@ $string = Str::of('disney world')->whenStartsWith('disney', function (Stringable
 <a name="method-fluent-str-when-ends-with"></a>
 #### `whenEndsWith` {.collection-method}
 
-`whenEndsWith` 方法會在字串以給定的子字串結尾時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenEndsWith` 方法會在字串以給定子字串結尾時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4092,7 +4130,7 @@ $string = Str::of('disney world')->whenEndsWith('world', function (Stringable $s
 <a name="method-fluent-str-when-exactly"></a>
 #### `whenExactly` {.collection-method}
 
-`whenExactly` 方法會在字串完全符合給定字串時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenExactly` 方法會在字串與給定字串完全相符時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4109,7 +4147,7 @@ $string = Str::of('laravel')->whenExactly('laravel', function (Stringable $strin
 <a name="method-fluent-str-when-not-exactly"></a>
 #### `whenNotExactly` {.collection-method}
 
-`whenNotExactly` 方法會在字串不完全符合給定字串時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenNotExactly` 方法會在字串與給定字串不完全相符時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4126,7 +4164,7 @@ $string = Str::of('framework')->whenNotExactly('laravel', function (Stringable $
 <a name="method-fluent-str-when-is"></a>
 #### `whenIs` {.collection-method}
 
-`whenIs` 方法會在字串符合給定模式時執行指定的閉包。星號可用作萬用字元。該閉包將接收流暢字串實例：
+`whenIs` 方法會在字串符合給定樣式時呼叫給定的閉包。可以使用星號作為萬用字元。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4143,7 +4181,7 @@ $string = Str::of('foo/bar')->whenIs('foo/*', function (Stringable $string) {
 <a name="method-fluent-str-when-is-ascii"></a>
 #### `whenIsAscii` {.collection-method}
 
-`whenIsAscii` 方法會在字串為 7 位元 ASCII 時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenIsAscii` 方法會在字串為 7 位元 ASCII 時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4160,7 +4198,7 @@ $string = Str::of('laravel')->whenIsAscii(function (Stringable $string) {
 <a name="method-fluent-str-when-is-ulid"></a>
 #### `whenIsUlid` {.collection-method}
 
-`whenIsUlid` 方法會在字串為有效的 ULID 時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenIsUlid` 方法會在字串為有效的 ULID 時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4176,7 +4214,7 @@ $string = Str::of('01gd6r360bp37zj17nxb55yv40')->whenIsUlid(function (Stringable
 <a name="method-fluent-str-when-is-uuid"></a>
 #### `whenIsUuid` {.collection-method}
 
-`whenIsUuid` 方法會在字串為有效的 UUID 時執行指定的閉包。該閉包將接收流暢字串實例：
+`whenIsUuid` 方法會在字串為有效的 UUID 時呼叫給定的閉包。閉包將接收該流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4192,7 +4230,7 @@ $string = Str::of('a0a2a2d2-0b87-4a18-83f2-2529882be2de')->whenIsUuid(function (
 <a name="method-fluent-str-when-test"></a>
 #### `whenTest` {.collection-method}
 
-`whenTest` 方法在字串符合給定的正規表達式時，會呼叫指定的閉包。該閉包將接收流暢字串 (fluent string) 實例：
+`whenTest` 方法會在字串符合給定的正規表示式時執行給定的閉包。該閉包將會接收流暢字串實例：
 
 ```php
 use Illuminate\Support\Str;
@@ -4209,7 +4247,7 @@ $string = Str::of('laravel framework')->whenTest('/laravel/', function (Stringab
 <a name="method-fluent-str-word-count"></a>
 #### `wordCount` {.collection-method}
 
-`wordCount` 方法會回傳字串中包含的單字數量：
+`wordCount` 方法會回傳字串中所包含的字數：
 
 ```php
 use Illuminate\Support\Str;
@@ -4221,7 +4259,7 @@ Str::of('Hello, world!')->wordCount(); // 2
 <a name="method-fluent-str-words"></a>
 #### `words` {.collection-method}
 
-`words` 方法會限制字串中的單字數量。如有需要，您可以指定一個額外的字串，該字串將會被附加到截斷後的字串末尾：
+`words` 方法會限制字串中的單字數量。如有需要，您可以透過第三個引數指定要附加至截斷字串末尾的額外字串：
 
 ```php
 use Illuminate\Support\Str;
@@ -4235,7 +4273,7 @@ $string = Str::of('Perfectly balanced, as all things should be.')->words(3, ' >>
 <a name="method-fluent-str-wrap"></a>
 #### `wrap` {.collection-method}
 
-`wrap` 方法會使用額外的字串或一對字串將給定的字串包裹起來：
+`wrap` 方法會使用額外的字串或一對字串包覆給定的字串：
 
 ```php
 use Illuminate\Support\Str;

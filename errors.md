@@ -5,7 +5,7 @@
 - [處理例外](#handling-exceptions)
     - [回報例外](#reporting-exceptions)
     - [例外日誌層級](#exception-log-levels)
-    - [依類型忽略例外](#ignoring-exceptions-by-type)
+    - [依型別忽略例外](#ignoring-exceptions-by-type)
     - [渲染例外](#rendering-exceptions)
     - [可回報與可渲染的例外](#renderable-exceptions)
 - [限制例外回報頻率](#throttling-reported-exceptions)
@@ -15,20 +15,20 @@
 <a name="introduction"></a>
 ## 簡介
 
-當你開始一個新的 Laravel 專案時，錯誤與例外處理已經為你設定好了；不過，在任何時候，你都可以在應用程式的 `bootstrap/app.php` 中使用 `withExceptions` 方法來管理應用程式如何回報與渲染例外。
+當您建立新的 Laravel 專案時，錯誤與例外處理已經預先為您配置完成；然而，在任何時候，您都可以使用應用程式 `bootstrap/app.php` 中的 `withExceptions` 方法，來管理應用程式如何回報與渲染例外。
 
-提供給 `withExceptions` 閉包的 `$exceptions` 物件是 `Illuminate\Foundation\Configuration\Exceptions` 的一個實例，負責管理應用程式中的例外處理。我們將在整份文件中深入探討這個物件。
+傳遞給 `withExceptions` 閉包的 `$exceptions` 物件是 `Illuminate\Foundation\Configuration\Exceptions` 的實例，負責管理應用程式中的例外處理。我們將在整份文件中更深入地探討此物件。
 
 
 <a name="configuration"></a>
 ## 設定
 
-在 `config/app.php` 設定檔中的 `debug` 選項決定了實際上要向使用者顯示多少關於錯誤的資訊。預設情況下，此選項設定為遵循存儲在 `.env` 檔案中的 `APP_DEBUG` 環境變數值。
+您的 `config/app.php` 設定檔中的 `debug` 選項決定了實際上向使用者顯示多少關於錯誤的資訊。預設情況下，此選項設定為遵循存放在 `.env` 檔案中的 `APP_DEBUG` 環境變數值。
 
-在本地開發期間，你應該將 `APP_DEBUG` 環境變數設定為 `true`。
+在本地端開發期間，您應該將 `APP_DEBUG` 環境變數設定為 `true`。
 
 > [!WARNING]
-> 在你的正式環境中，`APP_DEBUG` 的值應始終為 `false`。如果在正式環境中將該值設為 `true`，你將冒著向應用程式終端使用者洩露敏感設定值的風險。
+> 在正式環境中，`APP_DEBUG` 的值應始終為 `false`。若在正式環境中將該值設為 `true`，您可能會面臨將機密設定值暴露給應用程式終端使用者的風險。
 
 <a name="handling-exceptions"></a>
 ## 處理例外
@@ -36,9 +36,9 @@
 <a name="reporting-exceptions"></a>
 ### 回報例外
 
-在 Laravel 中，例外回報用於記錄例外日誌，或將其傳送到外部服務，例如 [Sentry](https://github.com/getsentry/sentry-laravel) 或 [Flare](https://flareapp.io)。預設情況下，例外將根據您的 [日誌](/docs/{{version}}/logging) 設定進行記錄。然而，您可以自由地以任何您想要的方式記錄例外。
+在 Laravel 中，例外回報用於記錄例外日誌或將其發送到外部服務，例如 [Laravel Nightwatch](https://nightwatch.laravel.com)、[Sentry](https://github.com/getsentry/sentry-laravel) 或 [Flare](https://flareapp.io)。預設情況下，系統會根據您的[記錄](/docs/{{version}}/logging)設定來記錄例外日誌。不過，您可以完全自由地以任何想要的方式記錄例外。
 
-如果您需要以不同方式回報不同類型的例外，您可以使用應用程式 `bootstrap/app.php` 中的 `report` 例外方法來註冊一個閉包，該閉包應在需要回報指定類型的例外時執行。Laravel 將透過檢查閉包的型別提示來判斷該閉包回報哪種類型的例外：
+如果您需要以不同方式回報不同型別的例外，可以使用應用程式 `bootstrap/app.php` 中的 `report` 例外方法來註冊一個閉包，該閉包會在需要回報特定型別的例外時執行。Laravel 會透過檢查閉包的型別提示 (Type-hint) 來判斷該閉包負責回報哪種型別的例外：
 
 ```php
 use App\Exceptions\InvalidOrderException;
@@ -50,7 +50,7 @@ use App\Exceptions\InvalidOrderException;
 })
 ```
 
-當您使用 `report` 方法註冊自訂例外回報回呼時，Laravel 仍會使用應用程式的預設日誌設定來記錄該例外。如果您希望停止將例外傳播到預設日誌堆疊，您可以在定義回報回呼時使用 `stop` 方法，或從回呼中回傳 `false`：
+當您使用 `report` 方法註冊自訂的例外回報回呼 (Callback) 時，Laravel 仍會使用應用程式的預設日誌設定來記錄該例外。如果您希望停止將該例外傳播到預設日誌堆疊，可以在定義回報回呼時使用 `stop` 方法，或從回呼中回傳 `false`：
 
 ```php
 use App\Exceptions\InvalidOrderException;
@@ -67,12 +67,12 @@ use App\Exceptions\InvalidOrderException;
 ```
 
 > [!NOTE]
-> 若要為特定例外自訂例外回報，您也可以利用 [可回報的例外](/docs/{{version}}/errors#renderable-exceptions)。
+> 若要為特定例外自訂例外回報，您也可以使用[可回報的例外](/docs/{{version}}/errors#renderable-exceptions)。
 
 <a name="global-log-context"></a>
 #### 全域日誌上下文
 
-如果可用，Laravel 會自動將目前使用者的 ID 作為上下文資料添加到每個例外的日誌訊息中。您可以使用應用程式 `bootstrap/app.php` 檔案中的 `context` 例外方法來定義您自己的全域上下文資料。這些資訊將包含在您的應用程式編寫的每個例外日誌訊息中：
+在可用的情況下，Laravel 會自動將當前使用者的 ID 作為上下文資料加入到每個例外的日誌訊息中。您可以在應用程式的 `bootstrap/app.php` 檔案中使用 `context` 例外方法來定義自己的全域上下文資料。這些資訊將會包含在應用程式寫入的每條例外日誌訊息中：
 
 ```php
 ->withExceptions(function (Exceptions $exceptions): void {
@@ -85,7 +85,7 @@ use App\Exceptions\InvalidOrderException;
 <a name="exception-log-context"></a>
 #### 例外日誌上下文
 
-雖然在每條日誌訊息中添加上下文很有用，但有時特定的例外可能具有您想包含在日誌中的獨特上下文。透過在您的應用程式例外之一中定義 `context` 方法，您可以指定與該例外相關的任何資料，並將其添加到該例外的日誌項目中：
+雖然在每個日誌訊息中加入上下文很有用，但有時特定例外可能包含您希望加入日誌中的獨特上下文。透過在應用程式的某個例外中定義 `context` 方法，您可以指定該例外相關的任何資料，這些資料將會加入到該例外的日誌記錄項目中：
 
 ```php
 <?php
@@ -113,7 +113,7 @@ class InvalidOrderException extends Exception
 <a name="the-report-helper"></a>
 #### `report` 輔助函式
 
-有時您可能需要回報例外，但繼續處理目前的請求。`report` 輔助函式允許您快速回報例外，而不會向使用者呈現錯誤頁面：
+有時您可能需要回報例外，但仍繼續處理當前的請求。`report` 輔助函式可讓您快速回報例外，而無需向使用者渲染錯誤頁面：
 
 ```php
 public function isValid(string $value): bool
@@ -129,11 +129,11 @@ public function isValid(string $value): bool
 ```
 
 <a name="deduplicating-reported-exceptions"></a>
-#### 排除重複回報的例外
+#### 去除重複回報的例外
 
-如果您在整個應用程式中都使用 `report` 函式，有時可能會多次回報相同的例外，從而在日誌中建立重複項目。
+如果您在整個應用程式中使用 `report` 函式，可能會偶爾多次回報同一個例外，從而在日誌中產生重複的記錄。
 
-如果您想確保單個例外實例僅被回報一次，您可以在應用程式的 `bootstrap/app.php` 檔案中調用 `dontReportDuplicates` 例外方法：
+如果您希望確保單一例外實例僅被回報一次，可以在應用程式的 `bootstrap/app.php` 檔案中呼叫 `dontReportDuplicates` 例外方法：
 
 ```php
 ->withExceptions(function (Exceptions $exceptions): void {
@@ -141,7 +141,7 @@ public function isValid(string $value): bool
 })
 ```
 
-現在，當使用相同的例外實例呼叫 `report` 輔助函式時，只有第一次呼叫會被回報：
+現在，當使用相同的例外實例呼叫 `report` 輔助函式時，只會回報第一次呼叫：
 
 ```php
 $original = new RuntimeException('Whoops!');
@@ -161,11 +161,11 @@ report($caught); // ignored
 <a name="exception-log-levels"></a>
 ### 例外日誌層級
 
-當訊息被寫入您的應用程式 [日誌](/docs/{{version}}/logging) 時，訊息會以指定的 [日誌層級](/docs/{{version}}/logging#log-levels) 寫入，這表示所記錄訊息的嚴重性或重要性。
+當訊息被寫入應用程式的[日誌](/docs/{{version}}/logging)時，訊息會以指定的[日誌層級](/docs/{{version}}/logging#log-levels)寫入，該層級表示所記錄訊息的嚴重性或重要性。
 
-如上所述，即使您使用 `report` 方法註冊了自訂例外回報回呼，Laravel 仍會使用應用程式的預設日誌設定來記錄該例外；然而，由於日誌層級有時會影響記錄訊息的頻道，您可能希望針對特定例外設定其記錄的日誌層級。
+如上所述，即使您使用 `report` 方法註冊了自訂的例外回報回呼，Laravel 仍會使用應用程式的預設日誌設定來記錄例外；然而，由於日誌層級有時會影響訊息寫入的頻道，您可能希望設定特定例外記錄時所使用的日誌層級。
 
-為此，您可以使用應用程式 `bootstrap/app.php` 檔案中的 `level` 例外方法。此方法接收例外類型作為其第一個引數，日誌層級作為其第二個引數：
+為了達成這一點，您可以在應用程式的 `bootstrap/app.php` 檔案中使用 `level` 例外方法。該方法接收例外型別作為其第一個引數，並接收日誌層級作為其第二個引數：
 
 ```php
 use PDOException;
@@ -177,9 +177,9 @@ use Psr\Log\LogLevel;
 ```
 
 <a name="ignoring-exceptions-by-type"></a>
-### 依類型忽略例外
+### 依型別忽略例外
 
-在開發應用程式時，某些類型的例外您可能永遠不想回報。若要忽略這些例外，您可以使用應用程式 `bootstrap/app.php` 檔案中的 `dontReport` 例外方法。提供給此方法的任何類別都不會被回報；但是，它們仍可能有自訂的渲染邏輯：
+在建構應用程式時，某些型別的例外您可能永遠不想回報。若要忽略這些例外，您可以在應用程式的 `bootstrap/app.php` 檔案中使用 `dontReport` 例外方法。傳遞給此方法的任何類別都永遠不會被回報；然而，它們仍然可以擁有自訂的渲染邏輯：
 
 ```php
 use App\Exceptions\InvalidOrderException;
@@ -191,7 +191,7 @@ use App\Exceptions\InvalidOrderException;
 })
 ```
 
-或者，您可以簡單地用 `Illuminate\Contracts\Debug\ShouldntReport` 介面「標記」一個例外類別。當例外被標記為此介面時，它將永遠不會被 Laravel 的例外處理程序回報：
+或者，您可以簡單地使用 `Illuminate\Contracts\Debug\ShouldntReport` 介面來「標記」一個例外類別。當例外被標記此介面時，Laravel 的例外處理常式將永遠不會回報它：
 
 ```php
 <?php
@@ -207,7 +207,7 @@ class PodcastProcessingException extends Exception implements ShouldntReport
 }
 ```
 
-如果您需要更精確地控制何時忽略特定類型的例外，您可以向 `dontReportWhen` 方法提供一個閉包：
+如果您需要對何時忽略特定型別的例外擁有更多控制權，可以向 `dontReportWhen` 方法提供一個閉包：
 
 ```php
 use App\Exceptions\InvalidOrderException;
@@ -221,7 +221,7 @@ use Throwable;
 })
 ```
 
-在內部，Laravel 已經為您忽略了某些類型的錯誤，例如 404 HTTP 錯誤產生的例外、來源不匹配產生的 403 HTTP 回應，或由無效 CSRF Token 產生的 419 HTTP 回應。如果您想指示 Laravel 停止忽略指定的例外類型，您可以使用應用程式 `bootstrap/app.php` 檔案中的 `stopIgnoring` 例外方法：
+在內部，Laravel 已經為您忽略了某些型別的錯誤，例如由 404 HTTP 錯誤產生的例外、由來源不符產生的 403 HTTP 回應，或是由無效 CSRF tokens 產生的 419 HTTP 回應。如果您想指示 Laravel 停止忽略特定型別的例外，可以在應用程式的 `bootstrap/app.php` 檔案中使用 `stopIgnoring` 例外方法：
 
 ```php
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -234,9 +234,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 <a name="rendering-exceptions"></a>
 ### 渲染例外
 
-預設情況下，Laravel 的例外處理器會為你將例外轉換為 HTTP 回應。然而，你可以自由地為特定類型的例外註冊自訂的渲染閉包。你可以在應用程式的 `bootstrap/app.php` 檔案中使用 `render` 例外方法來達成此目的。
+預設情況下，Laravel 的例外處理常式會自動將例外轉換為 HTTP 回應。不過，你可以自由地為特定型別的例外註冊自訂的渲染閉包。你可以在應用程式的 `bootstrap/app.php` 檔案中使用 `render` 例外方法來達成此目的。
 
-傳遞給 `render` 方法的閉包應該回傳一個 `Illuminate\Http\Response` 實例，這可以透過 `response` 輔助函式產生。Laravel 會透過檢查閉包的型別提示來判斷該閉包要渲染哪種類型的例外：
+傳遞給 `render` 方法的閉包應回傳 `Illuminate\Http\Response` 的實例，該實例可透過 `response` 輔助函式產生。Laravel 將透過檢查閉包的型別提示來判斷該閉包要渲染哪種型別的例外：
 
 ```php
 use App\Exceptions\InvalidOrderException;
@@ -249,7 +249,7 @@ use Illuminate\Http\Request;
 })
 ```
 
-你也可以使用 `render` 方法來覆寫 Laravel 內建或 Symfony 例外（例如 `NotFoundHttpException`）的渲染行為。如果傳遞給 `render` 方法的閉包沒有回傳值，則會使用 Laravel 預設的例外渲染機制：
+你也可以使用 `render` 方法來覆寫內建 Laravel 或 Symfony 例外（例如 `NotFoundHttpException`）的渲染行為。如果傳入 `render` 方法的閉包沒有回傳值，將會使用 Laravel 預設的例外渲染：
 
 ```php
 use Illuminate\Http\Request;
@@ -270,7 +270,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 <a name="rendering-exceptions-as-json"></a>
 #### 將例外渲染為 JSON
 
-在渲染例外時，Laravel 會根據請求的 `Accept` 標頭自動判斷例外應該被渲染為 HTML 還是 JSON 回應。如果你想自訂 Laravel 如何判斷是否要渲染 JSON 例外回應，可以使用 `shouldRenderJsonWhen` 方法：
+在渲染例外時，Laravel 會根據請求的 `Accept` 標頭自動判斷該例外應渲染為 HTML 還是 JSON 回應。如果你想要自訂 Laravel 判斷是否渲染 HTML 或 JSON 例外回應的邏輯，可以使用 `shouldRenderJsonWhen` 方法：
 
 ```php
 use Illuminate\Http\Request;
@@ -291,7 +291,7 @@ use Throwable;
 <a name="customizing-the-exception-response"></a>
 #### 自訂例外回應
 
-極少數情況下，你可能需要自訂由 Laravel 例外處理器渲染的整個 HTTP 回應。為此，你可以使用 `respond` 方法註冊一個回應自訂閉包：
+在少數情況下，你可能需要自訂由 Laravel 例外處理常式所渲染的整個 HTTP 回應。為此，你可以使用 `respond` 方法註冊一個回應自訂閉包：
 
 ```php
 use Symfony\Component\HttpFoundation\Response;
@@ -313,7 +313,7 @@ use Symfony\Component\HttpFoundation\Response;
 <a name="renderable-exceptions"></a>
 ### 可回報與可渲染的例外
 
-除了在應用程式的 `bootstrap/app.php` 檔案中定義自訂的回報與渲染行為外，你也可以直接在應用程式的例外類別中定義 `report` 與 `render` 方法。當這些方法存在時，框架會自動呼叫它們：
+除了在應用程式的 `bootstrap/app.php` 檔案中定義自訂的回報和渲染行為之外，你也可以直接在應用程式的例外類別上定義 `report` 和 `render` 方法。當這些方法存在時，框架會自動呼叫它們：
 
 ```php
 <?php
@@ -344,7 +344,7 @@ class InvalidOrderException extends Exception
 }
 ```
 
-如果你的例外繼承了一個已經具備可渲染能力的例外，例如 Laravel 內建或 Symfony 的例外，你可以在該例外的 `render` 方法中回傳 `false`，以便渲染該例外預設的 HTTP 回應：
+如果你的例外繼承了一個已經可渲染的例外（例如內建的 Laravel 或 Symfony 例外），你可以從例外的 `render` 方法中回傳 `false`，以渲染該例外的預設 HTTP 回應：
 
 ```php
 /**
@@ -361,7 +361,7 @@ public function render(Request $request): Response|bool
 }
 ```
 
-如果你的例外包含僅在滿足某些條件時才需要的自訂回報邏輯，你可能需要指示 Laravel 有時使用預設的例外處理設定來回報該例外。為此，你可以在該例外的 `report` 方法中回傳 `false`：
+如果你的例外包含只有在符合特定條件時才需要的自訂回報邏輯，你可能需要指示 Laravel 有時使用預設的例外處理設定來回報該例外。為此，你可以從例外的 `report` 方法中回傳 `false`：
 
 ```php
 /**
@@ -381,15 +381,15 @@ public function report(): bool
 ```
 
 > [!NOTE]
-> 你可以在 `report` 方法中對任何需要的依賴項進行型別提示，它們將由 Laravel 的 [服務容器(service container)](/docs/{{version}}/container) 自動注入。
+> 你可以在 `report` 方法中對任何所需的依賴項目進行型別提示，它們將由 Laravel 的[服務容器](/docs/{{version}}/container)自動注入到該方法中。
 
 
 <a name="throttling-reported-exceptions"></a>
 ### 限制例外回報頻率
 
-如果你的應用程式回報了大量的例外，你可能會想要限制實際記錄或發送到應用程式外部錯誤追蹤服務的例外數量。
+如果你的應用程式回報了大量的例外，你可能希望限制實際記錄或傳送到應用程式外部錯誤追蹤服務的例外數量。
 
-若要對例外進行隨機比例的取樣，你可以在應用程式的 `bootstrap/app.php` 檔案中使用 `throttle` 例外方法。`throttle` 方法接收一個應回傳 `Lottery` 實例的閉包：
+若要對例外進行隨機抽樣，你可以在應用程式的 `bootstrap/app.php` 檔案中使用 `throttle` 例外方法。`throttle` 方法接收一個應回傳 `Lottery` 實例的閉包：
 
 ```php
 use Illuminate\Support\Lottery;
@@ -402,7 +402,7 @@ use Throwable;
 })
 ```
 
-也可以根據例外類型進行條件取樣。如果你只想對特定例外類別的實例進行取樣，可以僅針對該類別回傳 `Lottery` 實例：
+也可以根據例外型別進行條件式抽樣。如果你只想抽樣特定例外類別的實例，可以僅針對該類別回傳 `Lottery` 實例：
 
 ```php
 use App\Exceptions\ApiMonitoringException;
@@ -418,7 +418,7 @@ use Throwable;
 })
 ```
 
-你也可以透過回傳 `Limit` 實例而非 `Lottery` 來對記錄或發送到外部錯誤追蹤服務的例外進行速率限制。如果你想防止突然爆發的例外淹沒日誌，例如當應用程式使用的第三方服務暫時失效時，這會非常有用：
+你也可以透過回傳 `Limit` 實例而非 `Lottery` 來對記錄或傳送到外部錯誤追蹤服務的例外進行速率限制。這在你想防止突發的大量例外灌爆日誌時非常有用，例如當應用程式使用的第三方服務發生故障時：
 
 ```php
 use Illuminate\Broadcasting\BroadcastException;
@@ -434,7 +434,7 @@ use Throwable;
 })
 ```
 
-預設情況下，限制將使用例外的類別名稱作為速率限制的金鑰。你可以透過在 `Limit` 上使用 `by` 方法來指定自己的金鑰：
+預設情況下，限制將使用例外的類別名稱作為速率限制鍵值。你可以透過在 `Limit` 上使用 `by` 方法指定自訂的鍵值來進行自訂：
 
 ```php
 use Illuminate\Broadcasting\BroadcastException;
@@ -450,7 +450,7 @@ use Throwable;
 })
 ```
 
-當然，你也可以針對不同的例外回傳 `Lottery` 與 `Limit` 實例的混合：
+當然，你也可以針對不同的例外混合回傳 `Lottery` 和 `Limit` 實例：
 
 ```php
 use App\Exceptions\ApiMonitoringException;
@@ -473,30 +473,32 @@ use Throwable;
 <a name="http-exceptions"></a>
 ## HTTP 例外
 
-某些例外描述了來自伺服器的 HTTP 錯誤碼。例如，這可能是「找不到頁面」錯誤 (404)、「未經授權錯誤」 (401)，甚至是開發者產生的 500 錯誤。為了從應用程式中的任何位置產生此類回應，你可以使用 `abort` 輔助函式：
+某些例外描述了來自伺服器的 HTTP 錯誤碼。例如，這可能是「找不到頁面」錯誤 (404)、「未授權錯誤」 (401)，甚至是開發人員產生的 500 錯誤。為了從應用程式中的任何位置產生此類回應，您可以使用 `abort` 輔助函式：
 
 ```php
 abort(404);
 ```
 
+
 <a name="custom-http-error-pages"></a>
 ### 自訂 HTTP 錯誤頁面
 
-Laravel 讓你可以輕鬆地為各種 HTTP 狀態碼顯示自訂錯誤頁面。例如，要為 404 HTTP 狀態碼自訂錯誤頁面，請建立一個 `resources/views/errors/404.blade.php` 視圖模板。此視圖將為你的應用程式產生的所有 404 錯誤進行渲染。該目錄中的視圖命名應與其對應的 HTTP 狀態碼一致。由 `abort` 函式引發的 `Symfony\Component\HttpKernel\Exception\HttpException` 實例將作為 `$exception` 變數傳遞給視圖：
+Laravel 讓您可以輕鬆為各種 HTTP 狀態碼顯示自訂錯誤頁面。例如，若要自訂 404 HTTP 狀態碼的錯誤頁面，請建立 `resources/views/errors/404.blade.php` 視圖模板。應用程式產生的所有 404 錯誤都將渲染此視圖。此目錄中的視圖名稱應與其對應的 HTTP 狀態碼相符。由 `abort` 函式引發的 `Symfony\Component\HttpKernel\Exception\HttpException` 實例將作為 `$exception` 變數傳遞給視圖：
 
 ```blade
 <h2>{{ $exception->getMessage() }}</h2>
 ```
 
-你可以使用 `vendor:publish` Artisan 指令發布 Laravel 預設的錯誤頁面模板。模板發布後，你就可以根據自己的喜好進行自訂：
+您可以使用 `vendor:publish` Artisan 指令發布 Laravel 的預設錯誤頁面模板。發布模板後，您可以根據自己的喜好進行自訂：
 
 ```shell
 php artisan vendor:publish --tag=laravel-errors
 ```
 
+
 <a name="fallback-http-error-pages"></a>
 #### 備用 HTTP 錯誤頁面
 
-你也可以為一系列的 HTTP 狀態碼定義「備用 (Fallback)」錯誤頁面。如果沒有與發生的特定 HTTP 狀態碼相對應的頁面，則會渲染此頁面。若要實現此功能，請在應用程式的 `resources/views/errors` 目錄中定義 `4xx.blade.php` 模板和 `5xx.blade.php` 模板。
+您也可以為特定系列的 HTTP 狀態碼定義一個「備用 (fallback)」錯誤頁面。如果發生的特定 HTTP 狀態碼沒有對應的頁面，將會渲染此頁面。為此，請在應用程式的 `resources/views/errors` 目錄中定義一個 `4xx.blade.php` 模板和一個 `5xx.blade.php` 模板。
 
-在定義備用錯誤頁面時，備用頁面不會影響 `404`、`500` 和 `503` 錯誤回應，因為 Laravel 對於這些狀態碼有內建的專屬頁面。要自訂這些狀態碼所渲染的頁面，你應該分別為它們定義個別的自訂錯誤頁面。
+定義備用錯誤頁面時，備用頁面不會影響 `404`、`500` 和 `503` 錯誤回應，因為 Laravel 為這些狀態碼提供了內部的專用頁面。若要自訂為這些狀態碼渲染的頁面，您應該為它們各自單獨定義一個自訂錯誤頁面。

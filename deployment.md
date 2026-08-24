@@ -1,6 +1,6 @@
 # 部署
 
-- [簡介](#introduction)
+- [介紹](#introduction)
 - [伺服器需求](#server-requirements)
 - [伺服器設定](#server-configuration)
     - [Nginx](#nginx)
@@ -17,32 +17,32 @@
 - [使用 Laravel Cloud 或 Forge 進行部署](#deploying-with-cloud-or-forge)
 
 <a name="introduction"></a>
-## 簡介
+## 介紹
 
-當您準備將 Laravel 應用程式部署到正式環境時，有一些重要的事情您可以做，以確保您的應用程式能以最高效率執行。在本文件中，我們將介紹一些確保 Laravel 應用程式正確部署的絕佳起點。
+當你準備好將 Laravel 應用程式部署到正式環境時，有一些重要事項可以確保你的應用程式盡可能高效地運作。在本文件中，我們將介紹一些絕佳的起點，以確保你的 Laravel 應用程式能被正確部署。
 
 
 <a name="server-requirements"></a>
 ## 伺服器需求
 
-Laravel 框架有一些系統需求。您應該確保您的網頁伺服器具有以下最低 PHP 版本與擴展：
+Laravel 框架有少許系統需求。你應確保你的網頁伺服器具備以下最低 PHP 版本與擴充套件：
 
 <div class="content-list" markdown="1">
 
 - PHP >= 8.3
-- Ctype PHP Extension
-- cURL PHP Extension
-- DOM PHP Extension
-- Fileinfo PHP Extension
-- Filter PHP Extension
-- Hash PHP Extension
-- Mbstring PHP Extension
-- OpenSSL PHP Extension
-- PCRE PHP Extension
-- PDO PHP Extension
-- Session PHP Extension
-- Tokenizer PHP Extension
-- XML PHP Extension
+- Ctype PHP 擴充套件
+- cURL PHP 擴充套件
+- DOM PHP 擴充套件
+- Fileinfo PHP 擴充套件
+- Filter PHP 擴充套件
+- Hash PHP 擴充套件
+- Mbstring PHP 擴充套件
+- OpenSSL PHP 擴充套件
+- PCRE PHP 擴充套件
+- PDO PHP 擴充套件
+- Session PHP 擴充套件
+- Tokenizer PHP 擴充套件
+- XML PHP 擴充套件
 
 </div>
 
@@ -54,9 +54,9 @@ Laravel 框架有一些系統需求。您應該確保您的網頁伺服器具有
 <a name="nginx"></a>
 ### Nginx
 
-如果您將應用程式部署到執行 Nginx 的伺服器，可以使用以下設定檔作為設定網頁伺服器的起點。大多數情況下，此檔案需要根據您的伺服器設定進行自訂。**如果您需要管理伺服器的協助，請考慮使用完全託管的 Laravel 平台，例如 [Laravel Cloud](https://cloud.laravel.com)。**
+如果你要將應用程式部署到執行 Nginx 的伺服器，可以使用以下設定檔作為設定網頁伺服器的起點。很可能需要根據伺服器的設定自訂此檔案。**如果你希望在管理伺服器方面獲得協助，請考慮使用像 [Laravel Cloud](https://cloud.laravel.com) 這樣的全代管 Laravel 平台。**
 
-請確保如以下設定所示，您的網頁伺服器將所有請求導向應用程式的 `public/index.php` 檔案。您絕對不應該嘗試將 `index.php` 檔案移至專案根目錄，因為從專案根目錄提供應用程式服務會將許多敏感的設定檔暴露在公開的網際網路上：
+請確保像下方的設定一樣，讓你的網頁伺服器將所有請求導向至應用程式的 `public/index.php` 檔案。切勿嘗試將 `index.php` 檔案移至專案根目錄，因為從專案根目錄提供應用程式服務會將許多敏感的設定檔暴露給公開的網際網路：
 
 ```nginx
 server {
@@ -85,6 +85,9 @@ server {
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
+        fastcgi_buffer_size 32k;
+        fastcgi_buffers 8 32k;
+        fastcgi_busy_buffers_size 64k;
         fastcgi_hide_header X-Powered-By;
     }
 
@@ -98,58 +101,58 @@ server {
 <a name="frankenphp"></a>
 ### FrankenPHP
 
-[FrankenPHP](https://frankenphp.dev/) 也可以用來提供 Laravel 應用程式的服務。FrankenPHP 是一個用 Go 編寫的現代 PHP 應用程式伺服器。要使用 FrankenPHP 提供 Laravel PHP 應用程式服務，您只需呼叫其 `php-server` 指令：
+[FrankenPHP](https://frankenphp.dev/) 也可以用來執行你的 Laravel 應用程式。FrankenPHP 是一個使用 Go 語言編寫的現代 PHP 應用程式伺服器。要使用 FrankenPHP 提供 Laravel PHP 應用程式服務，只需執行其 `php-server` 指令：
 
 ```shell
 frankenphp php-server -r public/
 ```
 
-若要利用 FrankenPHP 支援的更強大功能，例如其 [Laravel Octane](/docs/{{version}}/octane) 整合、HTTP/3、現代壓縮技術，或將 Laravel 應用程式打包為獨立二進位檔的能力，請參考 FrankenPHP 的 [Laravel 文件](https://frankenphp.dev/docs/laravel/)。
+若要運用 FrankenPHP 支援的更強大功能，例如其與 [Laravel Octane](/docs/{{version}}/octane) 的整合、HTTP/3、現代壓縮技術，或是將 Laravel 應用程式封裝為獨立二進位檔的功能，請參閱 FrankenPHP 的 [Laravel 文件](https://frankenphp.dev/docs/laravel/)。
 
 
 <a name="directory-permissions"></a>
 ### 目錄權限
 
-Laravel 需要對 `bootstrap/cache` 和 `storage` 目錄進行寫入，因此您應該確保網頁伺服器的行程擁有者具有對這些目錄的寫入權限。
+Laravel 需要寫入 `bootstrap/cache` 和 `storage` 目錄，因此你應確保網頁伺服器行程的擁有者具備寫入這些目錄的權限。
 
 
 <a name="optimization"></a>
 ## 最佳化
 
-將應用程式部署到正式環境時，有許多檔案應該被快取，包括您的設定、事件、路由和視圖。Laravel 提供了一個單一且方便的 `optimize` Artisan 指令來快取所有這些檔案。此指令通常應作為應用程式部署流程的一部分來執行：
+當將應用程式部署到正式環境時，有許多檔案應該被快取，包括設定、事件、路由以及視圖。Laravel 提供了一個單一且便利的 `optimize` Artisan 指令，可以快取所有這些檔案。此指令通常應該作為應用程式部署流程的一部分來執行：
 
 ```shell
 php artisan optimize
 ```
 
-`optimize:clear` 方法可用於移除由 `optimize` 指令產生的所有快取檔案，以及預設快取驅動程式中的所有鍵值：
+`optimize:clear` 方法可用於移除由 `optimize` 指令產生的所有快取檔案，以及預設快取驅動中的所有鍵值：
 
 ```shell
 php artisan optimize:clear
 ```
 
-在接下來的文件中，我們將討論由 `optimize` 指令執行的各個細粒度最佳化指令。
+在接下來的文件中，我們將討論由 `optimize` 指令所執行的每個細項最佳化指令。
 
 
 <a name="optimizing-configuration-loading"></a>
 ### 快取設定
 
-將應用程式部署到正式環境時，您應該確保在部署流程中執行 `config:cache` Artisan 指令：
+當將應用程式部署到正式環境時，你應該確保在部署流程中執行 `config:cache` Artisan 指令：
 
 ```shell
 php artisan config:cache
 ```
 
-此指令會將 Laravel 的所有設定檔合併成單一的快取檔案，這大大減少了框架在載入設定值時存取檔案系統的次數。
+此指令會將 Laravel 的所有設定檔合併為單一快取檔案，這能大幅減少框架在載入設定值時對檔案系統的讀取次數。
 
 > [!WARNING]
-> 如果您在部署流程中執行 `config:cache` 指令，請確保您僅在設定檔中呼叫 `env` 函式。一旦設定被快取，`.env` 檔案將不會被載入，所有針對 `.env` 變數呼叫 `env` 函式的操作都將回傳 `null`。
+> 如果你在部署流程中執行 `config:cache` 指令，請務必確認你只在設定檔內呼叫 `env` 函式。一旦設定被快取後，`.env` 檔案將不會被載入，所有針對 `.env` 變數呼叫 `env` 函式的回傳值都將是 `null`。
 
 
 <a name="caching-events"></a>
 ### 快取事件
 
-您應該在部署流程中快取應用程式自動發現的事件與監聽器對照表。這可以透過在部署期間呼叫 `event:cache` Artisan 指令來完成：
+你應該在部署流程中快取應用程式自動發現的事件與監聽器對應關係。這可以透過在部署期間執行 `event:cache` Artisan 指令來完成：
 
 ```shell
 php artisan event:cache
@@ -159,56 +162,56 @@ php artisan event:cache
 <a name="optimizing-route-loading"></a>
 ### 快取路由
 
-如果您正在建構一個具有許多路由的大型應用程式，您應該確保在部署流程中執行 `route:cache` Artisan 指令：
+如果你正在建構一個包含許多路由的大型應用程式，你應該確保在部署流程中執行 `route:cache` Artisan 指令：
 
 ```shell
 php artisan route:cache
 ```
 
-此指令將所有路由註冊縮減為快取檔案中的單一方法呼叫，在註冊數百個路由時，能提升路由註冊的效能。
+此指令會將所有的路由註冊縮減為快取檔案中的單一方法呼叫，從而在註冊數百個路由時提升路由註冊的效能。
 
 
 <a name="optimizing-view-loading"></a>
 ### 快取視圖
 
-將應用程式部署到正式環境時，您應該確保在部署流程中執行 `view:cache` Artisan 指令：
+當將應用程式部署到正式環境時，你應該確保在部署流程中執行 `view:cache` Artisan 指令：
 
 ```shell
 php artisan view:cache
 ```
 
-此指令會預先編譯所有 Blade 視圖，使其不需要隨需編譯，從而提升每個回傳視圖之請求的效能。
+此指令會預先編譯所有 Blade 視圖，使其不會在請求時才即時編譯，從而提升每個回傳視圖的請求效能。
 
 
 <a name="reloading-services"></a>
 ## 重新載入服務
 
 > [!NOTE]
-> 部署到 [Laravel Cloud](https://cloud.laravel.com) 時，不需要使用 `reload` 指令，因為所有服務的平滑重新載入都會自動處理。
+> 部署到 [Laravel Cloud](https://cloud.laravel.com) 時，不需要使用 `reload` 指令，因為系統會自動處理所有服務的平滑重新載入。
 
-部署新版本的應用程式後，任何長時間運行的服務（例如佇列工作者、Laravel Reverb 或 Laravel Octane）都應該重新載入 / 重新啟動以使用新程式碼。Laravel 提供了一個單一的 `reload` Artisan 指令來終止這些服務：
+在部署應用程式的新版本後，任何長時間執行的服務（例如佇列 Worker、Laravel Reverb 或 Laravel Octane）都應該重新載入 / 重新啟動以使用新程式碼。Laravel 提供了一個單一的 `reload` Artisan 指令來終止這些服務：
 
 ```shell
 php artisan reload
 ```
 
-如果您沒有使用 [Laravel Cloud](https://cloud.laravel.com)，您應該手動設定一個行程監控程式，以便在可重新載入的行程退出時偵測到並自動重新啟動它們。
+如果你沒有使用 [Laravel Cloud](https://cloud.laravel.com)，則應手動設定行程監控程式，以便在可重新載入的行程結束時偵測到並自動重新啟動它們。
 
 
 <a name="debug-mode"></a>
 ## 除錯模式
 
-`config/app.php` 設定檔中的除錯選項決定了實際上會向使用者顯示多少關於錯誤的資訊。預設情況下，此選項設定為遵循 `APP_DEBUG` 環境變數的值，該變數儲存在應用程式的 `.env` 檔案中。
+在 `config/app.php` 設定檔中的 debug 選項決定了實際上向使用者顯示多少關於錯誤的資訊。預設情況下，此選項設定為遵循儲存在應用程式 `.env` 檔案中的 `APP_DEBUG` 環境變數值。
 
 > [!WARNING]
-> **在正式環境中，此值應始終為 `false`。如果 `APP_DEBUG` 變數在正式環境中被設定為 `true`，您將面臨向應用程式終端使用者洩漏敏感設定值的風險。**
+> **在正式環境中，此值應始終為 `false`。如果在正式環境中將 `APP_DEBUG` 變數設定為 `true`，你將面臨將敏感設定值暴露給應用程式終端使用者的風險。**
 
 <a name="the-health-route"></a>
 ## 健康檢查路由
 
-Laravel 包含一個內建的健康檢查路由，可用於監控您的應用程式狀態。在正式環境中，此路由可用於將應用程式狀態回報給可用性監控 (uptime monitor)、負載平衡器或像 Kubernetes 這樣的編排系統。
+Laravel 包含一個內建的健康檢查路由，可用於監控應用程式的狀態。在正式環境中，此路由可用於向正常運行時間監控工具（Uptime Monitor）、負載平衡器（Load Balancer）或 Kubernetes 等編排系統回報應用程式的狀態。
 
-預設情況下，健康檢查路由位於 `/up`，如果應用程式在沒有例外狀況的情況下啟動，將回傳 200 HTTP 回應；否則，將回傳 500 HTTP 回應。您可以在應用程式的 `bootstrap/app` 檔案中設定此路由的 URI：
+預設情況下，健康檢查路由設定於 `/up`，如果應用程式順利啟動且沒有拋出例外，將會回傳 200 HTTP 回應。否則，將會回傳 500 HTTP 回應。您可以在應用程式的 `bootstrap/app` 檔案中設定此路由的 URI：
 
 ```php
 ->withRouting(
@@ -219,24 +222,21 @@ Laravel 包含一個內建的健康檢查路由，可用於監控您的應用程
 )
 ```
 
-當對此路由發出 HTTP 請求時，Laravel 還會發送一個 `Illuminate\Foundation\Events\DiagnosingHealth` 事件，讓您可以針對應用程式執行額外的健康檢查。在該事件的 [監聽器](/docs/{{version}}/events) 中，您可以檢查應用程式的資料庫或快取狀態。如果您發現應用程式有問題，只需在監聽器中拋出例外即可。
-
+當有 HTTP 請求發送到此路由時，Laravel 還會發送 `Illuminate\Foundation\Events\DiagnosingHealth` 事件，讓您可以執行與應用程式相關的其他健康檢查。在此事件的[監聽器](/docs/{{version}}/events)中，您可以檢查應用程式的資料庫或快取狀態。如果您偵測到應用程式有問題，只需直接從監聽器拋出例外即可。
 
 <a name="deploying-with-cloud-or-forge"></a>
 ## 使用 Laravel Cloud 或 Forge 進行部署
 
-
 <a name="laravel-cloud"></a>
 #### Laravel Cloud
 
-如果您想要一個為 Laravel 量身打造、完全託管且可自動擴展的部署平台，請參考 [Laravel Cloud](https://cloud.laravel.com)。Laravel Cloud 是一個強大的 Laravel 部署平台，提供託管的運算資源、資料庫、快取和物件儲存。
+如果您想要一個為 Laravel 量身打造、全託管且具備自動擴展功能的部署平台，請參考 [Laravel Cloud](https://cloud.laravel.com)。Laravel Cloud 是一個強大的 Laravel 部署平台，提供託管運算、資料庫、快取以及物件儲存服務。
 
-在 Cloud 上啟動您的 Laravel 應用程式，體驗可擴展的簡潔之美。Laravel Cloud 由 Laravel 的創作者精心調校，能與框架無縫協作，讓您可以像往常一樣繼續開發 Laravel 應用程式。
-
+在 Cloud 上啟動您的 Laravel 應用程式，體驗兼具擴展性與簡潔的優勢。Laravel Cloud 由 Laravel 核心團隊精心調校，能與框架無縫整合，讓您能夠完全按照習慣的方式繼續開發 Laravel 應用程式。
 
 <a name="laravel-forge"></a>
 #### Laravel Forge
 
-如果您偏好管理自己的伺服器，但不擅長設定運行強大 Laravel 應用程式所需的所有各種服務，[Laravel Forge](https://forge.laravel.com) 是一個專為 Laravel 應用程式設計的 VPS 伺服器管理平台。
+如果您偏好管理自己的伺服器，但對於設定執行強大 Laravel 應用程式所需的各種服務感到繁瑣，[Laravel Forge](https://forge.laravel.com) 是一個專為 Laravel 應用程式打造的 VPS 伺服器管理平台。
 
-Laravel Forge 可以在多種基礎設施提供商（如 DigitalOcean、Linode、AWS 等）上建立伺服器。此外，Forge 會安裝並管理建構強大 Laravel 應用程式所需的所有工具，例如 Nginx、MySQL、Redis、Memcached、Beanstalk 等。
+Laravel Forge 可以在各種基礎架構提供商（例如 DigitalOcean、Linode、AWS 等）上建立伺服器。此外，Forge 還會安裝並管理建構健全 Laravel 應用程式所需的所有工具，例如 Nginx、MySQL、Redis、Memcached、Beanstalk 等。

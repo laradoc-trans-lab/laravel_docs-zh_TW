@@ -1,21 +1,22 @@
 # 資料庫：入門指南
 
-- [簡介](#introduction)
+- [介紹](#introduction)
     - [設定](#configuration)
-    - [讀取與寫入連接](#read-and-write-connections)
+    - [讀取與寫入連線](#read-and-write-connections)
+    - [池化 PostgreSQL 連線](#pooled-postgresql-connections)
 - [執行 SQL 查詢](#running-queries)
-    - [使用多個資料庫連接](#using-multiple-database-connections)
+    - [使用多個資料庫連線](#using-multiple-database-connections)
     - [監聽查詢事件](#listening-for-query-events)
     - [監控累計查詢時間](#monitoring-cumulative-query-time)
-- [資料庫事務](#database-transactions)
-- [連接到資料庫 CLI](#connecting-to-the-database-cli)
-- [檢查您的資料庫](#inspecting-your-databases)
-- [監控您的資料庫](#monitoring-your-databases)
+- [資料庫交易](#database-transactions)
+- [連線至資料庫 CLI](#connecting-to-the-database-cli)
+- [檢視你的資料庫](#inspecting-your-databases)
+- [監控你的資料庫](#monitoring-your-databases)
 
 <a name="introduction"></a>
-## 簡介
+## 介紹
 
-幾乎每個現代的 Web 應用程式都會與資料庫進行互動。Laravel 使用原始 SQL、[流暢的查詢產生器 (Query Builder)](/docs/{{version}}/queries) 以及 [Eloquent ORM](/docs/{{version}}/eloquent)，讓在各種支援的資料庫之間進行互動變得非常簡單。目前，Laravel 為五種資料庫提供官方支援：
+幾乎所有現代 Web 應用程式都會與資料庫進行互動。Laravel 透過原生 SQL、[流暢的查詢建構器](/docs/{{version}}/queries) 以及 [Eloquent ORM](/docs/{{version}}/eloquent)，讓與各種支援的資料庫進行互動變得極其簡單。目前，Laravel 為五種資料庫提供第一方支援：
 
 <div class="content-list" markdown="1">
 
@@ -27,69 +28,69 @@
 
 </div>
 
-此外，MongoDB 透過 `mongodb/laravel-mongodb` 套件提供支援，該套件由 MongoDB 官方維護。請參閱 [Laravel MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/) 文件以取得更多資訊。
+此外，還能透過由 MongoDB 官方維護的 `mongodb/laravel-mongodb` 套件支援 MongoDB。請參閱 [Laravel MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/) 文件以獲取更多資訊。
 
 
 <a name="configuration"></a>
 ### 設定
 
-Laravel 資料庫服務的設定位於應用程式的 `config/database.php` 設定檔中。在此檔案中，您可以定義所有的資料庫連接，並指定預設使用的連接。此檔案中的大多數設定選項都由應用程式環境變數的值驅動。此檔案中提供了大多數 Laravel 支援的資料庫系統範例。
+Laravel 資料庫服務的設定檔位於應用程式的 `config/database.php`。在此檔案中，你可以定義所有的資料庫連線，並指定預設應該使用哪一個連線。該檔案中的大部分設定選項都是由應用程式的環境變數值所驅動。此檔案中提供了 Laravel 支援的大多數資料庫系統的範例。
 
-預設情況下，Laravel 的範例[環境設定](/docs/{{version}}/configuration#environment-configuration)已準備好與 [Laravel Sail](/docs/{{version}}/sail) 搭配使用，這是一個用於在本地機器上開發 Laravel 應用程式的 Docker 設定。不過，您可以根據本地資料庫的需要自由修改資料庫設定。
+預設情況下，Laravel 的範例[環境設定](/docs/{{version}}/configuration#environment-configuration)已預先配置好，可直接搭配 [Laravel Sail](/docs/{{version}}/sail) 使用，Sail 是一個用於在本地端機器上開發 Laravel 應用程式的 Docker 設定。不過，你可以根據本地端資料庫的需求隨意修改資料庫設定。
 
 
 <a name="sqlite-configuration"></a>
 #### SQLite 設定
 
-SQLite 資料庫包含在檔案系統中的單個檔案內。您可以使用終端機中的 `touch` 指令建立新的 SQLite 資料庫：`touch database/database.sqlite`。建立資料庫後，您可以透過在 `DB_DATABASE` 環境變數中放置資料庫的絕對路徑，輕鬆地將環境變數設定為指向此資料庫：
+SQLite 資料庫包含在檔案系統中的單一檔案內。你可以在終端機中使用 `touch` 指令建立一個新的 SQLite 資料庫：`touch database/database.sqlite`。建立資料庫後，你可以透過在 `DB_DATABASE` 環境變數中放置資料庫的絕對路徑，輕鬆設定環境變數以指向此資料庫：
 
 ```ini
 DB_CONNECTION=sqlite
 DB_DATABASE=/absolute/path/to/database.sqlite
 ```
 
-預設情況下，SQLite 連接會啟動外鍵約束。如果您想停用它們，應將 `DB_FOREIGN_KEYS` 環境變數設定為 `false`：
+預設情況下，SQLite 連線會啟用外鍵約束 (Foreign Key Constraints)。如果你想要停用它們，應將 `DB_FOREIGN_KEYS` 環境變數設定為 `false`：
 
 ```ini
 DB_FOREIGN_KEYS=false
 ```
 
 > [!NOTE]
-> 如果您使用 [Laravel 安裝程式](/docs/{{version}}/installation#creating-a-laravel-project)建立 Laravel 應用程式並選擇 SQLite 作為資料庫，Laravel 將自動為您建立 `database/database.sqlite` 檔案並執行預設的[資料庫遷移 (Migrations)](/docs/{{version}}/migrations)。
+> 如果你使用 [Laravel 安裝程式](/docs/{{version}}/installation#creating-a-laravel-project)建立 Laravel 應用程式並選擇 SQLite 作為資料庫，Laravel 將會自動建立 `database/database.sqlite` 檔案並為你執行預設的[資料庫遷移](/docs/{{version}}/migrations)。
 
 
 <a name="mssql-configuration"></a>
 #### Microsoft SQL Server 設定
 
-要使用 Microsoft SQL Server 資料庫，您應該確保已安裝 `sqlsrv` 和 `pdo_sqlsrv` PHP 擴充功能，以及它們可能需要的任何依賴項，例如 Microsoft SQL ODBC 驅動程式。
+若要使用 Microsoft SQL Server 資料庫，你應確保已安裝 `sqlsrv` 和 `pdo_sqlsrv` PHP 擴充套件，以及它們可能需要的任何依賴套件（例如 Microsoft SQL ODBC 驅動程式）。
 
 
 <a name="configuration-using-urls"></a>
 #### 使用 URL 進行設定
 
-通常，資料庫連接是使用多個設定值（如 `host`、`database`、`username`、`password` 等）來設定的。這些設定值中的每一個都有其對應的環境變數。這意味著在正式環境伺服器上設定資料庫連接資訊時，您需要管理多個環境變數。
+通常，資料庫連線會使用多個設定值進行設定，例如 `host`、`database`、`username`、`password` 等。這些設定值中的每一個都有其對應的環境變數。這意味著在正式環境伺服器上設定資料庫連線資訊時，你需要管理數個環境變數。
 
-一些受管理的資料庫提供商（如 AWS 和 Heroku）提供單個資料庫 "URL"，其中包含單個字串中資料庫的所有連接資訊。範例資料庫 URL 可能如下所示：
+某些受管資料庫供應商（例如 AWS 和 Heroku）提供單一資料庫「URL」，它在單一字串中包含了資料庫的所有連線資訊。範例資料庫 URL 可能類似於以下內容：
 
 ```html
 mysql://root:password@127.0.0.1/forge?charset=UTF-8
 ```
 
-這些 URL 通常遵循標準的 Schema 慣例：
+這些 URL 通常遵循標準的架構慣例：
 
 ```html
 driver://username:password@host:port/database?options
 ```
 
-為了方便起見，Laravel 支援這些 URL 作為使用多個設定選項來設定資料庫的另一種選擇。如果存在 `url`（或對應的 `DB_URL` 環境變數）設定選項，它將被用於提取資料庫連接和憑證資訊。
+為了方便起見，Laravel 支援這些 URL 作為使用多個設定選項來設定資料庫的替代方案。如果存在 `url`（或對應的 `DB_URL` 環境變數）設定選項，它將用於擷取資料庫連線和憑證資訊。
 
 
 <a name="read-and-write-connections"></a>
-### 讀取與寫入連接
+### 讀取與寫入連線
 
-有時您可能希望將一個資料庫連接用於 SELECT 語句，而將另一個連接用於 INSERT、UPDATE 和 DELETE 語句。Laravel 讓這件事變得輕而易舉，無論您是使用原始查詢、查詢產生器還是 Eloquent ORM，都會始終使用正確的連接。
+有時你可能希望將一個資料庫連線用於 SELECT 語句，並將另一個資料庫連線用於 INSERT、UPDATE 和 DELETE 語句。Laravel 讓這變得輕而易舉，無論你使用的是原始查詢、查詢建構器還是 Eloquent ORM，都將始終使用適當的連線。
 
-要了解應該如何設定讀取 / 寫入連接，讓我們看看這個範例：
+若要了解應該如何設定讀取／寫入連線，讓我們看看這個範例：
 
 ```php
 'mysql' => [
@@ -125,26 +126,61 @@ driver://username:password@host:port/database?options
 ],
 ```
 
-請注意，設定陣列中添加了三個鍵：`read`、`write` 和 `sticky`。`read` 和 `write` 鍵的陣列值包含單個鍵：`host`。`read` 和 `write` 連接的其他資料庫選項將從主要的 `mysql` 設定陣列中合併。
+請注意，設定陣列中已新增了三個鍵：`read`、`write` 和 `sticky`。`read` 和 `write` 鍵的陣列值包含單一個鍵：`host`。`read` 和 `write` 連線的其餘資料庫選項將從主要 `mysql` 設定陣列中合併。
 
-如果您希望覆蓋主要 `mysql` 陣列中的值，則只需將項目放入 `read` 和 `write` 陣列中即可。因此，在這種情況下，`192.168.1.1` 將用作「讀取」連接的主機，而 `192.168.1.3` 將用於「寫入」連接。資料庫憑證、前綴、字元集以及主要 `mysql` 陣列中的所有其他選項將在兩個連接之間共享。當 `host` 設定陣列中存在多個值時，將為每個請求隨機選擇一個資料庫主機。
+你只需要在 `read` 和 `write` 陣列中放置項目，以覆蓋主要 `mysql` 陣列中的值。因此，在此情況下，`192.168.1.1` 將用作「讀取」連線的主機，而 `192.168.1.3` 將用作「寫入」連線的主機。主要 `mysql` 陣列中的資料庫憑證、前綴、字元集和所有其他選項將在兩個連線之間共用。當 `host` 設定陣列中存在多個值時，將為每個請求隨機選擇一個資料庫主機。
 
 
 <a name="the-sticky-option"></a>
 #### `sticky` 選項
 
-`sticky` 選項是一個*選填*值，可用於允許立即讀取在當前請求週期內已寫入資料庫的紀錄。如果啟用了 `sticky` 選項，並且在當前請求週期內對資料庫執行了「寫入」操作，則任何進一步的「讀取」操作都將使用「寫入」連接。這可確保在請求週期內寫入的任何資料都可以在同一個請求期間立即從資料庫中讀回。您可以自行決定這是否是您應用程式所需的行為。
+`sticky` 選項是一個*可選的*值，可用於允許立即讀取在當前請求週期內已寫入資料庫的記錄。如果啟用了 `sticky` 選項，且在當前請求週期內對資料庫執行了「寫入」操作，則任何後續的「讀取」操作都將使用「寫入」連線。這可確保在該請求週期內寫入的任何資料都可以在該同一個請求期間立即從資料庫中讀回。你可以自行決定這是否是應用程式所需的行為。
+
+<a name="pooled-postgresql-connections"></a>
+### 池化 PostgreSQL 連線
+
+許多託管式 PostgreSQL 提供商透過 PgBouncer 或連線代理等服務提供交易模式的連線池。這些連線池非常適合應用程式查詢，但某些結構定義（schema）操作、遷移以及維護指令則需要直接與資料庫連線。
+
+若要在 PostgreSQL 中使用交易連線池，請照常設定池化連線，並透過 `direct` 設定選項提供直接連線的詳細資訊：
+
+```php
+'pgsql' => [
+    'driver' => 'pgsql',
+    // ...
+    'pooled' => env('DB_POOLED', false),
+    'direct' => array_filter([
+        'host' => env('DB_DIRECT_HOST'),
+        'port' => env('DB_DIRECT_PORT'),
+        'username' => env('DB_DIRECT_USERNAME'),
+        'password' => env('DB_DIRECT_PASSWORD'),
+        'sslmode' => env('DB_DIRECT_SSLMODE'),
+    ]),
+],
+```
+
+當 PostgreSQL 連線設定為池化時，Laravel 會自動為池化連線啟用模擬預編譯語句（emulated prepares）。直接連線則會繼承未在 `direct` 設定中明確定義的任何選項，並預設使用原生預編譯語句（native prepares）。
+
+Laravel 會自動將直接連線用於遷移、結構定義傾印與還原、`db:wipe`、`db:show` 以及 `db:table`。當啟用池化模式且已設定直接連線時，`db` 指令預設也會使用直接連線；你可以傳入 `--pooled` 選項以改為連線至池化連線：
+
+```shell
+php artisan db --pooled
+```
+
+如果你需要在應用程式中明確使用直接連線，請在連線名稱後方加上 `::direct` 後綴：
+
+```php
+DB::connection('pgsql::direct')->statement('create extension if not exists "uuid-ossp"');
+```
 
 <a name="running-queries"></a>
 ## 執行 SQL 查詢
 
-一旦設定好資料庫連接，您就可以使用 `DB` Facade 來執行查詢。`DB` Facade 為每種類型的查詢提供了對應的方法：`select`、`update`、`insert`、`delete` 以及 `statement`。
-
+當你設定好資料庫連線後，就可以使用 `DB` Facade 執行查詢。`DB` Facade 為每種類型的查詢都提供了對應的方法：`select`、`update`、`insert`、`delete` 以及 `statement`。
 
 <a name="running-a-select-query"></a>
 #### 執行 Select 查詢
 
-要執行一個基本的 SELECT 查詢，您可以使用 `DB` Facade 上的 `select` 方法：
+若要執行基本的 SELECT 查詢，可以使用 `DB` Facade 上的 `select` 方法：
 
 ```php
 <?php
@@ -168,9 +204,9 @@ class UserController extends Controller
 }
 ```
 
-傳遞給 `select` 方法的第一個參數是 SQL 查詢語句，而第二個參數則是任何需要綁定到查詢中的參數。通常，這些是 `where` 子句的約束值。參數綁定提供了防止 SQL 插入攻擊的保護。
+傳遞給 `select` 方法的第一個引數是 SQL 查詢語句，而第二個引數則是需要綁定到查詢中的任何參數綁定值。通常這些是 `where` 子句條件的值。參數綁定提供了防範 SQL 注入攻擊（SQL Injection）的保護機制。
 
-`select` 方法總是會回傳一個結果 `array`。陣列中的每個結果都會是一個 PHP `stdClass` 物件，用來代表資料庫中的一筆紀錄：
+`select` 方法總是會回傳一個結果 `array`。陣列中的每個結果都會是一個代表資料庫紀錄的 PHP `stdClass` 物件：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -182,11 +218,10 @@ foreach ($users as $user) {
 }
 ```
 
-
 <a name="selecting-scalar-values"></a>
 #### 取得純量值
 
-有時您的資料庫查詢可能只會得到單一的純量值。Laravel 允許您直接使用 `scalar` 方法取得此值，而不需要從紀錄物件中提取查詢的純量結果：
+有時你的資料庫查詢可能會回傳單一純量值（Scalar Value）。Laravel 允許你直接使用 `scalar` 方法取得此值，而不需要從紀錄物件中取得查詢的純量結果：
 
 ```php
 $burgers = DB::scalar(
@@ -194,11 +229,10 @@ $burgers = DB::scalar(
 );
 ```
 
-
 <a name="selecting-multiple-result-sets"></a>
 #### 取得多個結果集
 
-如果您的應用程式呼叫了會回傳多個結果集的儲存程序，您可以使用 `selectResultSets` 方法來取得該儲存程序回傳的所有結果集：
+如果你的應用程式呼叫了回傳多個結果集的預存程序（Stored Procedures），可以使用 `selectResultSets` 方法來取得該預存程序回傳的所有結果集：
 
 ```php
 [$options, $notifications] = DB::selectResultSets(
@@ -206,21 +240,19 @@ $burgers = DB::scalar(
 );
 ```
 
-
 <a name="using-named-bindings"></a>
-#### 使用命名綁定
+#### 使用具名綁定
 
-除了使用 `?` 來代表您的參數綁定外，您也可以使用具名綁定來執行查詢：
+除了使用 `?` 來表示參數綁定之外，你也可以使用具名綁定來執行查詢：
 
 ```php
 $results = DB::select('select * from users where id = :id', ['id' => 1]);
 ```
 
-
 <a name="running-an-insert-statement"></a>
-#### 執行 Insert 陳述式
+#### 執行 Insert 語句
 
-若要執行一個 `insert` 陳述式，您可以使用 `DB` Facade 上的 `insert` 方法。與 `select` 相同，此方法接受 SQL 查詢作為第一個參數，並將綁定作為第二個參數：
+若要執行 `insert` 語句，可以使用 `DB` Facade 上的 `insert` 方法。如同 `select` 一樣，此方法的第一個引數接受 SQL 查詢，第二個引數接受綁定值：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -228,11 +260,10 @@ use Illuminate\Support\Facades\DB;
 DB::insert('insert into users (id, name) values (?, ?)', [1, 'Marc']);
 ```
 
-
 <a name="running-an-update-statement"></a>
-#### 執行 Update 陳述式
+#### 執行 Update 語句
 
-`update` 方法用於更新資料庫中現有的紀錄。該方法會回傳受該陳述式影響的行數：
+`update` 方法應該用於更新資料庫中現有的紀錄。該語句影響的行數將由該方法回傳：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -243,11 +274,10 @@ $affected = DB::update(
 );
 ```
 
-
 <a name="running-a-delete-statement"></a>
-#### 執行 Delete 陳述式
+#### 執行 Delete 語句
 
-`delete` 方法用於從資料庫中刪除紀錄。與 `update` 一樣，該方法會回傳受影響的行數：
+`delete` 方法應該用於刪除資料庫中的紀錄。與 `update` 一樣，該方法將回傳受影響的行數：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -255,46 +285,42 @@ use Illuminate\Support\Facades\DB;
 $deleted = DB::delete('delete from users');
 ```
 
-
 <a name="running-a-general-statement"></a>
-#### 執行一般陳述式
+#### 執行一般語句
 
-某些資料庫陳述式不會回傳任何值。對於這類操作，您可以使用 `DB` Facade 上的 `statement` 方法：
+某些資料庫語句不會回傳任何值。對於這種類型的操作，可以使用 `DB` Facade 上的 `statement` 方法：
 
 ```php
 DB::statement('drop table users');
 ```
 
-
 <a name="running-an-unprepared-statement"></a>
-#### 執行未經預處理的陳述式
+#### 執行未預備語句
 
-有時您可能想在不綁定任何值的情況下執行 SQL 陳述式。您可以使用 `DB` Facade 的 `unprepared` 方法來達成此目的：
+有時你可能會想在不綁定任何值的情況下執行 SQL 語句。你可以使用 `DB` Facade 的 `unprepared` 方法來完成此操作：
 
 ```php
 DB::unprepared('update users set votes = 100 where name = "Dries"');
 ```
 
 > [!WARNING]
-> 由於未經預處理的陳述式不綁定參數，它們可能容易受到 SQL 插入攻擊。您絕不應該在未經預處理的陳述式中允許使用者控制的值。
-
+> 由於未預備語句（Unprepared Statements）不綁定參數，因此它們可能容易遭受 SQL 注入攻擊。你絕對不應該在未預備語句中允許使用者控制的值。
 
 <a name="implicit-commits-in-transactions"></a>
-#### 隱含提交
+#### 隱式提交
 
-在交易中使用 `DB` Facade 的 `statement` 與 `unprepared` 方法時，必須小心避免會導致 [隱含提交](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html) 的陳述式。這些陳述式會導致資料庫引擎間接提交整個交易，使 Laravel 無法察覺資料庫的交易層級。建立資料庫表就是這類陳述式的一個例子：
+在交易中使用 `DB` Facade 的 `statement` 和 `unprepared` 方法時，你必須小心避免使用會導致[隱式提交 (Implicit Commits)](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html) 的語句。這些語句會導致資料庫引擎間接提交整個交易，使 Laravel 無法掌握資料庫的交易層級。這類語句的一個範例就是建立資料庫資料表：
 
 ```php
 DB::unprepared('create table a (col varchar(1) null)');
 ```
 
-請參考 MySQL 手冊以取得會觸發隱含提交的 [所有陳述式清單](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)。
-
+請參考 MySQL 手冊以獲取觸發隱式提交的[所有語句清單](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)。
 
 <a name="using-multiple-database-connections"></a>
-### 使用多個資料庫連接
+### 使用多個資料庫連線
 
-如果您的應用程式在 `config/database.php` 設定檔中定義了多個連接，您可以透過 `DB` Facade 提供的 `connection` 方法來存取每個連接。傳遞給 `connection` 方法的連接名稱應對應於 `config/database.php` 設定檔中列出的連接之一，或是在執行期間使用 `config` 輔助函式設定的連接：
+若你的應用程式在 `config/database.php` 設定檔中定義了多個連線，你可以透過 `DB` Facade 提供的 `connection` 方法存取每個連線。傳遞給 `connection` 方法的連線名稱應對應至 `config/database.php` 設定檔中列出的其中一個連線，或者在執行時期使用 `config` 輔助函式設定的連線：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -302,17 +328,16 @@ use Illuminate\Support\Facades\DB;
 $users = DB::connection('sqlite')->select(/* ... */);
 ```
 
-您可以使用連接實例上的 `getPdo` 方法來存取底層原始的 PDO 實例：
+你可以使用連線實例上的 `getPdo` 方法來存取連線底層原始的 PDO 實例：
 
 ```php
 $pdo = DB::connection()->getPdo();
 ```
 
-
 <a name="listening-for-query-events"></a>
 ### 監聽查詢事件
 
-如果您想指定一個在應用程式執行每個 SQL 查詢時都會被呼叫的閉包，您可以使用 `DB` Facade 的 `listen` 方法。這個方法對於記錄查詢或除錯非常有用。您可以在 [服務提供者](/docs/{{version}}/providers) 的 `boot` 方法中註冊您的查詢監聽器閉包：
+如果你想要指定一個閉包，在應用程式執行每個 SQL 查詢時被調用，可以使用 `DB` Facade 的 `listen` 方法。這個方法對於記錄查詢日誌或除錯非常有用。你可以在[服務提供者(Service Providers)](/docs/{{version}}/providers) 的 `boot` 方法中註冊查詢監聽器閉包：
 
 ```php
 <?php
@@ -348,11 +373,10 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-
 <a name="monitoring-cumulative-query-time"></a>
 ### 監控累計查詢時間
 
-現代網頁應用程式常見的效能瓶頸在於查詢資料庫所花費的時間。幸運的是，當 Laravel 在單次請求中花費過多時間查詢資料庫時，它可以呼叫您指定的閉包或回呼。要開始使用，請向 `whenQueryingForLongerThan` 方法提供查詢時間閾值（以毫秒為單位）以及閉包。您可以在 [服務提供者](/docs/{{version}}/providers) 的 `boot` 方法中呼叫此方法：
+現代 Web 應用程式常見的效能瓶頸，就是耗費在查詢資料庫上的時間。值得慶幸的是，當 Laravel 在單次請求中花費過多時間查詢資料庫時，它可以調用你指定的閉包或回呼函式。要開始使用此功能，請向 `whenQueryingForLongerThan` 方法提供查詢時間門檻值（以毫秒為單位）以及閉包。你可以在[服務提供者(Service Providers)](/docs/{{version}}/providers) 的 `boot` 方法中調用此方法：
 
 ```php
 <?php
@@ -387,9 +411,9 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 <a name="database-transactions"></a>
-## 資料庫事務
+## 資料庫交易
 
-您可以使用 `DB` Facade 提供的 `transaction` 方法，在資料庫事務中執行一組操作。如果在事務閉包 (Closure) 內拋出異常，事務將自動回滾 (Roll Back) 且異常會被重新拋出。如果閉包執行成功，事務將自動提交 (Commit)。使用 `transaction` 方法時，您不需要擔心手動回滾或提交：
+你可以使用 `DB` Facade 提供的 `transaction` 方法，在資料庫交易中執行一組操作。如果在交易閉包內拋出例外，交易將會自動復原 (Rollback) 並重新拋出該例外。如果閉包成功執行，交易將會自動提交 (Commit)。在使用 `transaction` 方法時，你不需要擔心手動復原或提交：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -405,7 +429,7 @@ DB::transaction(function () {
 <a name="handling-deadlocks"></a>
 #### 處理死結
 
-`transaction` 方法接受一個可選的第二個參數，用於定義發生死結 (Deadlock) 時應重試事務的次數。一旦耗盡這些嘗試次數，將會拋出異常：
+`transaction` 方法接受可選的第二個引數，用於定義發生死結 (Deadlock) 時交易應該重試的次數。一旦用盡這些重試次數，將會拋出例外：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -419,9 +443,9 @@ DB::transaction(function () {
 
 
 <a name="manually-using-transactions"></a>
-#### 手動使用事務
+#### 手動使用交易
 
-如果您想手動開始事務並完全控制回滾與提交，可以使用 `DB` Facade 提供的 `beginTransaction` 方法：
+如果你想要手動開始交易，並完全掌控復原與提交，可以使用 `DB` Facade 提供的 `beginTransaction` 方法：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -429,32 +453,32 @@ use Illuminate\Support\Facades\DB;
 DB::beginTransaction();
 ```
 
-您可以透過 `rollBack` 方法回滾事務：
+你可以透過 `rollBack` 方法來復原交易：
 
 ```php
 DB::rollBack();
 ```
 
-最後，您可以透過 `commit` 方法提交事務：
+最後，你可以透過 `commit` 方法來提交交易：
 
 ```php
 DB::commit();
 ```
 
 > [!NOTE]
-> `DB` Facade 的事務方法同時控制了 [查詢產生器 (Query Builder)](/docs/{{version}}/queries) 與 [Eloquent ORM](/docs/{{version}}/eloquent) 的事務。
+> `DB` Facade 的交易方法同時控制了[查詢建構器](/docs/{{version}}/queries)與 [Eloquent ORM](/docs/{{version}}/eloquent) 的交易。
 
 
 <a name="connecting-to-the-database-cli"></a>
-## 連接到資料庫 CLI
+## 連線至資料庫 CLI
 
-如果您想連接到資料庫的 CLI，可以使用 `db` Artisan 指令：
+如果你想要連線到資料庫的 CLI，可以使用 `db` Artisan 指令：
 
 ```shell
 php artisan db
 ```
 
-如果需要，您可以指定資料庫連接名稱，以連接到非預設的資料庫連接：
+如有需要，你可以指定資料庫連線名稱，以連線到非預設連線的資料庫：
 
 ```shell
 php artisan db mysql
@@ -462,27 +486,27 @@ php artisan db mysql
 
 
 <a name="inspecting-your-databases"></a>
-## 檢查您的資料庫
+## 檢視你的資料庫
 
-使用 `db:show` 與 `db:table` Artisan 指令，您可以深入了解資料庫及其相關資料表。若要查看資料庫的概覽，包括其大小、類型、開啟的連接數以及資料表摘要，可以使用 `db:show` 指令：
+使用 `db:show` 和 `db:table` Artisan 指令，你可以深入了解資料庫及其相關的資料表。若要查看資料庫的總覽，包括其大小、類型、開啟連線數以及資料表的摘要，你可以使用 `db:show` 指令：
 
 ```shell
 php artisan db:show
 ```
 
-您可以透過 `--database` 選項提供資料庫連接名稱，來指定要檢查的資料庫連接：
+你可以透過 `--database` 選項向指令提供資料庫連線名稱，藉此指定要檢查的資料庫連線：
 
 ```shell
 php artisan db:show --database=pgsql
 ```
 
-如果您希望在指令輸出中包含資料表資料筆數與資料庫視圖 (View) 的詳細資訊，可以分別提供 `--counts` 與 `--views` 選項。在大型資料庫上，檢索資料筆數與視圖詳細資訊可能會很慢：
+如果你希望在指令輸出中包含資料表列數 (Row counts) 和資料庫檢視表 (View) 的詳細資訊，可以分別提供 `--counts` 和 `--views` 選項。在大型資料庫上，取得列數和檢視表詳細資訊可能會比較慢：
 
 ```shell
 php artisan db:show --counts --views
 ```
 
-此外，您可以使用以下 `Schema` 方法來檢查您的資料庫：
+此外，你也可以使用下列 `Schema` 方法來檢視你的資料庫：
 
 ```php
 use Illuminate\Support\Facades\Schema;
@@ -494,7 +518,7 @@ $indexes = Schema::getIndexes('users');
 $foreignKeys = Schema::getForeignKeys('users');
 ```
 
-如果您想檢查非應用程式預設連接的資料庫連接，可以使用 `connection` 方法：
+如果你想檢查非應用程式預設連線的資料庫，可以使用 `connection` 方法：
 
 ```php
 $columns = Schema::connection('sqlite')->getColumns('users');
@@ -502,9 +526,9 @@ $columns = Schema::connection('sqlite')->getColumns('users');
 
 
 <a name="table-overview"></a>
-#### 資料表概覽
+#### 資料表總覽
 
-如果您想查看資料庫中單個資料表的概覽，可以執行 `db:table` Artisan 指令。此指令提供了資料表的通用概覽，包括其欄位、類型、屬性、鍵 (Key) 與索引 (Index)：
+如果你想取得資料庫中個別資料表的總覽，可以執行 `db:table` Artisan 指令。此指令提供資料庫資料表的一般總覽，包括其欄位、型別、屬性、索引鍵 (Key) 和索引 (Index)：
 
 ```shell
 php artisan db:table users
@@ -512,17 +536,17 @@ php artisan db:table users
 
 
 <a name="monitoring-your-databases"></a>
-## 監控您的資料庫
+## 監控你的資料庫
 
-使用 `db:monitor` Artisan 指令，您可以指示 Laravel 在資料庫管理的開啟連接數超過指定數量時發送 `Illuminate\Database\Events\DatabaseBusy` 事件。
+使用 `db:monitor` Artisan 指令，你可以指示 Laravel 在資料庫管理的開啟連線數超過指定數量時，發送 `Illuminate\Database\Events\DatabaseBusy` 事件。
 
-首先，您應該排程 `db:monitor` 指令[每分鐘執行一次](/docs/{{version}}/scheduling)。該指令接受您希望監控的資料庫連接設定名稱，以及在發送事件前可容忍的最大開啟連接數：
+若要開始使用，你應該排程 `db:monitor` 指令[每分鐘執行一次](/docs/{{version}}/scheduling)。該指令接受你想監控的資料庫連線設定名稱，以及在發送事件之前所能容忍的最大開啟連線數：
 
 ```shell
 php artisan db:monitor --databases=mysql,pgsql --max=100
 ```
 
-單獨排程此指令不足以觸發提醒您開啟連接數的通知。當指令遇到開啟連接數超過閾值的資料庫時，將發送 `DatabaseBusy` 事件。您應該在應用程式的 `AppServiceProvider` 中監聽此事件，以便向您或您的開發團隊發送通知：
+單純排程此指令不足以觸發警示開啟連線數的通知。當指令遇到開啟連線數超過閥值的資料庫時，將會發送 `DatabaseBusy` 事件。你應該在應用程式的 `AppServiceProvider` 中監聽此事件，以便向你或你的開發團隊發送通知：
 
 ```php
 use App\Notifications\DatabaseApproachingMaxConnections;

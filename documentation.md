@@ -1,8 +1,4 @@
-- ## 前言
-    - [版本說明](/docs/{{version}}/releases)
-    - [升級指南](/docs/{{version}}/upgrade)
-    - [貢獻指南](/docs/{{version}}/contributions)
-- ## 入門
+- ## 入門指引
     - [安裝](/docs/{{version}}/installation)
     - [設定](/docs/{{version}}/configuration)
     - [AI 代理開發](/docs/{{version}}/ai)
@@ -14,47 +10,48 @@
 - ## 架構概念
     - [請求生命週期](/docs/{{version}}/lifecycle)
     - [服務容器](/docs/{{version}}/container)
-    - [服務提供者](/docs/{{version}}/providers)
+    - [服務提供者(Service Providers)](/docs/{{version}}/providers)
     - [Facades](/docs/{{version}}/facades)
 
-- ## 基礎功能
+- ## 基礎概念
     - [路由](/docs/{{version}}/routing)
     - [中介層](/docs/{{version}}/middleware)
-    - [CSRF 保護](/docs/{{version}}/csrf)
+    - [CSRF 防護](/docs/{{version}}/csrf)
     - [控制器](/docs/{{version}}/controllers)
     - [請求](/docs/{{version}}/requests)
     - [回應](/docs/{{version}}/responses)
     - [視圖](/docs/{{version}}/views)
     - [Blade 模板](/docs/{{version}}/blade)
     - [靜態資源打包](/docs/{{version}}/vite)
-    - [URL 產生](/docs/{{version}}/urls)
+    - [URL 生成](/docs/{{version}}/urls)
     - [Session](/docs/{{version}}/session)
     - [驗證](/docs/{{version}}/validation)
     - [錯誤處理](/docs/{{version}}/errors)
-    - [記錄(Logging)](/docs/{{version}}/logging)
+    - [日誌記錄](/docs/{{version}}/logging)
 
 - ## 深入探討
     - [Artisan 主控台](/docs/{{version}}/artisan)
     - [廣播](/docs/{{version}}/broadcasting)
     - [快取](/docs/{{version}}/cache)
     - [集合](/docs/{{version}}/collections)
-    - [並發處理](/docs/{{version}}/concurrency)
-    - [上下文(Context)](/docs/{{version}}/context)
+    - [平行處理](/docs/{{version}}/concurrency)
+    - [上下文](/docs/{{version}}/context)
     - [契約(Contracts)](/docs/{{version}}/contracts)
     - [事件](/docs/{{version}}/events)
     - [檔案儲存](/docs/{{version}}/filesystem)
     - [輔助函式](/docs/{{version}}/helpers)
     - [HTTP 客戶端](/docs/{{version}}/http-client)
+    - [圖片處理](/docs/{{version}}/images)
     - [在地化](/docs/{{version}}/localization)
     - [郵件](/docs/{{version}}/mail)
     - [通知](/docs/{{version}}/notifications)
     - [套件開發](/docs/{{version}}/packages)
     - [行程(Processes)](/docs/{{version}}/processes)
     - [佇列](/docs/{{version}}/queues)
-    - [頻率限制](/docs/{{version}}/rate-limiting)
+    - [速率限制](/docs/{{version}}/rate-limiting)
     - [搜尋](/docs/{{version}}/search)
-    - [字串](/docs/{{version}}/strings)
-    - [工作排程](/docs/{{version}}/scheduling)
+    - [字串處理](/docs/{{version}}/strings)
+    - [任務排程](/docs/{{version}}/scheduling)
 
 - ## 安全性
     - [認證](/docs/{{version}}/authentication)
@@ -66,7 +63,7 @@
 
 - ## 資料庫
     - [快速入門](/docs/{{version}}/database)
-    - [查詢產生器](/docs/{{version}}/queries)
+    - [查詢建構器](/docs/{{version}}/queries)
     - [分頁](/docs/{{version}}/pagination)
     - [遷移](/docs/{{version}}/migrations)
     - [資料填充](/docs/{{version}}/seeding)
@@ -80,12 +77,12 @@
     - [修改器 / 型別轉換](/docs/{{version}}/eloquent-mutators)
     - [API 資源](/docs/{{version}}/eloquent-resources)
     - [序列化](/docs/{{version}}/eloquent-serialization)
-    - [工廠(Factories)](/docs/{{version}}/eloquent-factories)
+    - [工廠](/docs/{{version}}/eloquent-factories)
 
 - ## AI
     - [AI SDK](/docs/{{version}}/ai-sdk)
     - [MCP](/docs/{{version}}/mcp)
-    - [Laravel Boost](/docs/{{version}}/boost)
+    - [Boost](/docs/{{version}}/boost)
 
 - ## 測試
     - [快速入門](/docs/{{version}}/testing)
@@ -93,15 +90,16 @@
     - [主控台測試](/docs/{{version}}/console-tests)
     - [瀏覽器測試](/docs/{{version}}/dusk)
     - [資料庫](/docs/{{version}}/database-testing)
-    - [Mocking](/docs/{{version}}/mocking)
+    - [模擬](/docs/{{version}}/mocking)
 
-- ## 官方套件
+- ## 套件
     - [Cashier (Stripe)](/docs/{{version}}/billing)
     - [Cashier (Paddle)](/docs/{{version}}/cashier-paddle)
     - [Dusk](/docs/{{version}}/dusk)
     - [Envoy](/docs/{{version}}/envoy)
     - [Fortify](/docs/{{version}}/fortify)
     - [Folio](/docs/{{version}}/folio)
+    - [Head](/docs/{{version}}/head)
     - [Homestead](/docs/{{version}}/homestead)
     - [Horizon](/docs/{{version}}/horizon)
     - [Mix](/docs/{{version}}/mix)
@@ -119,4 +117,4 @@
     - [Socialite](/docs/{{version}}/socialite)
     - [Telescope](/docs/{{version}}/telescope)
     - [Valet](/docs/{{version}}/valet)
-- [API 文件](https://api.laravel.com/docs/{{version}})
+- [API 文件](https://api.laravel.com/docs/13.x)

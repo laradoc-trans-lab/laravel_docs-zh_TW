@@ -1,58 +1,58 @@
-# HTTP 工作階段
+# HTTP Session
 
 - [簡介](#introduction)
     - [設定](#configuration)
-    - [驅動程式先決條件](#driver-prerequisites)
-- [與工作階段互動](#interacting-with-the-session)
-    - [擷取資料](#retrieving-data)
+    - [驅動需求](#driver-prerequisites)
+- [操作 Session](#interacting-with-the-session)
+    - [取得資料](#retrieving-data)
     - [儲存資料](#storing-data)
     - [快閃資料](#flash-data)
     - [刪除資料](#deleting-data)
-    - [重新產生工作階段 ID](#regenerating-the-session-id)
-- [工作階段快取](#session-cache)
-- [工作階段阻擋](#session-blocking)
-- [新增自訂工作階段驅動程式](#adding-custom-session-drivers)
-    - [實作驅動程式](#implementing-the-driver)
-    - [註冊驅動程式](#registering-the-driver)
+    - [重新產生 Session ID](#regenerating-the-session-id)
+- [Session 快取](#session-cache)
+- [Session 阻塞](#session-blocking)
+- [新增自訂 Session 驅動](#adding-custom-session-drivers)
+    - [實作驅動](#implementing-the-driver)
+    - [註冊驅動](#registering-the-driver)
 
 <a name="introduction"></a>
 ## 簡介
 
-由於 HTTP 驅動的應用程式是無狀態的，因此工作階段提供了一種跨多個請求儲存使用者資訊的方式。這些使用者資訊通常會被放置在一個持久儲存 / 後端中，以便從後續請求中存取。
+由於 HTTP 驅動的應用程式是無狀態的（Stateless），因此 Session 提供了一種跨多個請求儲存使用者相關資訊的方法。這些使用者資訊通常會存放在持久化儲存空間／後端中，以便在後續的請求中存取。
 
-Laravel 隨附了多種工作階段後端，可透過表達性且統一的 API 進行存取。支援流行的後端，例如 [Memcached](https://memcached.org)、[Redis](https://redis.io) 和資料庫。
+Laravel 內建了各種 Session 後端支援，並可透過直覺且統一的 API 進行存取。內建支援包含熱門的後端，如 [Memcached](https://memcached.org)、[Redis](https://redis.io) 以及資料庫。
 
 
 <a name="configuration"></a>
 ### 設定
 
-您的應用程式工作階段設定檔儲存在 `config/session.php`。請務必檢閱此檔案中可用的選項。預設情況下，Laravel 配置為使用 `database` 工作階段驅動程式。
+你的應用程式 Session 設定檔儲存於 `config/session.php`。請務必查看此檔案中提供的可用選項。預設情況下，Laravel 被設定為使用 `database` Session 驅動。
 
-工作階段的 `driver` 設定選項定義了每個請求的工作階段資料將儲存在何處。Laravel 包含多種驅動程式：
+Session 的 `driver` 設定選項定義了每個請求的 Session 資料將會儲存在何處。Laravel 包含了多種驅動：
 
 <div class="content-list" markdown="1">
 
-- `file` - 工作階段儲存在 `storage/framework/sessions`。
-- `cookie` - 工作階段儲存在安全、加密的 cookie 中。
-- `database` - 工作階段儲存在關聯式資料庫中。
-- `memcached` / `redis` - 工作階段儲存在這些快速、基於快取的儲存之一。
-- `dynamodb` - 工作階段儲存在 AWS DynamoDB 中。
-- `array` - 工作階段儲存在 PHP 陣列中，且不會持久化。
+- `file` - Session 儲存於 `storage/framework/sessions`。
+- `cookie` - Session 儲存於安全且經過加密的 Cookie 中。
+- `database` - Session 儲存於關聯式資料庫中。
+- `memcached` / `redis` - Session 儲存於這些快速且基於快取的儲存區之一。
+- `dynamodb` - Session 儲存於 AWS DynamoDB。
+- `array` - Session 儲存於 PHP 陣列中，不會被持久化保留。
 
 </div>
 
 > [!NOTE]
-> array 驅動程式主要用於 [測試](/docs/{{version}}/testing) 期間，並防止儲存在工作階段中的資料持久化。
+> array 驅動主要用於[測試](/docs/{{version}}/testing)期間，可防止儲存在 Session 中的資料被持久化保留。
 
 
 <a name="driver-prerequisites"></a>
-### 驅動程式先決條件
+### 驅動需求
 
 
 <a name="database"></a>
 #### 資料庫
 
-使用 `database` 工作階段驅動程式時，您需要確保擁有一個資料庫資料表來包含工作階段資料。通常，這會包含在 Laravel 預設的 `0001_01_01_000000_create_users_table.php` [資料庫遷移](/docs/{{version}}/migrations) 中；但是，如果由於任何原因您沒有 `sessions` 資料表，您可以使用 `make:session-table` Artisan 指令來產生此遷移：
+使用 `database` Session 驅動時，你需要確保有一個資料庫表來存放 Session 資料。通常，這已經包含在 Laravel 預設的 `0001_01_01_000000_create_users_table.php` [資料庫遷移](/docs/{{version}}/migrations)中；然而，若出於任何原因你沒有 `sessions` 表，你可以使用 `make:session-table` Artisan 命令來產生這個遷移：
 
 ```shell
 php artisan make:session-table
@@ -64,19 +64,18 @@ php artisan migrate
 <a name="redis"></a>
 #### Redis
 
-在使用 Laravel 的 Redis 工作階段之前，您需要透過 PECL 安裝 PhpRedis PHP 擴充功能，或透過 Composer 安裝 `predis/predis` 套件 (~1.0)。有關配置 Redis 的更多資訊，請查閱 Laravel 的 [Redis 文件](/docs/{{version}}/redis#configuration)。
+在 Laravel 中使用 Redis Session 之前，你需要透過 PECL 安裝 PhpRedis PHP 擴充套件，或是透過 Composer 安裝 `predis/predis` 套件。關於設定 Redis 的更多資訊，請參考 Laravel 的 [Redis 文件](/docs/{{version}}/redis#configuration)。
 
 > [!NOTE]
-> `SESSION_CONNECTION` 環境變數，或 `session.php` 設定檔中的 `connection` 選項，可用於指定用於工作階段儲存的 Redis 連線。
+> 可以使用 `SESSION_CONNECTION` 環境變數、或是 `session.php` 設定檔中的 `connection` 選項，來指定用於 Session 儲存的 Redis 連線。
 
 <a name="interacting-with-the-session"></a>
-## 與工作階段互動
-
+## 操作 Session
 
 <a name="retrieving-data"></a>
-### 擷取資料
+### 取得資料
 
-在 Laravel 中，有兩種主要方式可以處理工作階段資料：全域的 `session` 輔助函式以及透過 `Request` 實例。首先，讓我們看看如何透過 `Request` 實例來存取工作階段，此實例可以在路由閉包或控制器方法上進行型別提示。請記住，控制器方法的依賴項會透過 Laravel 的 [服務容器](/docs/{{version}}/container) 自動注入：
+在 Laravel 中，主要有兩種操作 Session 資料的方式：全域 `session` 輔助函式以及透過 `Request` 實例。首先，讓我們看看如何透過 `Request` 實例存取 Session，你可以在路由閉包或控制器方法上對其進行型別提示（Type-hint）。請記住，控制器的方法依賴會透過 Laravel 的[服務容器](/docs/{{version}}/container)自動注入：
 
 ```php
 <?php
@@ -104,7 +103,7 @@ class UserController extends Controller
 }
 ```
 
-當您從工作階段中擷取項目時，您也可以將預設值作為第二個引數傳遞給 `get` 方法。如果指定的鍵在工作階段中不存在，則會傳回此預設值。如果您將閉包作為預設值傳遞給 `get` 方法，且所請求的鍵不存在，則該閉包將會執行並傳回其結果：
+當你從 Session 取得項目時，也可以傳送預設值作為 `get` 方法的第二個引數。若指定的金鑰不存在於 Session 中，將會傳回該預設值。如果你傳送一個閉包作為 `get` 方法的預設值，且請求的金鑰不存在，則該閉包將會被執行並傳回其結果：
 
 ```php
 $value = $request->session()->get('key', 'default');
@@ -114,11 +113,10 @@ $value = $request->session()->get('key', function () {
 });
 ```
 
-
 <a name="the-global-session-helper"></a>
 #### 全域 Session 輔助函式
 
-您也可以使用全域的 `session` PHP 函式來從工作階段中擷取和儲存資料。當 `session` 輔助函式以單一字串引數呼叫時，它將傳回該工作階段鍵的值。當該輔助函式以鍵／值陣列呼叫時，這些值將會儲存在工作階段中：
+你也可以使用全域的 `session` PHP 函式來取得與儲存 Session 中的資料。當呼叫 `session` 輔助函式並傳入單一字串引數時，它會傳回該 Session 金鑰的值。當傳入包含金鑰與值的陣列時，這些值將會被儲存在 Session 中：
 
 ```php
 Route::get('/home', function () {
@@ -134,23 +132,21 @@ Route::get('/home', function () {
 ```
 
 > [!NOTE]
-> 使用 HTTP 請求實例來存取工作階段，與使用全域 `session` 輔助函式之間，實際上沒有太大差異。這兩種方法都可以透過 `assertSessionHas` 方法進行 [測試](/docs/{{version}}/testing)，該方法適用於您所有的測試案例。
-
+> 透過 HTTP 請求實例與透過全域 `session` 輔助函式來使用 Session，在實務上幾乎沒有差異。兩種方法都可以透過所有測試案例中皆可使用的 `assertSessionHas` 方法進行[測試](/docs/{{version}}/testing)。
 
 <a name="retrieving-all-session-data"></a>
-#### 擷取所有工作階段資料
+#### 取得所有 Session 資料
 
-如果您想擷取工作階段中的所有資料，可以使用 `all` 方法：
+如果你想要取得 Session 中的所有資料，可以使用 `all` 方法：
 
 ```php
 $data = $request->session()->all();
 ```
 
-
 <a name="retrieving-a-portion-of-the-session-data"></a>
-#### 擷取部分工作階段資料
+#### 取得部分 Session 資料
 
-`only` 和 `except` 方法可用於擷取工作階段資料的子集：
+`only` 和 `except` 方法可用於取得 Session 資料的子集：
 
 ```php
 $data = $request->session()->only(['username', 'email']);
@@ -158,11 +154,10 @@ $data = $request->session()->only(['username', 'email']);
 $data = $request->session()->except(['username', 'email']);
 ```
 
-
 <a name="determining-if-an-item-exists-in-the-session"></a>
-#### 判斷工作階段中是否存在項目
+#### 判斷 Session 中是否存在某個項目
 
-若要判斷某個項目是否存在於工作階段中，您可以使用 `has` 方法。如果該項目存在且不為 `null`，`has` 方法會傳回 `true`：
+若要判斷 Session 中是否存在某個項目，可以使用 `has` 方法。若該項目存在且不為 `null`，`has` 方法會傳回 `true`：
 
 ```php
 if ($request->session()->has('users')) {
@@ -170,7 +165,7 @@ if ($request->session()->has('users')) {
 }
 ```
 
-若要判斷某個項目是否存在於工作階段中，即使其值為 `null`，您也可以使用 `exists` 方法：
+若要判斷 Session 中是否存在某個項目（即使其值為 `null`），可以使用 `exists` 方法：
 
 ```php
 if ($request->session()->exists('users')) {
@@ -178,7 +173,7 @@ if ($request->session()->exists('users')) {
 }
 ```
 
-若要判斷某個項目是否不存在於工作階段中，您可以使用 `missing` 方法。如果該項目不存在，`missing` 方法會傳回 `true`：
+若要判斷 Session 中是否不存在某個項目，可以使用 `missing` 方法。若項目不存在，`missing` 方法會傳回 `true`：
 
 ```php
 if ($request->session()->missing('users')) {
@@ -186,11 +181,10 @@ if ($request->session()->missing('users')) {
 }
 ```
 
-
 <a name="storing-data"></a>
 ### 儲存資料
 
-若要將資料儲存到工作階段中，您通常會使用請求實例的 `put` 方法或全域 `session` 輔助函式：
+若要在 Session 中儲存資料，通常會使用請求實例的 `put` 方法或是全域 `session` 輔助函式：
 
 ```php
 // Via a request instance...
@@ -200,31 +194,28 @@ $request->session()->put('key', 'value');
 session(['key' => 'value']);
 ```
 
-
 <a name="pushing-to-array-session-values"></a>
-#### 推入陣列型工作階段值
+#### 推入 Session 陣列值
 
-`push` 方法可用於將新值推入作為陣列的工作階段值。例如，如果 `user.teams` 鍵包含一個團隊名稱陣列，您可以像這樣將新值推入該陣列：
+`push` 方法可用於將新值推入型別為陣列的 Session 值中。例如，若 `user.teams` 金鑰包含一個團隊名稱陣列，你可以像這樣將新值推入該陣列：
 
 ```php
 $request->session()->push('user.teams', 'developers');
 ```
 
-
 <a name="retrieving-deleting-an-item"></a>
-#### 擷取並刪除項目
+#### 取得並刪除項目
 
-`pull` 方法將在一個陳述式中從工作階段擷取並刪除一個項目：
+`pull` 方法可以用單一語句從 Session 中取得並刪除項目：
 
 ```php
 $value = $request->session()->pull('key', 'default');
 ```
 
-
 <a name="incrementing-and-decrementing-session-values"></a>
-#### 遞增和遞減工作階段值
+#### 增加與減少 Session 值
 
-如果您的工作階段資料包含一個您希望遞增或遞減的整數，您可以使用 `increment` 和 `decrement` 方法：
+如果你的 Session 資料包含想要增加或減少的整數，可以使用 `increment` 和 `decrement` 方法：
 
 ```php
 $request->session()->increment('count');
@@ -236,17 +227,16 @@ $request->session()->decrement('count');
 $request->session()->decrement('count', $decrementBy = 2);
 ```
 
-
 <a name="flash-data"></a>
 ### 快閃資料
 
-有時您可能希望在工作階段中儲存項目以供下一次請求使用。您可以使用 `flash` 方法來實現。使用此方法儲存在工作階段中的資料將立即可用，並在隨後的 HTTP 請求期間可用。在隨後的 HTTP 請求之後，快閃資料將被刪除。快閃資料主要用於短暫的狀態訊息：
+有時你可能希望在 Session 中儲存項目以供下一次請求使用。你可以使用 `flash` 方法來達到此目的。使用此方法儲存在 Session 中的資料將會立即生效，並保留至下一次 HTTP 請求期間。在下一次 HTTP 請求結束後，快閃資料將會被刪除。快閃資料主要適用於短暫發送的狀態訊息：
 
 ```php
 $request->session()->flash('status', 'Task was successful!');
 ```
 
-如果您需要讓您的快閃資料在數個請求中保持持久，您可以使用 `reflash` 方法，這將使所有快閃資料再保留一個額外的請求。如果您只需要保留特定的快閃資料，可以使用 `keep` 方法：
+如果你需要將快閃資料保留多個請求，可以使用 `reflash` 方法，這會將所有快閃資料再保留一次請求。如果你只需要保留特定的快閃資料，可以使用 `keep` 方法：
 
 ```php
 $request->session()->reflash();
@@ -254,17 +244,16 @@ $request->session()->reflash();
 $request->session()->keep(['username', 'email']);
 ```
 
-若只想讓快閃資料在當前請求中保持持久，您可以使用 `now` 方法：
+若要僅將快閃資料保留在當前請求中，可以使用 `now` 方法：
 
 ```php
 $request->session()->now('status', 'Task was successful!');
 ```
 
-
 <a name="deleting-data"></a>
 ### 刪除資料
 
-`forget` 方法將從工作階段中移除一塊資料。如果您想從工作階段中移除所有資料，可以使用 `flush` 方法：
+`forget` 方法會從 Session 中移除一筆資料。如果你想移除 Session 中的所有資料，可以使用 `flush` 方法：
 
 ```php
 // Forget a single key...
@@ -276,32 +265,31 @@ $request->session()->forget(['name', 'status']);
 $request->session()->flush();
 ```
 
-
 <a name="regenerating-the-session-id"></a>
-### 重新產生工作階段 ID
+### 重新產生 Session ID
 
-重新產生工作階段 ID 通常是為了防止惡意使用者利用 [工作階段固定攻擊](https://owasp.org/www-community/attacks/Session_fixation) 來攻擊您的應用程式。
+重新產生 Session ID 通常是為了防止惡意使用者對你的應用程式進行 [Session 固定 (Session Fixation)](https://owasp.org/www-community/attacks/Session_fixation) 攻擊。
 
-如果您正在使用 Laravel 的 [應用程式入門套件](/docs/{{version}}/starter-kits) 或 [Laravel Fortify](/docs/{{version}}/fortify)，Laravel 會在認證期間自動重新產生工作階段 ID；但是，如果您需要手動重新產生工作階段 ID，可以使用 `regenerate` 方法：
+如果你使用的是 Laravel [應用程式入門套件](/docs/{{version}}/starter-kits)之一或是 [Laravel Fortify](/docs/{{version}}/fortify)，Laravel 會在認證期間自動重新產生 Session ID；不過，如果你需要手動重新產生 Session ID，可以使用 `regenerate` 方法：
 
 ```php
 $request->session()->regenerate();
 ```
 
-如果您需要在一個陳述式中重新產生工作階段 ID 並移除工作階段中的所有資料，您可以使用 `invalidate` 方法：
+如果你需要重新產生 Session ID 並在單一語句中清除 Session 中的所有資料，可以使用 `invalidate` 方法：
 
 ```php
 $request->session()->invalidate();
 ```
 
 <a name="session-cache"></a>
-## 工作階段快取
+## Session 快取
 
-Laravel 的工作階段快取提供了一種便捷的方式來快取限定於個別使用者工作階段的資料。與全域應用程式快取不同，工作階段快取資料會自動依每個工作階段進行隔離，並在工作階段過期或被銷毀時自動清除。工作階段快取支援所有熟悉的 [Laravel 快取方法](/docs/{{version}}/cache)，例如 `get`、`put`、`remember`、`forget` 等，但其作用範圍僅限於當前工作階段。
+Laravel 的 Session 快取提供了一種便捷的方式來快取作用域限定於個別使用者 Session 的資料。與全域應用程式快取不同，Session 快取資料會自動依據每個 Session 進行隔離，並在 Session 過期或銷毀時自動清理。Session 快取支援所有熟悉的 [Laravel 快取方法](/docs/{{version}}/cache)，例如 `get`、`put`、`remember`、`forget` 等等，但作用域僅限於當前的 Session。
 
-工作階段快取非常適合用於儲存臨時的、使用者專屬的資料，這些資料需要在同一個工作階段中的多個請求之間保持持久，但不需要永久儲存。這包括表單資料、臨時計算結果、API 回應，或任何其他應與特定使用者工作階段綁定的暫時性資料。
+Session 快取非常適合用於儲存臨時且針對特定使用者的資料，這些資料您希望在同一 Session 內跨多個請求保留，但不需要永久儲存。這包括表單資料、臨時計算結果、API 回應，或任何其他應該與特定使用者 Session 綁定的短暫資料。
 
-您可以透過工作階段上的 `cache` 方法來存取工作階段快取：
+您可以透過 Session 上的 `cache` 方法存取 Session 快取：
 
 ```php
 $discount = $request->session()->cache()->get('discount');
@@ -311,17 +299,18 @@ $request->session()->cache()->put(
 );
 ```
 
-有關 Laravel 快取方法的更多資訊，請查閱[快取文件](/docs/{{version}}/cache)。
+關於 Laravel 快取方法的更多資訊，請參考[快取文件](/docs/{{version}}/cache)。
+
 
 <a name="session-blocking"></a>
-## 工作階段阻擋
+## Session 阻塞
 
 > [!WARNING]
-> 若要使用工作階段阻擋功能，您的應用程式必須使用支援[原子鎖定](/docs/{{version}}/cache#atomic-locks)的快取驅動程式。目前，這些快取驅動程式包括 `memcached`、`dynamodb`、`redis`、`mongodb` (包含於官方的 `mongodb/laravel-mongodb` 套件中)、`database`、`file` 和 `array` 驅動程式。此外，您不得使用 `cookie` 工作階段驅動程式。
+> 若要使用 Session 阻塞功能，您的應用程式必須使用支援[原子鎖](/docs/{{version}}/cache#atomic-locks)的快取驅動。目前這些快取驅動包括 `memcached`、`dynamodb`、`redis`、`mongodb`（包含於官方的 `mongodb/laravel-mongodb` 套件中）、`database`、`file` 與 `array` 驅動。此外，您不能使用 `cookie` Session 驅動。
 
-預設情況下，Laravel 允許使用相同工作階段的請求並行執行。因此，舉例來說，如果您使用 JavaScript HTTP 函式庫向應用程式發出兩個 HTTP 請求，它們將會同時執行。對於許多應用程式來說，這不是問題；然而，在少數應用程式中，如果同時向兩個不同的應用程式端點發出請求，且兩者都寫入資料到工作階段，則可能會發生工作階段資料遺失。
+預設情況下，Laravel 允許使用相同 Session 的請求同時執行。例如，如果您使用 JavaScript HTTP 函式庫向應用程式發送兩個 HTTP 請求，它們將會同時執行。對許多應用程式來說，這不是問題；然而，在少數情況下，若應用程式向兩個不同的端點同時發送請求且這兩個端點都會寫入資料到 Session 時，可能會發生 Session 資料遺失的問題。
 
-為了緩解這個問題，Laravel 提供了功能，讓您可以限制給定工作階段的並行請求。要開始使用，您只需將 `block` 方法鏈接到您的路由定義上。在此範例中，對 `/profile` 端點的傳入請求將會取得工作階段鎖定。當此鎖定被持有時，任何對 `/profile` 或 `/order` 端點的傳入請求，如果共用相同的工作階段 ID，將會等待第一個請求執行完成後才繼續執行：
+為了解決這個問題，Laravel 提供了允許您限制指定 Session 之同時請求數量的功能。若要開始使用，您只需在路由定義上鏈結 `block` 方法即可。在此範例中，對 `/profile` 端點傳入的請求將會取得一個 Session 鎖。當持有此鎖時，任何共享相同 Session ID 且進入 `/profile` 或 `/order` 端點的傳入請求，都會等待第一個請求執行完畢後才繼續執行：
 
 ```php
 Route::post('/profile', function () {
@@ -333,11 +322,11 @@ Route::post('/order', function () {
 })->block($lockSeconds = 10, $waitSeconds = 10);
 ```
 
-`block` 方法接受兩個可選參數。`block` 方法接受的第一個參數是工作階段鎖定在釋放前應保持的最大秒數。當然，如果請求在此時間之前完成執行，鎖定將會更早釋放。
+`block` 方法接受兩個選填引數。`block` 方法接受的第一個引數是 Session 鎖在釋放前應持有的最大秒數。當然，如果請求在此時間之前完成執行，鎖將會提早釋放。
 
-`block` 方法接受的第二個參數是請求在嘗試獲取工作階段鎖定時應該等待的秒數。如果請求無法在給定秒數內獲取工作階段鎖定，將會拋出 `Illuminate\Contracts\Cache\LockTimeoutException`。
+`block` 方法接受的第二個引數是請求在嘗試取得 Session 鎖時應等待的秒數。如果請求無法在指定的秒數內取得 Session 鎖，將會拋出 `Illuminate\Contracts\Cache\LockTimeoutException` 異常。
 
-如果這些參數都沒有傳遞，鎖定將最多保持 10 秒，並且請求在嘗試獲取鎖定時將最多等待 10 秒：
+如果兩個引數都沒有傳入，鎖將最多保持 10 秒，且請求在嘗試取得鎖時最多會等待 10 秒：
 
 ```php
 Route::post('/profile', function () {
@@ -345,13 +334,15 @@ Route::post('/profile', function () {
 })->block();
 ```
 
+
 <a name="adding-custom-session-drivers"></a>
-## 新增自訂工作階段驅動程式
+## 新增自訂 Session 驅動
+
 
 <a name="implementing-the-driver"></a>
-### 實作驅動程式
+### 實作驅動
 
-如果現有的工作階段驅動程式都不符合您的應用程式需求，Laravel 允許您自行編寫工作階段處理器。您的自訂工作階段驅動程式應該實作 PHP 內建的 `SessionHandlerInterface`。這個介面只包含幾個簡單的方法。一個存根化的 MongoDB 實作如下所示：
+如果現有的 Session 驅動都無法滿足您的應用程式需求，Laravel 允許您撰寫自己的 Session 處理常式。您的自訂 Session 驅動應該實作 PHP 內建的 `SessionHandlerInterface`。這個介面僅包含幾個簡單的方法。一個存根 (Stubbed) 的 MongoDB 實作如下所示：
 
 ```php
 <?php
@@ -369,25 +360,26 @@ class MongoSessionHandler implements \SessionHandlerInterface
 }
 ```
 
-由於 Laravel 不包含用於存放擴充功能預設目錄。您可以將它們放置在任何您喜歡的地方。在這個範例中，我們建立了一個 `Extensions` 目錄來存放 `MongoSessionHandler`。
+由於 Laravel 沒有包含用於存放擴充功能的預設目錄，您可以隨意將它們放置在任何您喜歡的地方。在此範例中，我們建立了一個 `Extensions` 目錄來存放 `MongoSessionHandler`。
 
-由於這些方法的用途並非一目瞭然，這裡將概述每個方法的用途：
+由於這些方法的用途可能無法一目瞭然，以下是每個方法用途的概覽：
 
 <div class="content-list" markdown="1">
 
-- `open` 方法通常用於基於檔案的工作階段儲存系統。由於 Laravel 附帶 `file` 工作階段驅動程式，您很少需要在這個方法中放入任何內容。您可以直接將這個方法留空。
-- `close` 方法與 `open` 方法一樣，通常也可以忽略。對於大多數驅動程式來說，它並不需要。
-- `read` 方法應該傳回與給定 `$sessionId` 相關的工作階段資料的字串版本。在您的驅動程式中擷取或儲存工作階段資料時，無需進行任何序列化或其他編碼，因為 Laravel 會為您執行序列化。
-- `write` 方法應該將與 `$sessionId` 相關的給定 `$data` 字串寫入某個持久性儲存系統，例如 MongoDB 或您選擇的其他儲存系統。同樣地，您不應該執行任何序列化 – Laravel 已經為您處理了這個部分。
-- `destroy` 方法應該從持久性儲存中移除與 `$sessionId` 相關的資料。
-- `gc` 方法應該銷毀所有早於給定 `$lifetime`（一個 UNIX 時間戳）的工作階段資料。對於像 Memcached 和 Redis 這樣會自行過期的系統，這個方法可以留空。
+- `open` 方法通常用於基於檔案的 Session 儲存系統。由於 Laravel 隨附了 `file` Session 驅動，您很少需要在此方法中撰寫任何內容。您可以直接保持此方法為空白。
+- `close` 方法與 `open` 方法類似，通常也可以被忽略。對於大多數驅動程式而言，並不需要此方法。
+- `read` 方法應回傳與給定 `$sessionId` 相關聯的 Session 資料字串版本。在驅動中取得或儲存 Session 資料時，不需要進行任何序列化或其他編碼，因為 Laravel 會為您執行序列化。
+- `write` 方法應將給定與 `$sessionId` 關聯的 `$data` 字串寫入某個持久化儲存系統，例如 MongoDB 或您選擇的其他儲存系統。同樣地，您不應執行任何序列化——Laravel 已經為您處理好了。
+- `destroy` 方法應從持久化儲存中移除與 `$sessionId` 關聯的資料。
+- `gc` 方法應銷毀所有比給定 `$lifetime`（即 UNIX 時間戳記）更舊的 Session 資料。對於像是 Memcached 與 Redis 這類會自動過期的系統，此方法可以保持空白。
 
 </div>
 
-<a name="registering-the-driver"></a>
-### 註冊驅動程式
 
-一旦您的驅動程式實作完成，您就可以將其註冊到 Laravel。要為 Laravel 的工作階段後端新增額外的驅動程式，您可以使用 `Session` [Facade](/docs/{{version}}/facades) 提供的 `extend` 方法。您應該從[服務提供者](/docs/{{version}}/providers)的 `boot` 方法中呼叫 `extend` 方法。您可以從現有的 `App\Providers\AppServiceProvider` 中執行此操作，或者建立一個全新的提供者：
+<a name="registering-the-driver"></a>
+### 註冊驅動
+
+當您的驅動實作完成後，即可將其註冊至 Laravel。若要向 Laravel 的 Session 後端新增其他驅動，您可以使用 `Session` [Facade](/docs/{{version}}/facades) 所提供的 `extend` 方法。您應該在[服務提供者(Service Providers)](/docs/{{version}}/providers) 的 `boot` 方法中呼叫 `extend` 方法。您可以在現有的 `App\Providers\AppServiceProvider` 中進行此操作，或是建立一個全新的服務提供者：
 
 ```php
 <?php
@@ -422,4 +414,4 @@ class SessionServiceProvider extends ServiceProvider
 }
 ```
 
-一旦工作階段驅動程式被註冊，您就可以使用 `SESSION_DRIVER` 環境變數或在應用程式的 `config/session.php` 配置檔案中，將 `mongo` 驅動程式指定為您的應用程式工作階段驅動程式。
+Session 驅動註冊完畢後，您便可以使用 `SESSION_DRIVER` 環境變數或在應用程式的 `config/session.php` 設定檔中指定 `mongo` 驅動作為您應用程式的 Session 驅動。
