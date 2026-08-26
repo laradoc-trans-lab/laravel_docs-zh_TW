@@ -1,32 +1,33 @@
 # 貢獻指南
 
-- [Bug 回報](#bug-reports)
+- [錯誤回報](#bug-reports)
 - [技術支援問題](#support-questions)
 - [核心開發討論](#core-development-discussion)
-- [選擇哪個分支？](#which-branch)
+- [要選擇哪個分支？](#which-branch)
 - [編譯後的靜態資源](#compiled-assets)
 - [AI 生成的貢獻](#ai-generated-contributions)
-- [安全性漏洞](#security-vulnerabilities)
+- [資安漏洞](#security-vulnerabilities)
 - [程式碼風格](#coding-style)
     - [PHPDoc](#phpdoc)
     - [StyleCI](#styleci)
 - [行為準則](#code-of-conduct)
 
 <a name="bug-reports"></a>
-## Bug 回報
+## 錯誤回報
 
-為了鼓勵積極協作，Laravel 強烈建議提交 Pull Request，而不只是 Bug 回報。Pull Request 只有在標記為「ready for review」（非「draft」狀態）且所有新功能的測試均通過時才會進行審核。處於「draft」狀態且長時間無活動的 Pull Request 將在幾天後被關閉。
+為了鼓勵積極合作，Laravel 強烈建議提交 Pull Request，而非僅僅是回報 Bug。Pull Request 只有在標示為「準備好進行審查 (ready for review)」（而非「草稿 (draft)」狀態）且新功能的所有測試皆通過時，才會被審查。若 Pull Request 長時間停留在「草稿」狀態且沒有積極更新，將會在幾天後被關閉。
 
-然而，若您提交 Bug 回報，您的 Issue 應包含標題與問題的清楚描述。您還應該盡可能附上所有相關資訊以及能夠重現該問題的程式碼範例。Bug 回報的目標是讓您自己以及其他人都能輕鬆重現該 Bug 並著手修復。
+然而，如果您提交了錯誤回報，您的 Issue 應包含標題以及對問題的清晰描述。您還應該包含盡可能多的相關資訊以及能夠重現該問題的範例程式碼。錯誤回報的目標是為了讓您自己與其他人能夠輕鬆重現該 Bug 並開發修復方案。
 
-請記住，建立 Bug 回報是希望能與遇到相同問題的人一起協作解決。請不要預期 Bug 回報會自動受到關注或其他人會立刻著手修復。建立 Bug 回報的作用是幫助您自己和他人開啟解決問題的第一步。如果您想出一份力，可以透過修復[我們 Issue 追蹤器中列出的任何 Bug](https://github.com/issues?q=is%3Aopen+is%3Aissue+label%3Abug+user%3Alaravel)來提供協助。您必須通過 GitHub 認證才能查看 Laravel 的所有 Issue。
+請記住，建立錯誤回報是希望其他遇到相同問題的人能夠與您一同合作解決問題。請不要期望錯誤回報會自動獲得處理，或是其他人會主動幫您修復。建立錯誤回報是幫助您與其他人踏出解決問題第一步的方法。如果您想盡一份心力，可以透過修復[我們 Issue 追蹤器中列出的任何 Bug](https://github.com/issues?q=is%3Aopen+is%3Aissue+label%3Abug+user%3Alaravel) 來提供協助。您必須登入 GitHub 驗證身份才能查看 Laravel 的所有 Issue。
 
-若您在使用 Laravel 時發現不正確的 DocBlock、PHPStan 或 IDE 警告，請勿建立 GitHub Issue。相反地，請提交 Pull Request 來修復該問題。
+在使用 Laravel 時，如果您注意到不正確的 DocBlock、PHPStan 或 IDE 警告，請勿建立 GitHub Issue。相反地，請直接提交 Pull Request 來修復該問題。
 
-Laravel 原始碼託管於 GitHub，並且每個 Laravel 專案都有各自的儲存庫：
+Laravel 的原始碼託管於 GitHub 上，且每個 Laravel 專案都有各自的儲存庫：
 
 <div class="content-list" markdown="1">
 
+- [Laravel AI SDK](https://github.com/laravel/ai)
 - [Laravel Application](https://github.com/laravel/laravel)
 - [Laravel Art](https://github.com/laravel/art)
 - [Laravel Boost](https://github.com/laravel/boost)
@@ -49,10 +50,10 @@ Laravel 原始碼託管於 GitHub，並且每個 Laravel 專案都有各自的�
 - [Laravel Scout](https://github.com/laravel/scout)
 - [Laravel Socialite](https://github.com/laravel/socialite)
 - [Laravel Telescope](https://github.com/laravel/telescope)
-- [Laravel Livewire Starter Kit](https://github.com/laravel/livewire-starter-kit)
-- [Laravel React Starter Kit](https://github.com/laravel/react-starter-kit)
-- [Laravel Svelte Starter Kit](https://github.com/laravel/svelte-starter-kit)
-- [Laravel Vue Starter Kit](https://github.com/laravel/vue-starter-kit)
+- [Laravel Livewire 入門套件](https://github.com/laravel/livewire-starter-kit)
+- [Laravel React 入門套件](https://github.com/laravel/react-starter-kit)
+- [Laravel Svelte 入門套件](https://github.com/laravel/svelte-starter-kit)
+- [Laravel Vue 入門套件](https://github.com/laravel/vue-starter-kit)
 
 </div>
 
@@ -60,13 +61,13 @@ Laravel 原始碼託管於 GitHub，並且每個 Laravel 專案都有各自的�
 <a name="support-questions"></a>
 ## 技術支援問題
 
-Laravel 的 GitHub Issue 追蹤器並非用於提供 Laravel 的求助或技術支援。相反地，請使用以下管道之一：
+Laravel 的 GitHub Issue 追蹤器並非用於提供 Laravel 的協助或技術支援。請改為使用以下管道：
 
 <div class="content-list" markdown="1">
 
 - [GitHub Discussions](https://github.com/laravel/framework/discussions)
-- [Laracasts Forums](https://laracasts.com/discuss)
-- [Laravel.io Forums](https://laravel.io/forum)
+- [Laracasts 論壇](https://laracasts.com/discuss)
+- [Laravel.io 論壇](https://laravel.io/forum)
 - [StackOverflow](https://stackoverflow.com/questions/tagged/laravel)
 - [Discord](https://discord.gg/laravel)
 - [Larachat](https://larachat.co)
@@ -78,54 +79,54 @@ Laravel 的 GitHub Issue 追蹤器並非用於提供 Laravel 的求助或技術�
 <a name="core-development-discussion"></a>
 ## 核心開發討論
 
-您可以在 Laravel Framework 儲存庫的 [GitHub 討論區](https://github.com/laravel/framework/discussions)中提出新功能或針對既有 Laravel 行為的改進建議。如果您提出了一項新功能，請願意至少實作完成該功能所需的部分程式碼。
+您可以在 Laravel 框架儲存庫的 [GitHub 討論區](https://github.com/laravel/framework/discussions) 中提議新功能或改進現有的 Laravel 行為。如果您提議新功能，請願意至少實作完成該功能所需的部分程式碼。
 
-關於 Bug、新功能以及現有功能實作的非正式討論會在 [Laravel Discord 伺服器](https://discord.gg/laravel)的 `#internals` 頻道中進行。Laravel 的維護者 Taylor Otwell 通常會在工作日的上午 8 點至下午 5 點（UTC-06:00 或美加中部時間 America/Chicago）出現在該頻道中，其他時間也會不定時出現。
+關於 Bug、新功能以及現有功能實作的非正式討論，會在 [Laravel Discord 伺服器](https://discord.gg/laravel) 的 `#internals` 頻道中進行。Laravel 的維護者 Taylor Otwell 通常會在工作日的上午 8 點至下午 5 點（UTC-06:00 或美中時間）出現在該頻道中，其他時間也會不定時出現。
 
 
 <a name="which-branch"></a>
-## 選擇哪個分支？
+## 要選擇哪個分支？
 
-**所有** Bug 修復都應發送至支援 Bug 修復的最新版本（目前為 `13.x`）。除非修復的是僅存在於即將發布版本中的功能，否則**絕對不要**將 Bug 修復發送至 `master` 分支。
+**所有** Bug 修復都應該發送到支援修復 Bug 的最新版本（目前為 `13.x`）。除非修復的是僅存在於即將發布版本中的功能，否則修復 Bug 的 PR **絕不**應該發送到 `master` 分支。
 
-與目前版本**完全向下相容**的**次要**功能可以發送至最新的穩定分支（目前為 `13.x`）。
+**次要**功能若能**完全向下相容**現有版本，可以發送到最新的穩定分支（目前為 `13.x`）。
 
-**主要**新功能或包含破壞性變更的功能應始終發送至 `master` 分支，該分支包含即將發布的版本。
+**主要**的新功能或包含破壞性變更的功能，則應始終發送到包含即將發布版本的 `master` 分支。
 
 
 <a name="compiled-assets"></a>
 ## 編譯後的靜態資源
 
-如果您提交的變更會影響編譯後的檔案，例如 `laravel/laravel` 儲存庫中 `resources/css` 或 `resources/js` 內的大多數檔案，請不要提交編譯後的檔案。由於檔案體積龐大，維護者實際上無法對其進行有效審查。這可能會被利用來向 Laravel 注入惡意程式碼。為了防禦此類問題，所有編譯後的檔案都將由 Laravel 維護者生成並提交。
+如果您提交的變更會影響編譯後的檔案，例如 `laravel/laravel` 儲存庫中 `resources/css` 或 `resources/js` 目錄下的多數檔案，請不要 commit 編譯後的檔案。由於這些檔案體積龐大，維護者實際上無法進行審查。這可能會被利用來作為向 Laravel 注入惡意程式碼的手法。為了進行防禦性預防，所有編譯後的檔案都將由 Laravel 的維護者統一生成並 commit。
 
 
 <a name="ai-generated-contributions"></a>
 ## AI 生成的貢獻
 
-我們感謝提交給 Laravel 的每一個 Pull Request。然而，未經深思熟慮的人工審查與考量、主要由 AI 生成的貢獻是不可接受的。
+我們感謝提交給 Laravel 的每一個 Pull Request。然而，主要由 AI 生成且未經過人類深思熟慮與審查的貢獻是不被接受的。
 
-若您選擇使用 AI 工具來協助您的貢獻，在提交之前，您**必須**徹底審查、測試並理解所產生的程式碼。
+如果您選擇使用 AI 工具來協助您的貢獻，在提交之前，您**必須**親自對產出的程式碼進行深入的審查、測試與理解。
 
-**大量開啟完全由 AI 生成的 Issue 或 Pull Request 將不被允許。** 此類 Pull Request 將在未經審核的情況下直接關閉，且該貢獻者可能會被此儲存庫封鎖。
+**絕不允許大量建立完全由 AI 生成的 Issue 或 Pull Request。** 此類 Pull Request 將會在未經審查的情況下直接關閉，且貢獻該內容的使用者可能會被封鎖於儲存庫之外。
 
-我們鼓勵貢獻者熟悉現有的程式碼庫、參與社群互動，並提交能體現自己對所解決問題的理解與審慎考量的 Pull Request。
+我們鼓勵貢獻者熟悉現有的程式碼庫、與社群互動，並提交能夠反映自己對所解決問題的理解與仔細考量的 Pull Request。
 
 
 <a name="security-vulnerabilities"></a>
-## 安全性漏洞
+## 資安漏洞
 
-如果您在 Laravel 中發現安全性漏洞，請發送電子郵件給我們的安全團隊：<a href="mailto:security@laravel.com">security@laravel.com</a>。所有安全性漏洞都將會被迅速處理。
+如果您在 Laravel 中發現資安漏洞，請發送電子郵件至資安團隊信箱 <a href="mailto:security@laravel.com">security@laravel.com</a>。所有資安漏洞都將會獲得及時處理。
 
 <a name="coding-style"></a>
 ## 程式碼風格
 
-Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) 編碼標準與 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) 自動載入標準。
+Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) 程式碼風格標準以及 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) 自動載入標準。
 
 
 <a name="phpdoc"></a>
 ### PHPDoc
 
-以下是有效的 Laravel 文件區塊範例。請注意，`@param` 屬性後面會接著兩個空格、引數型別、再兩個空格，最後則是變數名稱：
+以下是一個有效的 Laravel 文件塊 (DocBlock) 範例。請注意，在 `@param` 屬性後面跟著兩個空格、引數型態、再兩個空格，最後才是變數名稱：
 
 ```php
 /**
@@ -144,7 +145,7 @@ public function bind($abstract, $concrete = null, $shared = false)
 }
 ```
 
-當原生型別已明確宣告使得 `@param` 或 `@return` 屬性顯得多餘時，可以將其移除：
+當 `@param` 或 `@return` 屬性因為使用了原生型別而顯得重複多餘時，可以將它們移除：
 
 ```php
 /**
@@ -158,7 +159,7 @@ public function handle(AudioProcessor $processor): void
 }
 ```
 
-然而，當原生型別為泛型時，請使用 `@param` 或 `@return` 屬性來明確指定泛型型別：
+然而，當原生型別為泛型時，請透過使用 `@param` 或 `@return` 屬性來指定泛型型別：
 
 ```php
 /**
@@ -178,19 +179,19 @@ public function attachments(): array
 <a name="styleci"></a>
 ### StyleCI
 
-如果您的程式碼風格不夠完美，請別擔心！[StyleCI](https://styleci.io/) 會在 Pull Request 合併後，自動將任何風格修正合併至 Laravel 儲存庫中。這使我們能夠專注於貢獻的內容本身，而不是程式碼風格。
+如果您的程式碼風格不夠完美，請不用擔心！在 Pull Request 被合併後，[StyleCI](https://styleci.io/) 會自動將任何風格修復併入 Laravel 的儲存庫中。這能讓我們將精力專注於貢獻的內容本身，而不是程式碼風格。
 
 
 <a name="code-of-conduct"></a>
 ## 行為準則
 
-Laravel 行為準則衍生自 Ruby 行為準則。任何違反行為準則的情況都可以向 Taylor Otwell（taylor@laravel.com）檢舉：
+Laravel 的行為準則源自於 Ruby 的行為準則。任何違反行為準則的情況都可以向 Taylor Otwell (taylor@laravel.com) 回報：
 
 <div class="content-list" markdown="1">
 
-- 參與者將包容不同的觀點。
-- 參與者必須確保自己的言行不含有人身攻擊和貶損個人的言論。
-- 在解讀他人的言語和行為時，參與者應始終抱持善意的出發點。
-- 任何可被合理視為騷擾的行為都絕不容許。
+- 參與者應包容不同的觀點。
+- 參與者必須確保其言語和行為沒有個人攻擊和貶低個人的言論。
+- 在解讀他人的言語和行為時，參與者應始終假設對方出於善意。
+- 任何合理情況下被視為騷擾的行為都將絕不被允許。
 
 </div>
